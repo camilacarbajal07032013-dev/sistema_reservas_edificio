@@ -144,3 +144,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 if 'DATABASE_URL' in os.environ:
     import dj_database_url
     DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
+
+# CSRF Settings
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-b8d59.up.railway.app',
+]
