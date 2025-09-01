@@ -1,11 +1,14 @@
 [phases.setup]
-nixPkgs = ['python39']
+nixPkgs = ['python39', 'pip']
 
 [phases.install]
-cmds = ['pip install -r requirements.txt']
+cmds = [
+    'pip install --upgrade pip',
+    'pip install -r requirements.txt'
+]
 
 [phases.build]
-cmds = ['python manage.py collectstatic --noinput']
+cmds = ['python manage.py collectstatic --noinput --clear']
 
 [start]
-cmd = 'gunicorn sistema_reservas_edificio.wsgi --host=0.0.0.0 --port=$PORT'
+cmd = 'python -m gunicorn sistema_reservas_edificio.wsgi:application --bind 0.0.0.0:$PORT'
