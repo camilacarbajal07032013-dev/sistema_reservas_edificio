@@ -26,12 +26,8 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-clave-temporal-para-d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-
-ALLOWED_HOSTS = [
-    'web-production-b8d59.up.railway.app',  # Tu dominio de Railway
-    'localhost',
-    '127.0.0.1',
-]
+DEBUG = True  # Temporal para ver el error completo
+ALLOWED_HOSTS = ['*']  # Temporal
 
 
 # Application definition
