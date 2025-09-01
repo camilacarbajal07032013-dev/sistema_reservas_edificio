@@ -172,6 +172,37 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+def importar_usuarios(request):
+    from django.http import HttpResponse
+    from django.core.management import call_command
+    from django.contrib.auth.models import User
+    import os
+    
+    try:
+        # Buscar archivos disponibles
+        archivo = None
+        for nombre in ['usuarios_limpio.json', 'usuarios_utf8.json', 'usuarios.json']:
+            if os.path.exists(nombre):
+                archivo = nombre
+                break
+        
+        if not archivo:
+            return HttpResponse("❌ Ningún archivo de usuarios encontrado")
+        
+        # Contar usuarios antes
+        usuarios_antes = User.objects.count()
+        
+        # Importar datos
+        call_command('loaddata', archivo)
+        
+        # Contar usuarios después
+        usuarios_despues = User.objects.count()
+        
+        return HttpResponse(f"✅ Importación exitosa usando {archivo}!<br>Usuarios antes: {usuarios_antes}<br>Usuarios después: {usuarios_despues}")
+        
+    except Exception as e:
+        return HttpResponse(f"❌ Error al importar: {str(e)}")
+
 def ver_usuarios(request):
     from django.http import HttpResponse
     from django.contrib.auth.models import User
