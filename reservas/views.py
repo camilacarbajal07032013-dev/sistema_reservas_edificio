@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Count, Q
@@ -131,35 +131,35 @@ def nueva_reserva(request):
     
     # Obtener espacios disponibles
     espacios = Espacio.objects.filter(
-    Q(activo=True) & (
-        Q(tipo__in=['sala', 'directorio', 'terraza']) |  # Espacios comunes
-        Q(tipo='estacionamiento', es_estacionamiento_visita=True) |  # Estacionamientos de visita
-        Q(tipo='estacionamiento', oficina_propietaria=oficina)  # Sus estacionamientos propios
+        Q(activo=True) & (
+            Q(tipo__in=['sala', 'directorio', 'terraza']) |  # Espacios comunes
+            Q(tipo='estacionamiento', es_estacionamiento_visita=True) |  # Estacionamientos de visita
+            Q(tipo='estacionamiento', oficina_propietaria=oficina)  # Sus estacionamientos propios
+        )
     )
-)
     
     # Horarios disponibles por tipo de espacio
     horarios = []
     horarios_bloques = {
-    'directorio': [
-        {'inicio': '08:00', 'fin': '10:00', 'label': '8:00 AM - 10:00 AM'},
-        {'inicio': '10:15', 'fin': '12:15', 'label': '10:15 AM - 12:15 PM'},
-        {'inicio': '13:00', 'fin': '15:00', 'label': '1:00 PM - 3:00 PM'},
-        {'inicio': '15:15', 'fin': '17:15', 'label': '3:15 PM - 5:15 PM'},
-    ],
-    'sala': [
-        {'inicio': '08:00', 'fin': '09:00', 'label': '8:00 AM - 9:00 AM'},
-        {'inicio': '09:00', 'fin': '10:00', 'label': '9:00 AM - 10:00 AM'},
-        {'inicio': '10:00', 'fin': '11:00', 'label': '10:00 AM - 11:00 AM'},
-        # ... agregar más horarios de salas
-    ],
-    'terraza': [
-        {'inicio': '08:00', 'fin': '10:00', 'label': '8:00 AM - 10:00 AM'},
-        {'inicio': '10:00', 'fin': '12:00', 'label': '10:00 AM - 12:00 PM'},
-        {'inicio': '14:00', 'fin': '16:00', 'label': '2:00 PM - 4:00 PM'},
-        {'inicio': '16:00', 'fin': '18:00', 'label': '4:00 PM - 6:00 PM'},
-    ]
-}
+        'directorio': [
+            {'inicio': '08:00', 'fin': '10:00', 'label': '8:00 AM - 10:00 AM'},
+            {'inicio': '10:15', 'fin': '12:15', 'label': '10:15 AM - 12:15 PM'},
+            {'inicio': '13:00', 'fin': '15:00', 'label': '1:00 PM - 3:00 PM'},
+            {'inicio': '15:15', 'fin': '17:15', 'label': '3:15 PM - 5:15 PM'},
+        ],
+        'sala': [
+            {'inicio': '08:00', 'fin': '09:00', 'label': '8:00 AM - 9:00 AM'},
+            {'inicio': '09:00', 'fin': '10:00', 'label': '9:00 AM - 10:00 AM'},
+            {'inicio': '10:00', 'fin': '11:00', 'label': '10:00 AM - 11:00 AM'},
+            # ... agregar más horarios de salas
+        ],
+        'terraza': [
+            {'inicio': '08:00', 'fin': '10:00', 'label': '8:00 AM - 10:00 AM'},
+            {'inicio': '10:00', 'fin': '12:00', 'label': '10:00 AM - 12:00 PM'},
+            {'inicio': '14:00', 'fin': '16:00', 'label': '2:00 PM - 4:00 PM'},
+            {'inicio': '16:00', 'fin': '18:00', 'label': '4:00 PM - 6:00 PM'},
+        ]
+    }
     
     context = {
         'espacios': espacios,
@@ -167,44 +167,10 @@ def nueva_reserva(request):
         'fecha_minima': date.today().isoformat(),
     }
     return render(request, 'reservas/nueva_reserva.html', context)
-from django.contrib.auth import logout
 
 def logout_view(request):
     logout(request)
     return redirect('login')
-
-# ... todo tu código existente ...
-
-def logout_view(request):
-    logout(request)
-    return redirect('login')
-
-# AGREGAR ESTAS DOS FUNCIONES AQUÍ:
-
-def importar_usuarios(request):
-    from django.http import HttpResponse
-    from django.core.management import call_command
-    from django.contrib.auth.models import User
-    import os
-    
-    try:
-        # Verificar si el archivo existe
-        if not os.path.exists('usuarios_utf8.json'):
-            return HttpResponse("❌ Archivo usuarios.json no encontrado")
-        
-        # Contar usuarios antes
-        usuarios_antes = User.objects.count()
-        
-        # Importar datos
-        call_command('loaddata', 'usuarios_utf8.json')
-        
-        # Contar usuarios después
-        usuarios_despues = User.objects.count()
-        
-        return HttpResponse(f"✅ Importación exitosa!<br>Usuarios antes: {usuarios_antes}<br>Usuarios después: {usuarios_despues}")
-        
-    except Exception as e:
-        return HttpResponse(f"❌ Error al importar: {str(e)}")
 
 def ver_usuarios(request):
     from django.http import HttpResponse
