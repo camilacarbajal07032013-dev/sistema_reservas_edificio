@@ -189,14 +189,14 @@ def importar_usuarios(request):
     
     try:
         # Verificar si el archivo existe
-        if not os.path.exists('usuarios.json'):
+        if not os.path.exists('usuarios_utf8.json'):
             return HttpResponse("❌ Archivo usuarios.json no encontrado")
         
         # Contar usuarios antes
         usuarios_antes = User.objects.count()
         
         # Importar datos
-        call_command('loaddata', 'usuarios.json')
+        call_command('loaddata', 'usuarios_utf8.json')
         
         # Contar usuarios después
         usuarios_despues = User.objects.count()
