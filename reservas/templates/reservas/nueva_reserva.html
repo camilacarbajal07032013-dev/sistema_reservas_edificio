@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Reserva | Sistema Corporativo</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100"><polygon fill="rgba(255,255,255,0.05)" points="0,0 1000,0 1000,60 0,100"/></svg>');
+            background-size: cover;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231,76,60,0.3);
+        }
+
+        .main-content {
+            padding: 3rem 0;
+        }
+
+        .reservation-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reservation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #3498db, #2980b9, #8e44ad, #9b59b6);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .form-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .form-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #34495e;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(52,152,219,0.1);
+            transform: translateY(-2px);
+        }
+
+        .time-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .visitor-info {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 2px dashed #dee2e6;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .visitor-info.active {
+            display: block;
+            border-color: #3498db;
+            background: linear-gradient(135deg, #ebf3fd 0%, #f8fbff 100%);
+        }
+
+        .visitor-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .visitor-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(52,152,219,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(52,152,219,0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .alert {
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 500;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #fadbd8 0%, #f1948a 100%);
+            border-left-color: #e74c3c;
+            color: #c0392b;
+        }
+
+        .icon {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .time-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .reservation-card {
+                padding: 2rem 1.5rem;
+                border-radius: 15px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Animaciones sutiles */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reservation-card {
+            animation: fadeInUp 0.6s ease;
+        }
+
+        /* Efectos de hover mejorados */
+        .form-group:hover input,
+        .form-group:hover select {
+            border-color: #bdc3c7;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1>
+                        <i class="fas fa-calendar-plus icon"></i>
+                        Nueva Reserva
+                    </h1>
+                    <p>Sistema de Gestión Corporativa - Reservas Inteligentes</p>
+                </div>
+                <div class="nav-buttons">
+                    <a href="{% url 'mis_reservas' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Volver a Mis Reservas
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="reservation-card">
+                <div class="form-header">
+                    <h2>
+                        <i class="fas fa-building"></i>
+                        Solicitud de Reserva
+                    </h2>
+                    <p>Complete los siguientes campos para procesar su reserva</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="espacio">
+                                <i class="fas fa-map-marker-alt icon"></i>
+                                Espacio a Reservar
+                            </label>
+                            <select name="espacio" id="espacio" required onchange="toggleVisitorInfo()">
+                                <option value="">Seleccione un espacio...</option>
+                                {% for espacio in espacios %}
+                                    <option value="{{ espacio.id }}">{{ espacio.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fecha">
+                                <i class="fas fa-calendar-alt icon"></i>
+                                Fecha de Reserva
+                            </label>
+                            <input type="date" name="fecha" id="fecha" min="{{ fecha_minima }}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bloque_horario">
+                            <i class="fas fa-clock icon"></i>
+                            Seleccionar Bloque de Horario
+                        </label>
+                        <select name="bloque_horario" id="bloque_horario" required>
+                            <option value="">Primero seleccione un espacio...</option>
+                        </select>
+                    </div>
+
+                    <div id="visitor-info" class="visitor-info">
+                        <div class="visitor-header">
+                            <i class="fas fa-user-tie" style="font-size: 1.5rem; color: #3498db;"></i>
+                            <h3>Información del Visitante</h3>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="nombre_visitante">
+                                    <i class="fas fa-user icon"></i>
+                                    Nombre Completo
+                                </label>
+                                <input type="text" name="nombre_visitante" id="nombre_visitante" 
+                                       placeholder="Ej: Juan Carlos Pérez López">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="placa_visitante">
+                                    <i class="fas fa-car icon"></i>
+                                    Placa del Vehículo
+                                </label>
+                                <input type="text" name="placa_visitante" id="placa_visitante" 
+                                       placeholder="Ej: ABC-123" style="text-transform: uppercase;">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="empresa_visitante">
+                                    <i class="fas fa-briefcase icon"></i>
+                                    Empresa / Organización
+                                </label>
+                                <input type="text" name="empresa_visitante" id="empresa_visitante" 
+                                       placeholder="Ej: Corporación Internacional S.A.">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check-circle"></i>
+                            Confirmar Reserva
+                        </button>
+                        <a href="{% url 'mis_reservas' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        function updateHorarios() {
+            const espacio = document.getElementById('espacio');
+            const bloqueSelect = document.getElementById('bloque_horario');
+            
+            bloqueSelect.innerHTML = '<option value="">Seleccionar horario...</option>';
+            
+            if (!espacio.value) {
+                bloqueSelect.innerHTML = '<option value="">Primero seleccione un espacio...</option>';
+                return;
+            }
+            
+            const espacioTexto = espacio.options[espacio.selectedIndex].text.toLowerCase();
+            
+            let horarios = [];
+            
+            if (espacioTexto.includes('directorio')) {
+                horarios = [
+                    {inicio: '08:00', fin: '10:00', label: '8:00 AM - 10:00 AM'},
+                    {inicio: '10:15', fin: '12:15', label: '10:15 AM - 12:15 PM'},
+                    {inicio: '13:00', fin: '15:00', label: '1:00 PM - 3:00 PM'},
+                    {inicio: '15:15', fin: '17:15', label: '3:15 PM - 5:15 PM'}
+                ];
+            } else {
+                horarios = [
+                    {inicio: '08:00', fin: '09:00', label: '8:00 AM - 9:00 AM'},
+                    {inicio: '09:30', fin: '10:30', label: '9:30 AM - 10:30 AM'},
+                    {inicio: '11:00', fin: '12:00', label: '11:00 AM - 12:00 PM'},
+                    {inicio: '13:00', fin: '14:00', label: '1:00 PM - 2:00 PM'},
+                    {inicio: '14:30', fin: '15:30', label: '2:30 PM - 3:30 PM'},
+                    {inicio: '16:00', fin: '17:00', label: '4:00 PM - 5:00 PM'}
+                ];
+            }
+            
+            horarios.forEach(bloque => {
+                const option = document.createElement('option');
+                option.value = bloque.inicio + '-' + bloque.fin;
+                option.textContent = bloque.label;
+                bloqueSelect.appendChild(option);
+            });
+        }
+
+        document.getElementById('espacio').addEventListener('change', function() {
+            updateHorarios();
+            toggleVisitorInfo();
+        });
+
+        // Auto-uppercase para placa
+        document.getElementById('placa_visitante').addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+
+        // Animación suave al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            const card = document.querySelector('.reservation-card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

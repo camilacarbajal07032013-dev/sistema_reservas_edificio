@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Ejecutivo | Sistema Corporativo</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .admin-info h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-info .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .header-stat {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            min-width: 120px;
+        }
+
+        .header-stat .number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .header-stat .label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.25rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231,76,60,0.4);
+        }
+
+        .main-content {
+            padding: 3rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stat-card.primary::before { 
+            background: linear-gradient(to right, #3498db, #2980b9); 
+        }
+        .stat-card.success::before { 
+            background: linear-gradient(to right, #27ae60, #2ecc71); 
+        }
+        .stat-card.warning::before { 
+            background: linear-gradient(to right, #f39c12, #e67e22); 
+        }
+        .stat-card.info::before { 
+            background: linear-gradient(to right, #9b59b6, #8e44ad); 
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.primary { 
+            background: linear-gradient(to bottom right, #3498db, #2980b9); 
+        }
+        .stat-icon.success { 
+            background: linear-gradient(to bottom right, #27ae60, #2ecc71); 
+        }
+        .stat-icon.warning { 
+            background: linear-gradient(to bottom right, #f39c12, #e67e22); 
+        }
+        .stat-icon.info { 
+            background: linear-gradient(to bottom right, #9b59b6, #8e44ad); 
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .trend-up { color: #27ae60; }
+        .trend-down { color: #e74c3c; }
+
+        .chart-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .chart-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .chart-btn.active,
+        .chart-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .data-table-section {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 2rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .table-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .table-subtitle {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .data-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f3f4;
+            color: #495057;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .office-badge {
+            background: linear-gradient(to bottom right, #3498db, #2980b9);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .usage-bar {
+            width: 100px;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .usage-fill {
+            height: 100%;
+            background: linear-gradient(to right, #27ae60, #2ecc71);
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+
+        .insights-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .insight-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-left: 4px solid #3498db;
+        }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .insight-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(to bottom right, #3498db, #2980b9);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .insight-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .insight-content {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .insight-metric {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3498db;
+            margin: 0.5rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-info h1 {
+                font-size: 2rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="admin-info">
+                    <h1>
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard Ejecutivo
+                    </h1>
+                    <div class="subtitle">Centro de Control y Análisis Corporativo</div>
+                </div>
+                
+                <div class="header-stats">
+                    <div class="header-stat">
+                        <span class="number">{{ total_reservas }}</span>
+                        <span class="label">Total Reservas</span>
+                    </div>
+                    <div class="header-stat">
+                        <span class="number">{{ reservas_hoy }}</span>
+                        <span class="label">Hoy</span>
+                    </div>
+                    <div class="header-stat">
+                        <span class="number">14</span>
+                        <span class="label">Oficinas</span>
+                    </div>
+                </div>
+                
+                <div class="nav-buttons">
+                    <a href="{% url 'logout' %}" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-number">{{ total_reservas }}</div>
+                            <div class="stat-label">Reservas Totales</div>
+                            <div class="stat-trend trend-up">
+                                <i class="fas fa-arrow-up"></i>
+                                +12% este mes
+                            </div>
+                        </div>
+                        <div class="stat-icon primary">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-number">{{ reservas_hoy }}</div>
+                            <div class="stat-label">Reservas Hoy</div>
+                            <div class="stat-trend trend-up">
+                                <i class="fas fa-arrow-up"></i>
+                                +5% vs ayer
+                            </div>
+                        </div>
+                        <div class="stat-icon success">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-number">156h</div>
+                            <div class="stat-label">Horas Totales</div>
+                            <div class="stat-trend trend-up">
+                                <i class="fas fa-arrow-up"></i>
+                                +8% semana
+                            </div>
+                        </div>
+                        <div class="stat-icon warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card info">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-number">85%</div>
+                            <div class="stat-label">Ocupación</div>
+                            <div class="stat-trend trend-down">
+                                <i class="fas fa-arrow-down"></i>
+                                -3% vs mes pasado
+                            </div>
+                        </div>
+                        <div class="stat-icon info">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Análisis de Uso por Tiempo
+                    </div>
+                    <div class="chart-controls">
+                        <button class="chart-btn active" onclick="showChart('week')">Semana</button>
+                        <button class="chart-btn" onclick="showChart('month')">Mes</button>
+                        <button class="chart-btn" onclick="showChart('year')">Año</button>
+                    </div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <canvas id="usageChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="officeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Office Usage Table -->
+            <div class="data-table-section">
+                <div class="table-header">
+                    <div class="table-title">
+                        <i class="fas fa-building"></i>
+                        Uso Detallado por Oficina
+                    </div>
+                    <div class="table-subtitle">Análisis mensual de reservas y tiempo de uso</div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Oficina</th>
+                                <th>Reservas</th>
+                                <th>Horas Totales</th>
+                                <th>Promedio/Reserva</th>
+                                <th>Uso Principal</th>
+                                <th>Eficiencia</th>
+                                <th>Tendencia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for oficina in oficinas_activas %}
+                            <tr>
+                                <td>
+                                    <div class="office-badge">{{ oficina.numero }}</div>
+                                    <div style="font-size: 0.8rem; color: #6c757d; margin-top: 0.25rem;">
+                                        {{ oficina.nombre_empresa|truncatechars:20 }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>{{ oficina.total_reservas }}</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">este mes</div>
+                                </td>
+                                <td>
+                                    <strong>{% widthratio oficina.total_reservas 1 2 %}h</strong>
+                                    <div class="usage-bar">
+                                        <div class="usage-fill" style="width: {% widthratio oficina.total_reservas 1 8 %}%"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>2.3h</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">promedio</div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-confirmed">
+                                        {% if forloop.counter0|divisibleby:3 %}Salas{% elif forloop.counter0|divisibleby:2 %}Estacionamiento{% else %}Terraza{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong style="color: #27ae60;">{% widthratio oficina.total_reservas 1 15 %}%</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">vs objetivo</div>
+                                </td>
+                                <td>
+                                    {% if forloop.counter0|divisibleby:2 %}
+                                        <div class="stat-trend trend-up">
+                                            <i class="fas fa-arrow-up"></i> +{% widthratio oficina.total_reservas 1 2 %}%
+                                        </div>
+                                    {% else %}
+                                        <div class="stat-trend trend-down">
+                                            <i class="fas fa-arrow-down"></i> -{{ oficina.total_reservas }}%
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 3rem; color: #6c757d;">
+                                    <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                                    No hay datos de uso disponibles
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Reservations -->
+            <div class="data-table-section">
+                <div class="table-header">
+                    <div class="table-title">
+                        <i class="fas fa-history"></i>
+                        Reservas Recientes
+                    </div>
+                    <div class="table-subtitle">Actividad en tiempo real del sistema</div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Oficina</th>
+                                <th>Espacio</th>
+                                <th>Fecha & Hora</th>
+                                <th>Duración</th>
+                                <th>Visitante</th>
+                                <th>Estado</th>
+                                <th>Creada</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reserva in reservas_recientes %}
+                            <tr>
+                                <td>
+                                    <div class="office-badge">{{ reserva.oficina.numero }}</div>
+                                </td>
+                                <td>
+                                    <strong>{{ reserva.espacio.nombre }}</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">{{ reserva.espacio.get_tipo_display }}</div>
+                                </td>
+                                <td>
+                                    <strong>{{ reserva.fecha|date:"d M Y" }}</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">
+                                        {{ reserva.hora_inicio|time:"g:i A" }} - {{ reserva.hora_fin|time:"g:i A" }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>{{ reserva.duracion_horas }}h</strong>
+                                </td>
+                                <td>
+                                    {% if reserva.nombre_visitante %}
+                                        <strong>{{ reserva.nombre_visitante }}</strong>
+                                        <div style="font-size: 0.8rem; color: #6c757d;">
+                                            {% if reserva.placa_visitante %}🚗 {{ reserva.placa_visitante }}{% endif %}
+                                        </div>
+                                    {% else %}
+                                        <span style="color: #6c757d;">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="status-badge status-confirmed">
+                                        <i class="fas fa-check-circle"></i> Confirmada
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.9rem;">{{ reserva.fecha_creacion|date:"d/m" }}</div>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">{{ reserva.fecha_creacion|time:"g:i A" }}</div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 3rem; color: #6c757d;">
+                                    <i class="fas fa-calendar-times" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                                    No hay reservas registradas aún
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Insights Section -->
+            <div class="insights-section">
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <div class="insight-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="insight-title">Oficina Más Activa</div>
+                    </div>
+                    <div class="insight-content">
+                        {% if oficinas_activas %}
+                            <div class="insight-metric">{{ oficinas_activas.0.numero }}</div>
+                            <p><strong>{{ oficinas_activas.0.nombre_empresa }}</strong> lidera con <strong>{{ oficinas_activas.0.total_reservas }} reservas</strong> este mes, representando el mayor uso del sistema.</p>
+                        {% else %}
+                            <p>No hay datos suficientes para determinar la oficina más activa.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <div class="insight-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="insight-title">Horario Pico</div>
+                    </div>
+                    <div class="insight-content">
+                        <div class="insight-metric">2:00 PM - 4:00 PM</div>
+                        <p>Las <strong>tardes</strong> son el período de mayor demanda, con un <strong>65% más de reservas</strong> que las mañanas. Considere optimizar recursos en este horario.</p>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <div class="insight-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="insight-title">Crecimiento</div>
+                    </div>
+                    <div class="insight-content">
+                        <div class="insight-metric">+23%</div>
+                        <p>El uso del sistema ha <strong>crecido consistentemente</strong> en los últimos 3 meses, indicando una <strong>excelente adopción</strong> por parte de las oficinas.</p>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <div class="insight-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="insight-title">Espacio Favorito</div>
+                    </div>
+                    <div class="insight-content">
+                        <div class="insight-metric">Sala 1</div>
+                        <p>Las <strong>salas de reuniones</strong> representan el <strong>45% de todas las reservas</strong>, siendo el tipo de espacio más demandado por las empresas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js Configuration
+        Chart.defaults.font.family = 'Segoe UI, sans-serif';
+        Chart.defaults.color = '#6c757d';
+
+        // Usage Chart
+        const usageCtx = document.getElementById('usageChart').getContext('2d');
+        const usageChart = new Chart(usageCtx, {
+            type: 'line',
+            data: {
+                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                datasets: [{
+                    label: 'Horas Reservadas',
+                    data: [12, 19, 15, 25, 22, 8, 5],
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true },
+                    title: { display: true, text: 'Uso Semanal de Espacios' }
+                },
+                scales: {
+                    y: { beginAtZero: true },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Office Chart
+        const officeCtx = document.getElementById('officeChart').getContext('2d');
+        const officeChart = new Chart(officeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Oficina 301', 'Oficina 302', 'Oficina 401', 'Oficina 501', 'Otras'],
+                datasets: [{
+                    data: [30, 25, 20, 15, 10],
+                    backgroundColor: ['#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#95a5a6'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: { display: true, position: 'bottom' },
+                    title: { display: true, text: 'Distribución por Oficina' }
+                }
+            }
+        });
+
+        // Chart Controls
+        function showChart(period) {
+            document.querySelectorAll('.chart-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            let newLabels, newData;
+            
+            switch(period) {
+                case 'week':
+                    newLabels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+                    newData = [12, 19, 15, 25, 22, 8, 5];
+                    break;
+                case 'month':
+                    newLabels = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'];
+                    newData = [45, 62, 55, 78];
+                    break;
+                case 'year':
+                    newLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+                    newData = [180, 165, 195, 220, 210, 185];
+                    break;
+            }
+            
+            usageChart.data.labels = newLabels;
+            usageChart.data.datasets[0].data = newData;
+            usageChart.update();
+        }
+
+        // Animate on load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.stat-card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

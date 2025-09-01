@@ -1,0 +1,1 @@
+web: gunicorn edificio.wsgi --log-file -
