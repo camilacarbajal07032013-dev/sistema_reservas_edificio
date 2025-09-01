@@ -1,9 +1,1 @@
-{
-  "name": "sistema-reservas-edificio",
-  "version": "1.0.0",
-  "scripts": {
-    "start": "python -m http.server 8080",
-    "build": "echo 'No build needed'"
-  },
-  "dependencies": {}
-}
+
