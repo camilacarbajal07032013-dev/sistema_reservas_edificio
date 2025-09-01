@@ -10,5 +10,4 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('importar-usuarios/', views.importar_usuarios, name='importar_usuarios'),
     path('ver-usuarios/', views.ver_usuarios, name='ver_usuarios'),
-    path('resetear-passwords/', views.resetear_passwords, name='resetear_passwords'),
 ]
