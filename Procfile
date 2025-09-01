@@ -1,0 +1,1 @@
+web: gunicorn sistema_reservas_edificio.wsgi --log-file -
