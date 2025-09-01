@@ -172,3 +172,44 @@ from django.contrib.auth import logout
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+# ... todo tu código existente ...
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+# AGREGAR ESTAS DOS FUNCIONES AQUÍ:
+
+def importar_usuarios(request):
+    from django.http import HttpResponse
+    from django.core.management import call_command
+    from django.contrib.auth.models import User
+    import os
+    
+    try:
+        # Verificar si el archivo existe
+        if not os.path.exists('usuarios.json'):
+            return HttpResponse("❌ Archivo usuarios.json no encontrado")
+        
+        # Contar usuarios antes
+        usuarios_antes = User.objects.count()
+        
+        # Importar datos
+        call_command('loaddata', 'usuarios.json')
+        
+        # Contar usuarios después
+        usuarios_despues = User.objects.count()
+        
+        return HttpResponse(f"✅ Importación exitosa!<br>Usuarios antes: {usuarios_antes}<br>Usuarios después: {usuarios_despues}")
+        
+    except Exception as e:
+        return HttpResponse(f"❌ Error al importar: {str(e)}")
+
+def ver_usuarios(request):
+    from django.http import HttpResponse
+    from django.contrib.auth.models import User
+    
+    usuarios = User.objects.all()
+    lista = "<br>".join([f"- {u.username} (activo: {u.is_active})" for u in usuarios])
+    return HttpResponse(f"<h3>Usuarios en Railway ({usuarios.count()} total):</h3><br>{lista}")
