@@ -139,7 +139,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Configuración para Railway
 if 'DATABASE_URL' in os.environ:
     import dj_database_url
-    DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
+    DATABASES = {'default': dj_database_url.config()}
 
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
