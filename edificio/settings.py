@@ -153,12 +153,3 @@ CSRF_TRUSTED_ORIGINS = [
     'https://web-production-b8d59.up.railway.app',
 ]
 
-if not DEBUG:
-    try:
-        import django
-        django.setup()
-        from django.contrib.auth.models import User
-        if not User.objects.filter(username='admin').exists():
-            User.objects.create_superuser('admin', 'admin@edificio.com', 'admin123')
-    except:
-        pass
