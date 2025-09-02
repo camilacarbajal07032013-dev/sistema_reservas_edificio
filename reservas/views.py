@@ -203,45 +203,6 @@ def importar_usuarios(request):
     except Exception as e:
         return HttpResponse(f"❌ Error al importar: {str(e)}")
 
-def resetear_passwords(request):
-    from django.http import HttpResponse
-    from django.contrib.auth.models import User
-    
-    try:
-        usuarios_actualizados = []
-        
-        # Contraseñas temporales simples (formato: oficina + 123)
-        usuarios_passwords = {
-            'admin': 'admin123',
-            'oficina101': 'oficina101',
-            'oficina201': 'oficina201', 
-            'oficina202': 'oficina202',
-            'oficina301': 'oficina301',
-            'oficina302': 'oficina302',
-            'oficina501': 'oficina501',
-            'oficina502': 'oficina502',
-            'oficina601': 'oficina601',
-            'oficina602': 'oficina602',
-            'oficina701': 'oficina701',
-            'oficina702': 'oficina702',
-            'oficina801': 'oficina801',
-            'oficina802': 'oficina802',
-        }
-        
-        for username, password in usuarios_passwords.items():
-            try:
-                user = User.objects.get(username=username)
-                user.set_password(password)
-                user.save()
-                usuarios_actualizados.append(f"✅ {username} → contraseña: {password}")
-            except User.DoesNotExist:
-                usuarios_actualizados.append(f"❌ {username} no encontrado")
-        
-        return HttpResponse("<h3>Contraseñas actualizadas:</h3><br>" + "<br>".join(usuarios_actualizados))
-        
-    except Exception as e:
-        return HttpResponse(f"❌ Error: {str(e)}")
-
 def ver_usuarios(request):
     from django.http import HttpResponse
     from django.contrib.auth.models import User
