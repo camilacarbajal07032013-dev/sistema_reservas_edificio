@@ -542,6 +542,18 @@
             });
         }
 
+        function toggleVisitorInfo() {
+            const espacio = document.getElementById('espacio');
+            const visitorInfo = document.getElementById('visitor-info');
+            const espacioTexto = espacio.options[espacio.selectedIndex].text.toLowerCase();
+            
+            if (espacioTexto.includes('estacionamiento')) {
+                visitorInfo.classList.add('active');
+            } else {
+                visitorInfo.classList.remove('active');
+            }
+        }
+
         document.getElementById('espacio').addEventListener('change', function() {
             updateHorarios();
             toggleVisitorInfo();
