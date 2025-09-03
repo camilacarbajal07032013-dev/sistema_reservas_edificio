@@ -647,21 +647,46 @@
         }
 
         function updateSelectedTimes() {
+            const espacio = document.getElementById('espacio');
+            const espacioTexto = espacio.options[espacio.selectedIndex].text.toLowerCase();
             const checkboxes = document.querySelectorAll('#time-blocks input[type="checkbox"]:checked');
             const selectedTimes = Array.from(checkboxes).map(cb => cb.value);
             const selectedLabels = Array.from(checkboxes).map(cb => cb.nextElementSibling.textContent);
             
-            document.getElementById('bloques_horarios').value = selectedTimes.join(',');
+            // Definir límites por tipo de espacio
+            let maxBlocks = 0;
+            let limitMessage = '';
             
-            const summary = document.getElementById('selected-summary');
-            const summaryText = document.getElementById('summary-text');
+            if (espacioTexto.includes('estacionamiento')) {
+                maxBlocks = 999; // Sin límite
+                limitMessage = 'Sin límite de horarios';
+            } else if (espacioTexto.includes('directorio')) {
+                maxBlocks = 2; // 2 bloques de 2h = 4h máximo
+                limitMessage = 'Máximo 2 bloques (4 horas)';
+            } else if (espacioTexto.includes('sala')) {
+                maxBlocks = 2; // 2 bloques de 1h = 2h máximo
+                limitMessage = 'Máximo 2 bloques (2 horas)';
+            }
             
-            if (selectedTimes.length > 0) {
-                summary.classList.add('active');
-                summaryText.textContent = selectedLabels.join(' | ');
+            // Verificar límite excedido
+            if (selectedTimes.length > maxBlocks) {
+                // Deseleccionar el último checkbox marcado
+                const lastChecked = Array.from(checkboxes).pop();
+                lastChecked.checked = false;
+                
+                // Mostrar alerta
+                alert(`Límite excedido. ${limitMessage} para ${espacioTexto}.`);
+                
+                // Recalcular sin el último elemento
+                const updatedCheckboxes = document.querySelectorAll('#time-blocks input[type="checkbox"]:checked');
+                const updatedTimes = Array.from(updatedCheckboxes).map(cb => cb.value);
+                const updatedLabels = Array.from(updatedCheckboxes).map(cb => cb.nextElementSibling.textContent);
+                
+                document.getElementById('bloques_horarios').value = updatedTimes.join(',');
+                updateSummary(updatedLabels, updatedTimes, limitMessage);
             } else {
-                summary.classList.remove('active');
-                summaryText.textContent = 'No hay horarios seleccionados';
+                document.getElementById('bloques_horarios').value = selectedTimes.join(',');
+                updateSummary(selectedLabels, selectedTimes, limitMessage);
             }
 
             // Actualizar estilos visuales
@@ -674,6 +699,22 @@
                     block.classList.remove('selected');
                 }
             });
+        }
+        
+        function updateSummary(labels, times, limitMessage) {
+            const summary = document.getElementById('selected-summary');
+            const summaryText = document.getElementById('summary-text');
+            
+            if (times.length > 0) {
+                summary.classList.add('active');
+                summaryText.innerHTML = `
+                    <strong>${labels.join(' | ')}</strong><br>
+                    <small style="color: #6c757d; font-style: italic;">${limitMessage} - Seleccionados: ${times.length}</small>
+                `;
+            } else {
+                summary.classList.remove('active');
+                summaryText.textContent = 'No hay horarios seleccionados';
+            }
         }
 
         function toggleVisitorInfo() {
