@@ -13,8 +13,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -24,11 +24,11 @@
 
         .login-container {
             background: white;
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 3rem;
             width: 100%;
-            max-width: 450px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            max-width: 420px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
             animation: slideUp 0.6s ease;
         }
 
@@ -43,48 +43,51 @@
             }
         }
 
+        /* HEADER MÁS PROMINENTE */
         .login-header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
         }
 
         .logo {
-            width: 80px;
-            height: 80px;
+            width: 90px;
+            height: 90px;
             background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            border-radius: 20px;
+            border-radius: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 1.5rem;
-            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 15px 35px rgba(52, 152, 219, 0.4);
         }
 
         .logo i {
-            font-size: 2.5rem;
+            font-size: 3rem;
             color: white;
         }
 
         .login-header h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
+            font-size: 2.6rem;
+            font-weight: 800;
             color: #2c3e50;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
+            letter-spacing: -0.5px;
         }
 
         .login-header .subtitle {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-            font-weight: 500;
+            color: #34495e;
+            font-size: 1.2rem;
+            font-weight: 600;
             margin-bottom: 0.5rem;
         }
 
         .login-header .tagline {
-            color: #95a5a6;
-            font-size: 0.9rem;
-            font-style: italic;
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            font-style: normal;
         }
 
+        /* FORMULARIO */
         .form-group {
             position: relative;
             margin-bottom: 1.8rem;
@@ -95,7 +98,7 @@
             margin-bottom: 0.8rem;
             font-weight: 600;
             color: #34495e;
-            font-size: 0.95rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -107,9 +110,9 @@
 
         .form-group input {
             width: 100%;
-            padding: 1rem 1rem 1rem 3.5rem;
+            padding: 1.2rem 1.2rem 1.2rem 3.8rem;
             border: 2px solid #e9ecef;
-            border-radius: 15px;
+            border-radius: 16px;
             font-size: 1rem;
             font-weight: 500;
             background: #f8f9fa;
@@ -127,11 +130,11 @@
 
         .input-icon {
             position: absolute;
-            left: 1.2rem;
+            left: 1.3rem;
             top: 50%;
             transform: translateY(-50%);
             color: #7f8c8d;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             transition: all 0.3s ease;
             z-index: 2;
         }
@@ -144,87 +147,82 @@
             width: 100%;
             background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             color: white;
-            padding: 1rem 2rem;
+            padding: 1.2rem 2rem;
             border: none;
-            border-radius: 15px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            border-radius: 16px;
+            font-size: 1.15rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.4);
             margin-bottom: 2rem;
         }
 
         .btn-login:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(52, 152, 219, 0.4);
+            box-shadow: 0 15px 45px rgba(52, 152, 219, 0.5);
         }
 
         .btn-login:active {
             transform: translateY(-1px);
         }
 
-        .access-info {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border: 1px solid #dee2e6;
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin-top: 1rem;
+        /* SECCIÓN DE ACCESO SIMPLIFICADA */
+        .access-section {
+            border-top: 1px solid #e9ecef;
+            padding-top: 1.5rem;
         }
 
-        .info-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            color: #495057;
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            padding: 1rem;
-            background: white;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .info-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .info-icon {
-            width: 35px;
-            height: 35px;
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            flex-shrink: 0;
-        }
-
-        .info-content {
-            flex: 1;
-        }
-
-        .info-title {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 0.3rem;
-            font-size: 0.95rem;
-        }
-
-        .info-description {
+        .access-title {
+            text-align: center;
             color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .access-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .access-option {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .access-option:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.1);
+        }
+
+        .access-option i {
+            font-size: 1.5rem;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .access-option-title {
+            font-weight: 700;
+            color: #2c3e50;
             font-size: 0.85rem;
-            line-height: 1.4;
+            margin-bottom: 0.3rem;
+        }
+
+        .access-option-desc {
+            color: #6c757d;
+            font-size: 0.75rem;
+            line-height: 1.3;
         }
 
         .alert {
@@ -243,9 +241,9 @@
         .security-notice {
             text-align: center;
             padding: 0.8rem;
-            background: rgba(52, 152, 219, 0.1);
-            border-radius: 10px;
-            margin-top: 1rem;
+            background: rgba(52, 152, 219, 0.08);
+            border-radius: 12px;
+            margin-top: 1.5rem;
             font-size: 0.8rem;
             color: #34495e;
         }
@@ -259,20 +257,16 @@
             .login-container {
                 padding: 2rem 1.5rem;
                 margin: 1rem;
-                border-radius: 15px;
+                border-radius: 20px;
             }
             
             .login-header h1 {
-                font-size: 1.8rem;
+                font-size: 2.2rem;
             }
             
-            .logo {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .logo i {
-                font-size: 2rem;
+            .access-options {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
             }
         }
     </style>
@@ -283,11 +277,11 @@
             <div class="logo">
                 <i class="fas fa-building"></i>
             </div>
-            <h1>Sistema Corporativo</h1>
-            <div class="subtitle">Plataforma de Reservas Ejecutiva</div>
-            <div class="tagline">Gestión Inteligente de Espacios Empresariales</div>
+            <h1>EDIFICIO DEAN VALDIVIA</h1>
+            <div class="subtitle">Sistema de Reservas</div>
+            <div class="tagline">Gestión Profesional de Espacios</div>
         </div>
-
+        
         {% if messages %}
             {% for message in messages %}
                 <div class="alert">
@@ -346,41 +340,27 @@
             </button>
         </form>
 
-        <div class="access-info">
-            <div class="info-header">
-                <i class="fas fa-info-circle"></i>
-                Acceso Corporativo
-            </div>
+        <div class="access-section">
+            <div class="access-title">Tipos de Acceso</div>
             
-            <div class="info-item">
-                <div class="info-icon">
+            <div class="access-options">
+                <div class="access-option">
                     <i class="fas fa-building"></i>
+                    <div class="access-option-title">Oficinas</div>
+                    <div class="access-option-desc">Reserva de espacios y gestión de solicitudes</div>
                 </div>
-                <div class="info-content">
-                    <div class="info-title">Oficinas Corporativas</div>
-                    <div class="info-description">
-                        Utilice sus credenciales proporcionadas por administración.
-                        <strong>Formato:</strong> oficina###
-                    </div>
-                </div>
-            </div>
 
-            <div class="info-item">
-                <div class="info-icon">
+                <div class="access-option">
                     <i class="fas fa-user-shield"></i>
-                </div>
-                <div class="info-content">
-                    <div class="info-title">Acceso Administrativo</div>
-                    <div class="info-description">
-                        Solo para personal autorizado de administración general del edificio.
-                    </div>
+                    <div class="access-option-title">Administración</div>
+                    <div class="access-option-desc">Panel administrativo del edificio</div>
                 </div>
             </div>
         </div>
 
         <div class="security-notice">
             <i class="fas fa-shield-alt"></i>
-            Conexión segura protegida. Para soporte contacte: admin@edificio.com | Ext. 100
+            ¿Necesitas ayuda? Contacta: admin@edificio.com | Ext. 100
         </div>
     </div>
 </body>
