@@ -113,7 +113,6 @@
 
         .btn-secondary:active {
             transform: translateY(-1px);
-
         }
 
         .btn-danger {
@@ -215,6 +214,96 @@
             transform: translateY(-2px);
         }
 
+        /* Estilos para selección múltiple de horarios */
+        .time-blocks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+        }
+
+        .time-block {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: white;
+        }
+
+        .time-block:hover {
+            border-color: #3498db;
+            background: #f8fbff;
+            transform: translateY(-2px);
+        }
+
+        .time-block input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #3498db;
+            cursor: pointer;
+        }
+
+        .time-block input[type="checkbox"]:checked + .time-label {
+            font-weight: 700;
+            color: #2980b9;
+        }
+
+        .time-block.selected {
+            border-color: #3498db;
+            background: linear-gradient(135deg, #ebf3fd 0%, #f8fbff 100%);
+        }
+
+        .time-label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            color: #2c3e50;
+        }
+
+        .no-space {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 2rem;
+        }
+
+        .selected-summary {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            border: 1px solid #bee5eb;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .selected-summary.active {
+            display: block;
+        }
+
+        .selected-summary h4 {
+            color: #0c5460;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .selected-summary p {
+            color: #0c5460;
+            font-size: 0.9rem;
+        }
+
         .time-selector {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -313,6 +402,11 @@
                 gap: 1.5rem;
             }
             
+            .time-blocks {
+                grid-template-columns: 1fr;
+                max-height: 250px;
+            }
+            
             .time-selector {
                 grid-template-columns: 1fr;
             }
@@ -360,7 +454,7 @@
                         <i class="fas fa-calendar-plus icon"></i>
                         Nueva Reserva
                     </h1>
-                    <p>Sistema de Gestión Corporativa - Reservas Inteligentes</p>
+                    <p>Sistema de Gestión Corporativa</p>
                 </div>
                 <div class="nav-buttons">
                     <a href="{% url 'mis_reservas' %}" class="btn btn-secondary">
@@ -423,13 +517,19 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="bloque_horario">
+                        <label for="bloques_horarios">
                             <i class="fas fa-clock icon"></i>
-                            Seleccionar Bloque de Horario
+                            Seleccionar Bloques de Horario (Múltiple)
                         </label>
-                        <select name="bloque_horario" id="bloque_horario" required>
-                            <option value="">Primero seleccione un espacio...</option>
-                        </select>
+                        <div class="time-blocks" id="time-blocks">
+                            <p class="no-space">Primero seleccione un espacio...</p>
+                        </div>
+                        <input type="hidden" name="bloques_horarios" id="bloques_horarios" required>
+                        
+                        <div class="selected-summary" id="selected-summary">
+                            <h4><i class="fas fa-clock"></i> Horarios Seleccionados:</h4>
+                            <p id="summary-text">No hay horarios seleccionados</p>
+                        </div>
                     </div>
 
                     <div id="visitor-info" class="visitor-info">
@@ -487,12 +587,12 @@
         
         function updateHorarios() {
             const espacio = document.getElementById('espacio');
-            const bloqueSelect = document.getElementById('bloque_horario');
+            const timeBlocks = document.getElementById('time-blocks');
             
-            bloqueSelect.innerHTML = '<option value="">Seleccionar horario...</option>';
+            timeBlocks.innerHTML = '';
             
             if (!espacio.value) {
-                bloqueSelect.innerHTML = '<option value="">Primero seleccione un espacio...</option>';
+                timeBlocks.innerHTML = '<p class="no-space">Primero seleccione un espacio...</p>';
                 return;
             }
             
@@ -507,7 +607,6 @@
                     {inicio: '13:00', fin: '15:00', label: '1:00 PM - 3:00 PM'},
                     {inicio: '15:15', fin: '17:15', label: '3:15 PM - 5:15 PM'}
                 ];
-            
             } else if (espacioTexto.includes('estacionamiento')) {
                 horarios = [
                     {inicio: '07:00', fin: '08:00', label: '7:00 AM - 8:00 AM'},
@@ -516,13 +615,12 @@
                     {inicio: '10:00', fin: '11:00', label: '10:00 AM - 11:00 AM'},
                     {inicio: '11:00', fin: '12:00', label: '11:00 AM - 12:00 PM'},
                     {inicio: '12:00', fin: '13:00', label: '12:00 PM - 1:00 PM'},
-                    {inicio: '13:00', fin: '14:00', label: '1:00 AM - 2:00 PM'},
+                    {inicio: '13:00', fin: '14:00', label: '1:00 PM - 2:00 PM'},
                     {inicio: '14:00', fin: '15:00', label: '2:00 PM - 3:00 PM'},
                     {inicio: '15:00', fin: '16:00', label: '3:00 PM - 4:00 PM'},
                     {inicio: '16:00', fin: '17:00', label: '4:00 PM - 5:00 PM'},
                     {inicio: '17:00', fin: '18:00', label: '5:00 PM - 6:00 PM'}
                 ];    
-
             } else {
                 horarios = [
                     {inicio: '08:00', fin: '09:00', label: '8:00 AM - 9:00 AM'},
@@ -534,23 +632,71 @@
                 ];
             }
             
-            horarios.forEach(bloque => {
-                const option = document.createElement('option');
-                option.value = bloque.inicio + '-' + bloque.fin;
-                option.textContent = bloque.label;
-                bloqueSelect.appendChild(option);
+            horarios.forEach((bloque, index) => {
+                const timeBlock = document.createElement('div');
+                timeBlock.className = 'time-block';
+                timeBlock.innerHTML = `
+                    <input type="checkbox" id="time_${index}" value="${bloque.inicio}-${bloque.fin}" 
+                           onchange="updateSelectedTimes()">
+                    <label for="time_${index}" class="time-label">
+                        ${bloque.label}
+                    </label>
+                `;
+                timeBlocks.appendChild(timeBlock);
+            });
+        }
+
+        function updateSelectedTimes() {
+            const checkboxes = document.querySelectorAll('#time-blocks input[type="checkbox"]:checked');
+            const selectedTimes = Array.from(checkboxes).map(cb => cb.value);
+            const selectedLabels = Array.from(checkboxes).map(cb => cb.nextElementSibling.textContent);
+            
+            document.getElementById('bloques_horarios').value = selectedTimes.join(',');
+            
+            const summary = document.getElementById('selected-summary');
+            const summaryText = document.getElementById('summary-text');
+            
+            if (selectedTimes.length > 0) {
+                summary.classList.add('active');
+                summaryText.textContent = selectedLabels.join(' | ');
+            } else {
+                summary.classList.remove('active');
+                summaryText.textContent = 'No hay horarios seleccionados';
+            }
+
+            // Actualizar estilos visuales
+            const timeBlocks = document.querySelectorAll('.time-block');
+            timeBlocks.forEach(block => {
+                const checkbox = block.querySelector('input[type="checkbox"]');
+                if (checkbox.checked) {
+                    block.classList.add('selected');
+                } else {
+                    block.classList.remove('selected');
+                }
             });
         }
 
         function toggleVisitorInfo() {
             const espacio = document.getElementById('espacio');
             const visitorInfo = document.getElementById('visitor-info');
+            
+            if (!espacio.value) {
+                visitorInfo.classList.remove('active');
+                return;
+            }
+            
             const espacioTexto = espacio.options[espacio.selectedIndex].text.toLowerCase();
             
             if (espacioTexto.includes('estacionamiento')) {
                 visitorInfo.classList.add('active');
+                document.getElementById('nombre_visitante').required = true;
+                document.getElementById('placa_visitante').required = true;
+                document.querySelector('.visitor-header h3').textContent = 'Información del Visitante (Obligatorio)';
             } else {
                 visitorInfo.classList.remove('active');
+                document.getElementById('nombre_visitante').required = false;
+                document.getElementById('placa_visitante').required = false;
+                document.querySelector('.visitor-header h3').textContent = 'Información del Visitante';
             }
         }
 
