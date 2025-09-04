@@ -790,8 +790,8 @@
                         <div class="insight-title">Horario Pico</div>
                     </div>
                     <div class="insight-content">
-                        <div class="insight-metric">2:00 PM - 4:00 PM</div>
-                        <p>Las <strong>tardes</strong> son el período de mayor demanda, con un <strong>65% más de reservas</strong> que las mañanas. Considere optimizar recursos en este horario.</p>
+                        <div class="insight-metric">{{ horario_pico }}</div>
+                        <p>Las <strong>{{ horario_pico|lower }}</strong> son el período de mayor demanda, con un <strong>{{ porcentaje_pico }}% más de reservas</strong> que otros horarios.</p>
                     </div>
                 </div>
 
@@ -803,8 +803,8 @@
                         <div class="insight-title">Crecimiento</div>
                     </div>
                     <div class="insight-content">
-                        <div class="insight-metric">+23%</div>
-                        <p>El uso del sistema ha <strong>crecido consistentemente</strong> en los últimos 3 meses, indicando una <strong>excelente adopción</strong> por parte de las oficinas.</p>
+                        <div class="insight-metric">{% if crecimiento >= 0 %}+{% endif %}{{ crecimiento }}%</div>
+                        <p>El uso del sistema ha {% if crecimiento >= 0 %}<strong>crecido</strong>{% else %}<strong>disminuido</strong>{% endif %} un <strong>{{ crecimiento|floatformat:1 }}%</strong> comparado con el mes anterior.</p>
                     </div>
                 </div>
 
@@ -816,8 +816,8 @@
                         <div class="insight-title">Espacio Favorito</div>
                     </div>
                     <div class="insight-content">
-                        <div class="insight-metric">Sala 1</div>
-                        <p>Las <strong>salas de reuniones</strong> representan el <strong>45% de todas las reservas</strong>, siendo el tipo de espacio más demandado por las empresas.</p>
+                        <div class="insight-metric">{{ espacio_favorito }}</div>
+                        <p><strong>{{ espacio_favorito }}</strong> representa el <strong>{{ porcentaje_favorito }}% de todas las reservas</strong>, siendo el espacio más demandado.</p>
                     </div>
                 </div>
             </div>
