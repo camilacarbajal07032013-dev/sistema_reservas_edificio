@@ -214,7 +214,6 @@
             transform: translateY(-2px);
         }
 
-        /* Estilos para selección múltiple de horarios */
         .time-blocks {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -304,12 +303,6 @@
             font-size: 0.9rem;
         }
 
-        .time-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
         .visitor-info {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: 15px;
@@ -371,6 +364,13 @@
             transform: translateY(-1px);
         }
 
+        .btn-primary:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         .alert {
             padding: 1.25rem;
             border-radius: 12px;
@@ -407,10 +407,6 @@
                 max-height: 250px;
             }
             
-            .time-selector {
-                grid-template-columns: 1fr;
-            }
-            
             .reservation-card {
                 padding: 2rem 1.5rem;
                 border-radius: 15px;
@@ -422,7 +418,6 @@
             }
         }
 
-        /* Animaciones sutiles */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -438,7 +433,6 @@
             animation: fadeInUp 0.6s ease;
         }
 
-        /* Efectos de hover mejorados */
         .form-group:hover input,
         .form-group:hover select {
             border-color: #bdc3c7;
@@ -481,6 +475,11 @@
                 {% endfor %}
             {% endif %}
 
+            <div class="alert alert-danger" id="error-messages" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="error-text"></span>
+            </div>
+
             <div class="reservation-card">
                 <div class="form-header">
                     <h2>
@@ -490,7 +489,7 @@
                     <p>Complete los siguientes campos para procesar su reserva</p>
                 </div>
 
-                <form method="post">
+                <form method="post" onsubmit="return validateForm(event)">
                     {% csrf_token %}
                     
                     <div class="form-grid">
@@ -499,7 +498,7 @@
                                 <i class="fas fa-map-marker-alt icon"></i>
                                 Espacio a Reservar
                             </label>
-                            <select name="espacio" id="espacio" required onchange="toggleVisitorInfo()">
+                            <select name="espacio" id="espacio" required>
                                 <option value="">Seleccione un espacio...</option>
                                 {% for espacio in espacios %}
                                     <option value="{{ espacio.id }}">{{ espacio.nombre }}</option>
@@ -524,7 +523,8 @@
                         <div class="time-blocks" id="time-blocks">
                             <p class="no-space">Primero seleccione un espacio...</p>
                         </div>
-                        <input type="hidden" name="bloques_horarios" id="bloques_horarios" required>
+                        
+                        <div id="hidden-horarios"></div>
                         
                         <div class="selected-summary" id="selected-summary">
                             <h4><i class="fas fa-clock"></i> Horarios Seleccionados:</h4>
@@ -534,7 +534,7 @@
 
                     <div id="visitor-info" class="visitor-info">
                         <div class="visitor-header">
-                            <i class="fas fa-user-tie" style="font-size: 1.5rem; color: #3498db7a;"></i>
+                            <i class="fas fa-user-tie" style="font-size: 1.5rem; color: #3498db;"></i>
                             <h3>Información del Visitante</h3>
                         </div>
                         
@@ -569,7 +569,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="submit-btn">
                             <i class="fas fa-check-circle"></i>
                             Confirmar Reserva
                         </button>
@@ -584,19 +584,41 @@
     </div>
 
     <script>
+        let selectedTimeSlots = [];
+        let currentSpaceType = '';
         
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').min = today;
+            
+            const card = document.querySelector('.reservation-card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        });
+
         function updateHorarios() {
             const espacio = document.getElementById('espacio');
             const timeBlocks = document.getElementById('time-blocks');
+            
+            selectedTimeSlots = [];
+            updateHiddenInputs();
             
             timeBlocks.innerHTML = '';
             
             if (!espacio.value) {
                 timeBlocks.innerHTML = '<p class="no-space">Primero seleccione un espacio...</p>';
+                toggleVisitorInfo();
                 return;
             }
             
             const espacioTexto = espacio.options[espacio.selectedIndex].text.toLowerCase();
+            currentSpaceType = espacioTexto;
             
             let horarios = [];
             
@@ -636,7 +658,11 @@
                 const timeBlock = document.createElement('div');
                 timeBlock.className = 'time-block';
                 timeBlock.innerHTML = `
-                    <input type="checkbox" id="time_${index}" value="${bloque.inicio}-${bloque.fin}" 
+                    <input type="checkbox" id="time_${index}" 
+                           value="${bloque.inicio}-${bloque.fin}" 
+                           data-inicio="${bloque.inicio}"
+                           data-fin="${bloque.fin}"
+                           data-label="${bloque.label}"
                            onchange="updateSelectedTimes()">
                     <label for="time_${index}" class="time-label">
                         ${bloque.label}
@@ -644,52 +670,102 @@
                 `;
                 timeBlocks.appendChild(timeBlock);
             });
+            
+            toggleVisitorInfo();
         }
 
         function updateSelectedTimes() {
-            const espacio = document.getElementById('espacio');
-            const espacioTexto = espacio.options[espacio.selectedIndex].text.toLowerCase();
             const checkboxes = document.querySelectorAll('#time-blocks input[type="checkbox"]:checked');
-            const selectedTimes = Array.from(checkboxes).map(cb => cb.value);
-            const selectedLabels = Array.from(checkboxes).map(cb => cb.nextElementSibling.textContent);
             
-            // Definir límites por tipo de espacio
-            let maxBlocks = 0;
-            let limitMessage = '';
+            let maxBlocks = getMaxBlocks();
+            let limitMessage = getLimitMessage();
             
-            if (espacioTexto.includes('estacionamiento')) {
-                maxBlocks = 999; // Sin límite
-                limitMessage = 'Sin límite de horarios';
-            } else if (espacioTexto.includes('directorio')) {
-                maxBlocks = 2; // 2 bloques de 2h = 4h máximo
-                limitMessage = 'Máximo 2 bloques (4 horas)';
-            } else if (espacioTexto.includes('sala')) {
-                maxBlocks = 2; // 2 bloques de 1h = 2h máximo
-                limitMessage = 'Máximo 2 bloques (2 horas)';
-            }
-            
-            // Verificar límite excedido
-            if (selectedTimes.length > maxBlocks) {
-                // Deseleccionar el último checkbox marcado
+            if (checkboxes.length > maxBlocks && maxBlocks > 0) {
                 const lastChecked = Array.from(checkboxes).pop();
                 lastChecked.checked = false;
                 
-                // Mostrar alerta
-                alert(`Límite excedido. ${limitMessage} para ${espacioTexto}.`);
+                showError(`Límite excedido. ${limitMessage} para ${currentSpaceType}.`);
                 
-                // Recalcular sin el último elemento
-                const updatedCheckboxes = document.querySelectorAll('#time-blocks input[type="checkbox"]:checked');
-                const updatedTimes = Array.from(updatedCheckboxes).map(cb => cb.value);
-                const updatedLabels = Array.from(updatedCheckboxes).map(cb => cb.nextElementSibling.textContent);
-                
-                document.getElementById('bloques_horarios').value = updatedTimes.join(',');
-                updateSummary(updatedLabels, updatedTimes, limitMessage);
-            } else {
-                document.getElementById('bloques_horarios').value = selectedTimes.join(',');
-                updateSummary(selectedLabels, selectedTimes, limitMessage);
+                setTimeout(() => {
+                    updateSelectedTimes();
+                }, 50);
+                return;
             }
+            
+            selectedTimeSlots = Array.from(checkboxes).map(cb => ({
+                inicio: cb.dataset.inicio,
+                fin: cb.dataset.fin,
+                label: cb.dataset.label,
+                value: cb.value
+            }));
+            
+            updateHiddenInputs();
+            updateSummary(limitMessage);
+            updateVisualStyles();
+            hideError();
+        }
 
-            // Actualizar estilos visuales
+        function getMaxBlocks() {
+            if (currentSpaceType.includes('estacionamiento')) {
+                return 0; // Sin límite
+            } else if (currentSpaceType.includes('directorio')) {
+                return 2; // 2 bloques máximo
+            } else if (currentSpaceType.includes('sala')) {
+                return 2; // 2 bloques máximo para salas
+            }
+            return 2; // Por defecto
+        }
+
+        function getLimitMessage() {
+            if (currentSpaceType.includes('estacionamiento')) {
+                return 'Sin límite de horarios';
+            } else if (currentSpaceType.includes('directorio')) {
+                return 'Máximo 2 bloques (4 horas)';
+            } else if (currentSpaceType.includes('sala')) {
+                return 'Máximo 2 bloques (2 horas)';
+            }
+            return 'Máximo 2 bloques';
+        }
+
+        function updateHiddenInputs() {
+            const container = document.getElementById('hidden-horarios');
+            container.innerHTML = '';
+            
+            if (selectedTimeSlots.length > 0) {
+                selectedTimeSlots.forEach((slot, index) => {
+                    const inputBloqueHorario = document.createElement('input');
+                    inputBloqueHorario.type = 'hidden';
+                    inputBloqueHorario.name = 'bloques_horarios';
+                    inputBloqueHorario.value = `${slot.inicio}-${slot.fin}`;
+                    container.appendChild(inputBloqueHorario);
+                });
+                
+                const inputTotal = document.createElement('input');
+                inputTotal.type = 'hidden';
+                inputTotal.name = 'total_bloques';
+                inputTotal.value = selectedTimeSlots.length;
+                container.appendChild(inputTotal);
+            }
+        }
+        
+        function updateSummary(limitMessage) {
+            const summary = document.getElementById('selected-summary');
+            const summaryText = document.getElementById('summary-text');
+            
+            if (selectedTimeSlots.length > 0) {
+                summary.classList.add('active');
+                const labels = selectedTimeSlots.map(slot => slot.label);
+                summaryText.innerHTML = `
+                    <strong>${labels.join(' | ')}</strong><br>
+                    <small style="color: #6c757d; font-style: italic;">${limitMessage} - Seleccionados: ${selectedTimeSlots.length}</small>
+                `;
+            } else {
+                summary.classList.remove('active');
+                summaryText.textContent = 'No hay horarios seleccionados';
+            }
+        }
+
+        function updateVisualStyles() {
             const timeBlocks = document.querySelectorAll('.time-block');
             timeBlocks.forEach(block => {
                 const checkbox = block.querySelector('input[type="checkbox"]');
@@ -699,22 +775,6 @@
                     block.classList.remove('selected');
                 }
             });
-        }
-        
-        function updateSummary(labels, times, limitMessage) {
-            const summary = document.getElementById('selected-summary');
-            const summaryText = document.getElementById('summary-text');
-            
-            if (times.length > 0) {
-                summary.classList.add('active');
-                summaryText.innerHTML = `
-                    <strong>${labels.join(' | ')}</strong><br>
-                    <small style="color: #6c757d; font-style: italic;">${limitMessage} - Seleccionados: ${times.length}</small>
-                `;
-            } else {
-                summary.classList.remove('active');
-                summaryText.textContent = 'No hay horarios seleccionados';
-            }
         }
 
         function toggleVisitorInfo() {
@@ -741,27 +801,70 @@
             }
         }
 
+        function validateForm(event) {
+            const espacio = document.getElementById('espacio').value;
+            const fecha = document.getElementById('fecha').value;
+            const horariosSeleccionados = selectedTimeSlots.length;
+            
+            if (!espacio) {
+                showError('Debe seleccionar un espacio válido');
+                event.preventDefault();
+                return false;
+            }
+            
+            if (!fecha) {
+                showError('Debe seleccionar una fecha válida');
+                event.preventDefault();
+                return false;
+            }
+            
+            if (horariosSeleccionados === 0) {
+                showError('Debe seleccionar al menos un bloque de horario válido');
+                event.preventDefault();
+                return false;
+            }
+            
+            if (currentSpaceType.includes('estacionamiento')) {
+                const nombreVisitante = document.getElementById('nombre_visitante').value;
+                const placaVisitante = document.getElementById('placa_visitante').value;
+                
+                if (!nombreVisitante.trim()) {
+                    showError('El nombre del visitante es obligatorio para reservas de estacionamiento');
+                    event.preventDefault();
+                    return false;
+                }
+                
+                if (!placaVisitante.trim()) {
+                    showError('La placa del vehículo es obligatoria para reservas de estacionamiento');
+                    event.preventDefault();
+                    return false;
+                }
+            }
+            
+            hideError();
+            return true;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-messages');
+            const errorText = document.getElementById('error-text');
+            errorText.textContent = message;
+            errorDiv.style.display = 'flex';
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function hideError() {
+            const errorDiv = document.getElementById('error-messages');
+            errorDiv.style.display = 'none';
+        }
+
+        // Event Listeners
         document.getElementById('espacio').addEventListener('change', function() {
             updateHorarios();
-            toggleVisitorInfo();
         });
 
-        // Auto-uppercase para placa
         document.getElementById('placa_visitante').addEventListener('input', function() {
             this.value = this.value.toUpperCase();
-        });
-
-        // Animación suave al cargar
-        document.addEventListener('DOMContentLoaded', function() {
-            const card = document.querySelector('.reservation-card');
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(30px)';
-            
-            setTimeout(() => {
-                card.style.transition = 'all 0.6s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, 100);
         });
     </script>
 </body>
