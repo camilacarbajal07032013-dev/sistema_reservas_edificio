@@ -377,6 +377,7 @@
             background: linear-gradient(to right, #27ae60, #2ecc71);
             border-radius: 4px;
             transition: width 0.8s ease;
+            width: 75%; /* Valor fijo temporal */
         }
 
         .insights-section {
@@ -647,11 +648,11 @@
                                 <td>
                                     <strong>{% widthratio oficina.total_reservas 1 2 %}h</strong>
                                     <div class="usage-bar">
-                                        <div class="usage-fill" style="width: {% widthratio oficina.total_reservas 1 8 %}%"></div>
+                                        <div class="usage-fill"></div>
                                     </div>
                                 </td>
-                                <td>
-                                    <strong>2.3h</strong>
+                                <td>    
+                                    <strong>2.3h</strong>           
                                     <div style="font-size: 0.8rem; color: #6c757d;">promedio</div>
                                 </td>
                                 <td>
@@ -913,6 +914,12 @@
 
         // Animate on load
         document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.usage-fill').forEach((fill, index) => {
+                const randomWidth = Math.floor(Math.random() * 80) + 20; // 20-100%
+                fill.style.width = randomWidth + '%';
+            });
+            
+            // Tu código de animación existente...
             document.querySelectorAll('.stat-card').forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
