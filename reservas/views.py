@@ -130,6 +130,7 @@ def mis_reservas(request):
         return redirect('login')
 
 @login_required
+@login_required
 def nueva_reserva(request):
     try:
         oficina = request.user.oficina
@@ -140,13 +141,9 @@ def nueva_reserva(request):
     if request.method == 'POST':
         espacio_id = request.POST.get('espacio')
         fecha = request.POST.get('fecha')
-        bloque_horario = request.POST.get('bloque_horario')
-        if bloque_horario and '-' in bloque_horario:
-            hora_inicio_str, hora_fin_str = bloque_horario.split('-')
-            hora_inicio_obj = datetime.strptime(hora_inicio_str, '%H:%M').time()
-            hora_fin_obj = datetime.strptime(hora_fin_str, '%H:%M').time()
-        else:
-            messages.error(request, 'Debe seleccionar un bloque de horario válido')
+        
+        # CAMBIO: Obtener múltiples bloques de horario
+        bloques_horarios = request.POST.getlist('bloques_horarios')  # getlist para múltiples valores
         
         # Campos para estacionamientos
         nombre_visitante = request.POST.get('nombre_visitante', '')
@@ -154,23 +151,62 @@ def nueva_reserva(request):
         empresa_visitante = request.POST.get('empresa_visitante', '')
         
         # Validaciones básicas
+        if not espacio_id:
+            messages.error(request, 'Debe seleccionar un espacio válido')
+            return redirect('nueva_reserva')
+            
+        if not fecha:
+            messages.error(request, 'Debe seleccionar una fecha válida')
+            return redirect('nueva_reserva')
+            
+        if not bloques_horarios:
+            messages.error(request, 'Debe seleccionar al menos un bloque de horario válido')
+            return redirect('nueva_reserva')
+        
         try:
             espacio = Espacio.objects.get(id=espacio_id)
             fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
             
-            # Verificar que no haya conflictos
-            conflicto = Reserva.objects.filter(
-                espacio=espacio,
-                fecha=fecha_obj,
-                hora_inicio__lt=hora_fin_obj,
-                hora_fin__gt=hora_inicio_obj
-            ).exists()
+            # Validar límites por tipo de espacio
+            tipo_espacio = espacio.tipo.lower()
+            if 'sala' in tipo_espacio and len(bloques_horarios) > 2:
+                messages.error(request, 'Las salas tienen un límite de 2 bloques de horario por día')
+                return redirect('nueva_reserva')
+            elif 'directorio' in tipo_espacio and len(bloques_horarios) > 2:
+                messages.error(request, 'El directorio tiene un límite de 2 bloques de horario por día')
+                return redirect('nueva_reserva')
+            # Estacionamiento no tiene límite
             
-            if conflicto:
-                messages.error(request, 'Ya hay una reserva en ese horario')
-            else:
-                # Crear la reserva
-                Reserva.objects.create(
+            # Procesar cada bloque de horario
+            reservas_creadas = []
+            
+            for bloque_horario in bloques_horarios:
+                if '-' not in bloque_horario:
+                    messages.error(request, f'Formato de horario inválido: {bloque_horario}')
+                    return redirect('nueva_reserva')
+                
+                try:
+                    hora_inicio_str, hora_fin_str = bloque_horario.split('-')
+                    hora_inicio_obj = datetime.strptime(hora_inicio_str, '%H:%M').time()
+                    hora_fin_obj = datetime.strptime(hora_fin_str, '%H:%M').time()
+                except ValueError:
+                    messages.error(request, f'Formato de hora inválido en: {bloque_horario}')
+                    return redirect('nueva_reserva')
+                
+                # Verificar que no haya conflictos para este bloque específico
+                conflicto = Reserva.objects.filter(
+                    espacio=espacio,
+                    fecha=fecha_obj,
+                    hora_inicio__lt=hora_fin_obj,
+                    hora_fin__gt=hora_inicio_obj
+                ).exists()
+                
+                if conflicto:
+                    messages.error(request, f'Ya hay una reserva en el horario {hora_inicio_str}-{hora_fin_str}')
+                    return redirect('nueva_reserva')
+                
+                # Crear la reserva para este bloque
+                reserva = Reserva.objects.create(
                     oficina=oficina,
                     espacio=espacio,
                     fecha=fecha_obj,
@@ -180,51 +216,38 @@ def nueva_reserva(request):
                     placa_visitante=placa_visitante,
                     empresa_visitante=empresa_visitante
                 )
-                messages.success(request, 'Reserva creada exitosamente!')
-                return redirect('mis_reservas')
+                reservas_creadas.append(reserva)
             
+            # Mensaje de éxito
+            if len(reservas_creadas) == 1:
+                messages.success(request, 'Reserva creada exitosamente!')
+            else:
+                messages.success(request, f'{len(reservas_creadas)} reservas creadas exitosamente!')
+            
+            return redirect('mis_reservas')
                 
+        except Espacio.DoesNotExist:
+            messages.error(request, 'El espacio seleccionado no existe')
+            return redirect('nueva_reserva')
         except Exception as e:
             messages.error(request, f'Error al crear la reserva: {str(e)}')
+            return redirect('nueva_reserva')
     
-    # Obtener espacios disponibles
+    # GET request - mostrar formulario
     espacios = Espacio.objects.filter(
         Q(activo=True) & (
-            Q(tipo__in=['sala', 'directorio', 'terraza']) |  # Espacios comunes
-            Q(tipo='estacionamiento', es_estacionamiento_visita=True) |  # Estacionamientos de visita
-            Q(tipo='estacionamiento', oficina_propietaria=oficina)  # Sus estacionamientos propios
+            Q(tipo__in=['sala', 'directorio', 'terraza']) |
+            Q(tipo='estacionamiento', es_estacionamiento_visita=True) |
+            Q(tipo='estacionamiento', oficina_propietaria=oficina)
         )
     )
     
-    # Horarios disponibles por tipo de espacio
-    horarios = []
-    horarios_bloques = {
-        'directorio': [
-            {'inicio': '08:00', 'fin': '10:00', 'label': '8:00 AM - 10:00 AM'},
-            {'inicio': '10:15', 'fin': '12:15', 'label': '10:15 AM - 12:15 PM'},
-            {'inicio': '13:00', 'fin': '15:00', 'label': '1:00 PM - 3:00 PM'},
-            {'inicio': '15:15', 'fin': '17:15', 'label': '3:15 PM - 5:15 PM'},
-        ],
-        'sala': [
-            {'inicio': '08:00', 'fin': '09:00', 'label': '8:00 AM - 9:00 AM'},
-            {'inicio': '09:00', 'fin': '10:00', 'label': '9:00 AM - 10:00 AM'},
-            {'inicio': '10:00', 'fin': '11:00', 'label': '10:00 AM - 11:00 AM'},
-            # ... agregar más horarios de salas
-        ],
-        'terraza': [
-            {'inicio': '08:00', 'fin': '10:00', 'label': '8:00 AM - 10:00 AM'},
-            {'inicio': '10:00', 'fin': '12:00', 'label': '10:00 AM - 12:00 PM'},
-            {'inicio': '14:00', 'fin': '16:00', 'label': '2:00 PM - 4:00 PM'},
-            {'inicio': '16:00', 'fin': '18:00', 'label': '4:00 PM - 6:00 PM'},
-        ]
-    }
-    
     context = {
         'espacios': espacios,
-        'horarios_bloques': horarios_bloques,
         'fecha_minima': date.today().isoformat(),
     }
     return render(request, 'reservas/nueva_reserva.html', context)
+ 
 
 def logout_view(request):
     logout(request)
