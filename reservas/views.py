@@ -38,8 +38,10 @@ def admin_dashboard(request):
     total_reservas = Reserva.objects.count()
     reservas_hoy = Reserva.objects.filter(fecha=date.today()).count()
     
-    # Calcular horas totales
-    horas_totales = Reserva.objects.aggregate(Sum('duracion_horas'))['duracion_horas__sum'] or 0
+    # Calcular horas totales usando el método del modelo
+    horas_totales = 0
+    for reserva in Reserva.objects.all():
+        horas_totales += reserva.duracion_horas()
     
     # Porcentaje de ocupación (ejemplo: 4 espacios * 10 horas * 30 días = 1200h máximo)
     capacidad_total = 4 * 10 * 30  # Ajusta según tus espacios reales
@@ -100,7 +102,7 @@ def admin_dashboard(request):
     context = {
         'total_reservas': total_reservas,
         'reservas_hoy': reservas_hoy,
-        'horas_totales': horas_totales,
+        'horas_totales': int(horas_totales),
         'ocupacion': ocupacion,
         'horario_pico': horario_pico[0],
         'porcentaje_pico': round((horario_pico[1] / total_reservas * 100), 0) if total_reservas > 0 else 0,
