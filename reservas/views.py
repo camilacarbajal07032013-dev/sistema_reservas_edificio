@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Count, Q
-from datetime import date, time, datetime
+from django.db.models import Count, Q, Sum
+from datetime import date, time, datetime, timedelta
 from .models import Oficina, Espacio, Reserva
 
 def login_view(request):
@@ -38,6 +38,55 @@ def admin_dashboard(request):
     total_reservas = Reserva.objects.count()
     reservas_hoy = Reserva.objects.filter(fecha=date.today()).count()
     
+    # Calcular horas totales
+    horas_totales = Reserva.objects.aggregate(Sum('duracion_horas'))['duracion_horas__sum'] or 0
+    
+    # Porcentaje de ocupación (ejemplo: 4 espacios * 10 horas * 30 días = 1200h máximo)
+    capacidad_total = 4 * 10 * 30  # Ajusta según tus espacios reales
+    ocupacion = round((horas_totales / capacidad_total * 100), 1) if capacidad_total > 0 else 0
+    
+    # HORARIO PICO - Analizar qué franja horaria tiene más reservas
+    horarios_count = {}
+    reservas_con_hora = Reserva.objects.all()
+    
+    for reserva in reservas_con_hora:
+        hora = reserva.hora_inicio.hour
+        if 8 <= hora < 12:
+            franja = "Mañanas (8AM-12PM)"
+        elif 12 <= hora < 16:
+            franja = "Tardes (12PM-4PM)"  
+        elif 16 <= hora < 20:
+            franja = "Tardes (4PM-8PM)"
+        else:
+            franja = "Otras horas"
+            
+        horarios_count[franja] = horarios_count.get(franja, 0) + 1
+    
+    horario_pico = max(horarios_count.items(), key=lambda x: x[1]) if horarios_count else ("No definido", 0)
+    
+    # CRECIMIENTO - Comparar último mes vs anterior
+    hoy = date.today()
+    mes_actual = hoy.replace(day=1)
+    mes_anterior = (mes_actual - timedelta(days=1)).replace(day=1)
+    
+    reservas_mes_actual = Reserva.objects.filter(fecha__gte=mes_actual).count()
+    reservas_mes_anterior = Reserva.objects.filter(
+        fecha__gte=mes_anterior, 
+        fecha__lt=mes_actual
+    ).count()
+    
+    if reservas_mes_anterior > 0:
+        crecimiento = ((reservas_mes_actual - reservas_mes_anterior) / reservas_mes_anterior) * 100
+    else:
+        crecimiento = 100 if reservas_mes_actual > 0 else 0
+    
+    # ESPACIO FAVORITO - Espacio más reservado
+    espacio_favorito = Reserva.objects.values(
+        'espacio__nombre'
+    ).annotate(
+        total=Count('id')
+    ).order_by('-total').first()
+    
     # Top oficinas
     oficinas_activas = Oficina.objects.annotate(
         total_reservas=Count('reserva')
@@ -51,6 +100,13 @@ def admin_dashboard(request):
     context = {
         'total_reservas': total_reservas,
         'reservas_hoy': reservas_hoy,
+        'horas_totales': horas_totales,
+        'ocupacion': ocupacion,
+        'horario_pico': horario_pico[0],
+        'porcentaje_pico': round((horario_pico[1] / total_reservas * 100), 0) if total_reservas > 0 else 0,
+        'crecimiento': round(crecimiento, 1),
+        'espacio_favorito': espacio_favorito['espacio__nombre'] if espacio_favorito else 'No definido',
+        'porcentaje_favorito': round((espacio_favorito['total'] / total_reservas * 100), 0) if espacio_favorito and total_reservas > 0 else 0,
         'oficinas_activas': oficinas_activas,
         'reservas_recientes': reservas_recientes,
     }
