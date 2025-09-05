@@ -488,9 +488,9 @@
                 <div class="admin-info">
                     <h1>
                         <i class="fas fa-chart-line"></i>
-                        Dashboard Ejecutivo
+                        DASHBOARD ADMINISTRATIVO
                     </h1>
-                    <div class="subtitle">Centro de Control y Análisis Corporativo</div>
+                    <div class="subtitle">Centro de Control y Análisis</div>
                 </div>
                 
                 <div class="header-stats">
@@ -503,7 +503,7 @@
                         <span class="label">Hoy</span>
                     </div>
                     <div class="header-stat">
-                        <span class="number">14</span>
+                        <span class="number">15</span>
                         <span class="label">Oficinas</span>
                     </div>
                 </div>
@@ -520,16 +520,16 @@
 
     <div class="container">
         <div class="main-content">
-            <!-- Stats Cards -->
+            <!-- Stats Cards - SECCIÓN CORREGIDA -->
             <div class="stats-grid">
                 <div class="stat-card primary">
                     <div class="stat-header">
                         <div>
                             <div class="stat-number">{{ total_reservas }}</div>
                             <div class="stat-label">Reservas Totales</div>
-                            <div class="stat-trend trend-up">
-                                <i class="fas fa-arrow-up"></i>
-                                +12% este mes
+                            <div class="stat-trend {% if crecimiento_mensual >= 0 %}trend-up{% else %}trend-down{% endif %}">
+                                <i class="fas fa-arrow-{% if crecimiento_mensual >= 0 %}up{% else %}down{% endif %}"></i>
+                                {% if crecimiento_mensual >= 0 %}+{% endif %}{{ crecimiento_mensual }}% este mes
                             </div>
                         </div>
                         <div class="stat-icon primary">
@@ -543,9 +543,9 @@
                         <div>
                             <div class="stat-number">{{ reservas_hoy }}</div>
                             <div class="stat-label">Reservas Hoy</div>
-                            <div class="stat-trend trend-up">
-                                <i class="fas fa-arrow-up"></i>
-                                +5% vs ayer
+                            <div class="stat-trend {% if crecimiento_diario >= 0 %}trend-up{% else %}trend-down{% endif %}">
+                                <i class="fas fa-arrow-{% if crecimiento_diario >= 0 %}up{% else %}down{% endif %}"></i>
+                                {% if crecimiento_diario >= 0 %}+{% endif %}{{ crecimiento_diario }}% vs ayer
                             </div>
                         </div>
                         <div class="stat-icon success">
@@ -557,11 +557,11 @@
                 <div class="stat-card warning">
                     <div class="stat-header">
                         <div>
-                            <div class="stat-number">156h</div>
+                            <div class="stat-number">{{ horas_totales }}h</div>
                             <div class="stat-label">Horas Totales</div>
-                            <div class="stat-trend trend-up">
-                                <i class="fas fa-arrow-up"></i>
-                                +8% semana
+                            <div class="stat-trend {% if crecimiento_semanal >= 0 %}trend-up{% else %}trend-down{% endif %}">
+                                <i class="fas fa-arrow-{% if crecimiento_semanal >= 0 %}up{% else %}down{% endif %}"></i>
+                                {% if crecimiento_semanal >= 0 %}+{% endif %}{{ crecimiento_semanal }}% semana
                             </div>
                         </div>
                         <div class="stat-icon warning">
@@ -573,11 +573,11 @@
                 <div class="stat-card info">
                     <div class="stat-header">
                         <div>
-                            <div class="stat-number">85%</div>
+                            <div class="stat-number">{{ ocupacion }}%</div>
                             <div class="stat-label">Ocupación</div>
-                            <div class="stat-trend trend-down">
-                                <i class="fas fa-arrow-down"></i>
-                                -3% vs mes pasado
+                            <div class="stat-trend {% if cambio_ocupacion >= 0 %}trend-up{% else %}trend-down{% endif %}">
+                                <i class="fas fa-arrow-{% if cambio_ocupacion >= 0 %}up{% else %}down{% endif %}"></i>
+                                {% if cambio_ocupacion >= 0 %}+{% endif %}{{ cambio_ocupacion }}% vs mes pasado
                             </div>
                         </div>
                         <div class="stat-icon info">
@@ -803,8 +803,8 @@
                         <div class="insight-title">Crecimiento</div>
                     </div>
                     <div class="insight-content">
-                        <div class="insight-metric">{% if crecimiento >= 0 %}+{% endif %}{{ crecimiento }}%</div>
-                        <p>El uso del sistema ha {% if crecimiento >= 0 %}<strong>crecido</strong>{% else %}<strong>disminuido</strong>{% endif %} un <strong>{{ crecimiento|floatformat:1 }}%</strong> comparado con el mes anterior.</p>
+                        <div class="insight-metric">{% if crecimiento_mensual >= 0 %}+{% endif %}{{ crecimiento_mensual }}%</div>
+                        <p>El uso del sistema ha {% if crecimiento_mensual >= 0 %}<strong>crecido</strong>{% else %}<strong>disminuido</strong>{% endif %} un <strong>{{ crecimiento_mensual|floatformat:1 }}%</strong> comparado con el mes anterior.</p>
                     </div>
                 </div>
 
@@ -931,6 +931,11 @@
                 }, index * 100);
             });
         });
+
+        // Auto-actualización cada 5 minutos
+        setInterval(function() {
+            location.reload();
+        }, 300000);
     </script>
 </body>
 </html>
