@@ -824,6 +824,29 @@
                 return false;
             }
             
+            // NUEVA VALIDACIÓN: Restricción de 30 minutos antes
+            const fechaSeleccionada = new Date(fecha);
+            const ahora = new Date();
+            const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+            const fechaSeleccionadaSinHora = new Date(fechaSeleccionada.getFullYear(), fechaSeleccionada.getMonth(), fechaSeleccionada.getDate());
+            
+            // Solo aplicar restricción si es para hoy
+            if (fechaSeleccionadaSinHora.getTime() === hoy.getTime()) {
+                const horaActual = ahora.getHours() * 60 + ahora.getMinutes(); // minutos desde medianoche
+                
+                for (let slot of selectedTimeSlots) {
+                    const [horaInicio, minutoInicio] = slot.inicio.split(':').map(Number);
+                    const minutosInicio = horaInicio * 60 + minutoInicio;
+                    
+                    // Verificar si el bloque inicia en menos de 30 minutos
+                    if (minutosInicio <= horaActual + 30) {
+                        showError(`No se puede reservar el horario ${slot.label} porque debe hacerse al menos 30 minutos antes de la hora de inicio.`);
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+            }
+            
             if (currentSpaceType.includes('estacionamiento')) {
                 const nombreVisitante = document.getElementById('nombre_visitante').value;
                 const placaVisitante = document.getElementById('placa_visitante').value;
