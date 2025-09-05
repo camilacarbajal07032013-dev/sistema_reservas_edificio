@@ -34,20 +34,85 @@ def admin_dashboard(request):
     if not request.user.is_superuser:
         return redirect('mis_reservas')
     
-    # Estadísticas
+    from django.db.models import Sum
+    from decimal import Decimal
+    
+    # Fechas para cálculos
+    hoy = date.today()
+    ayer = hoy - timedelta(days=1)
+    hace_una_semana = hoy - timedelta(days=7)
+    mes_actual = hoy.replace(day=1)
+    mes_anterior = (mes_actual - timedelta(days=1)).replace(day=1)
+    
+    # 1. RESERVAS TOTALES y porcentaje mensual
     total_reservas = Reserva.objects.count()
-    reservas_hoy = Reserva.objects.filter(fecha=date.today()).count()
+    reservas_mes_actual = Reserva.objects.filter(fecha__gte=mes_actual, fecha__lte=hoy).count()
+    reservas_mes_anterior = Reserva.objects.filter(fecha__gte=mes_anterior, fecha__lt=mes_actual).count()
     
-    # Calcular horas totales usando el método del modelo
-    horas_totales = 0
-    for reserva in Reserva.objects.all():
-        horas_totales += reserva.duracion_horas()
+    if reservas_mes_anterior > 0:
+        crecimiento_mensual = ((reservas_mes_actual - reservas_mes_anterior) / reservas_mes_anterior) * 100
+    else:
+        crecimiento_mensual = 100 if reservas_mes_actual > 0 else 0
     
-    # Porcentaje de ocupación (ejemplo: 4 espacios * 10 horas * 30 días = 1200h máximo)
-    capacidad_total = 4 * 10 * 30  # Ajusta según tus espacios reales
-    ocupacion = round((horas_totales / capacidad_total * 100), 1) if capacidad_total > 0 else 0
+    # 2. RESERVAS HOY y porcentaje vs ayer
+    reservas_hoy = Reserva.objects.filter(fecha=hoy).count()
+    reservas_ayer = Reserva.objects.filter(fecha=ayer).count()
     
-    # HORARIO PICO - Analizar qué franja horaria tiene más reservas
+    if reservas_ayer > 0:
+        crecimiento_diario = ((reservas_hoy - reservas_ayer) / reservas_ayer) * 100
+    else:
+        crecimiento_diario = 100 if reservas_hoy > 0 else 0
+    
+    # 3. HORAS TOTALES y porcentaje semanal
+    # Calcular horas de esta semana
+    reservas_esta_semana = Reserva.objects.filter(fecha__gte=hace_una_semana, fecha__lte=hoy)
+    horas_esta_semana = 0
+    for reserva in reservas_esta_semana:
+        horas_esta_semana += reserva.duracion_horas()
+    
+    # Calcular horas de la semana anterior (hace 14 días a hace 7 días)
+    hace_dos_semanas = hoy - timedelta(days=14)
+    reservas_semana_anterior = Reserva.objects.filter(fecha__gte=hace_dos_semanas, fecha__lt=hace_una_semana)
+    horas_semana_anterior = 0
+    for reserva in reservas_semana_anterior:
+        horas_semana_anterior += reserva.duracion_horas()
+    
+    if horas_semana_anterior > 0:
+        crecimiento_semanal = ((horas_esta_semana - horas_semana_anterior) / horas_semana_anterior) * 100
+    else:
+        crecimiento_semanal = 100 if horas_esta_semana > 0 else 0
+    
+    # 4. OCUPACIÓN y porcentaje vs mes anterior
+    # Obtener espacios activos
+    espacios_activos = Espacio.objects.filter(activo=True).count()
+    
+    # Calcular capacidad total mensual (espacios * días del mes * horas promedio por día)
+    dias_mes_actual = (hoy - mes_actual).days + 1
+    horas_por_dia = 10  # Ajusta según tu operación (ej: 8AM a 6PM = 10 horas)
+    capacidad_mes_actual = espacios_activos * dias_mes_actual * horas_por_dia
+    
+    # Ocupación actual
+    if capacidad_mes_actual > 0:
+        ocupacion_actual = (reservas_mes_actual * 100) / capacidad_mes_actual
+    else:
+        ocupacion_actual = 0
+    
+    # Ocupación mes anterior
+    dias_mes_anterior = (mes_actual - mes_anterior).days
+    capacidad_mes_anterior = espacios_activos * dias_mes_anterior * horas_por_dia
+    
+    if capacidad_mes_anterior > 0:
+        ocupacion_anterior = (reservas_mes_anterior * 100) / capacidad_mes_anterior
+    else:
+        ocupacion_anterior = 0
+    
+    # Cambio en ocupación
+    if ocupacion_anterior > 0:
+        cambio_ocupacion = ocupacion_actual - ocupacion_anterior
+    else:
+        cambio_ocupacion = ocupacion_actual
+    
+    # HORARIO PICO - Mejorado
     horarios_count = {}
     reservas_con_hora = Reserva.objects.all()
     
@@ -66,23 +131,7 @@ def admin_dashboard(request):
     
     horario_pico = max(horarios_count.items(), key=lambda x: x[1]) if horarios_count else ("No definido", 0)
     
-    # CRECIMIENTO - Comparar último mes vs anterior
-    hoy = date.today()
-    mes_actual = hoy.replace(day=1)
-    mes_anterior = (mes_actual - timedelta(days=1)).replace(day=1)
-    
-    reservas_mes_actual = Reserva.objects.filter(fecha__gte=mes_actual).count()
-    reservas_mes_anterior = Reserva.objects.filter(
-        fecha__gte=mes_anterior, 
-        fecha__lt=mes_actual
-    ).count()
-    
-    if reservas_mes_anterior > 0:
-        crecimiento = ((reservas_mes_actual - reservas_mes_anterior) / reservas_mes_anterior) * 100
-    else:
-        crecimiento = 100 if reservas_mes_actual > 0 else 0
-    
-    # ESPACIO FAVORITO - Espacio más reservado
+    # ESPACIO FAVORITO
     espacio_favorito = Reserva.objects.values(
         'espacio__nombre'
     ).annotate(
@@ -100,13 +149,21 @@ def admin_dashboard(request):
     ).order_by('-fecha_creacion')[:15]
     
     context = {
+        # Métricas principales
         'total_reservas': total_reservas,
         'reservas_hoy': reservas_hoy,
-        'horas_totales': int(horas_totales),
-        'ocupacion': ocupacion,
+        'horas_totales': int(horas_esta_semana),
+        'ocupacion': round(ocupacion_actual, 1),
+        
+        # Porcentajes de crecimiento/cambio
+        'crecimiento_mensual': round(crecimiento_mensual, 1),
+        'crecimiento_diario': round(crecimiento_diario, 1),
+        'crecimiento_semanal': round(crecimiento_semanal, 1),
+        'cambio_ocupacion': round(cambio_ocupacion, 1),
+        
+        # Otros datos
         'horario_pico': horario_pico[0],
         'porcentaje_pico': round((horario_pico[1] / total_reservas * 100), 0) if total_reservas > 0 else 0,
-        'crecimiento': round(crecimiento, 1),
         'espacio_favorito': espacio_favorito['espacio__nombre'] if espacio_favorito else 'No definido',
         'porcentaje_favorito': round((espacio_favorito['total'] / total_reservas * 100), 0) if espacio_favorito and total_reservas > 0 else 0,
         'oficinas_activas': oficinas_activas,
