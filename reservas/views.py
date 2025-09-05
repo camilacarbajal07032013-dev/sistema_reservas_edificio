@@ -130,7 +130,6 @@ def mis_reservas(request):
         return redirect('login')
 
 @login_required
-@login_required
 def nueva_reserva(request):
     try:
         oficina = request.user.oficina
@@ -141,99 +140,111 @@ def nueva_reserva(request):
     if request.method == 'POST':
         espacio_id = request.POST.get('espacio')
         fecha = request.POST.get('fecha')
-        
-        # CAMBIO: Obtener múltiples bloques de horario
-        bloques_horarios = request.POST.getlist('bloques_horarios')  # getlist para múltiples valores
+        bloques_horarios = request.POST.getlist('bloques_horarios')
         
         # Campos para estacionamientos
         nombre_visitante = request.POST.get('nombre_visitante', '')
         placa_visitante = request.POST.get('placa_visitante', '')
         empresa_visitante = request.POST.get('empresa_visitante', '')
         
-        # Validaciones básicas
-        if not espacio_id:
-            messages.error(request, 'Debe seleccionar un espacio válido')
-            return redirect('nueva_reserva')
-            
-        if not fecha:
-            messages.error(request, 'Debe seleccionar una fecha válida')
-            return redirect('nueva_reserva')
-            
-        if not bloques_horarios:
-            messages.error(request, 'Debe seleccionar al menos un bloque de horario válido')
+        if not espacio_id or not fecha or not bloques_horarios:
+            messages.error(request, 'Debe completar todos los campos obligatorios')
             return redirect('nueva_reserva')
         
         try:
             espacio = Espacio.objects.get(id=espacio_id)
             fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
             
-            # Validar límites por tipo de espacio
-            tipo_espacio = espacio.tipo.lower()
-            if 'sala' in tipo_espacio and len(bloques_horarios) > 2:
-                messages.error(request, 'Las salas tienen un límite de 2 bloques de horario por día')
-                return redirect('nueva_reserva')
-            elif 'directorio' in tipo_espacio and len(bloques_horarios) > 2:
-                messages.error(request, 'El directorio tiene un límite de 2 bloques de horario por día')
-                return redirect('nueva_reserva')
-            # Estacionamiento no tiene límite
+            # NUEVA VALIDACIÓN: Restricción de 30 minutos antes
+            ahora = datetime.now()
+            hoy = ahora.date()
             
-            # Procesar cada bloque de horario
-            reservas_creadas = []
-            
-            for bloque_horario in bloques_horarios:
-                if '-' not in bloque_horario:
-                    messages.error(request, f'Formato de horario inválido: {bloque_horario}')
-                    return redirect('nueva_reserva')
+            # Solo aplicar restricción si la reserva es para hoy
+            if fecha_obj == hoy:
+                hora_limite = ahora + timedelta(minutes=30)
                 
+                for bloque in bloques_horarios:
+                    if '-' not in bloque:
+                        continue
+                    
+                    try:
+                        hora_inicio_str, hora_fin_str = bloque.split('-')
+                        hora_inicio_obj = datetime.strptime(hora_inicio_str, '%H:%M').time()
+                        
+                        # Combinar fecha de hoy con la hora de inicio del bloque
+                        datetime_inicio = datetime.combine(fecha_obj, hora_inicio_obj)
+                        
+                        # Verificar si el bloque inicia en menos de 30 minutos
+                        if datetime_inicio <= hora_limite:
+                            messages.error(request, 
+                                f'No se puede reservar el horario {hora_inicio_str}-{hora_fin_str} '
+                                f'porque debe hacerse al menos 30 minutos antes de la hora de inicio.'
+                            )
+                            return redirect('nueva_reserva')
+                    except ValueError:
+                        messages.error(request, f'Formato de hora inválido: {bloque}')
+                        return redirect('nueva_reserva')
+            
+            # Validar límites según tipo de espacio
+            if espacio.tipo.lower() in ['sala'] and len(bloques_horarios) > 2:
+                messages.error(request, 'Las salas permiten máximo 2 bloques por día')
+                return redirect('nueva_reserva')
+            elif 'directorio' in espacio.tipo.lower() and len(bloques_horarios) > 2:
+                messages.error(request, 'El directorio permite máximo 2 bloques por día')
+                return redirect('nueva_reserva')
+            
+            reservas_creadas = 0
+            
+            for bloque in bloques_horarios:
+                if '-' not in bloque:
+                    continue
+                    
                 try:
-                    hora_inicio_str, hora_fin_str = bloque_horario.split('-')
+                    hora_inicio_str, hora_fin_str = bloque.split('-')
                     hora_inicio_obj = datetime.strptime(hora_inicio_str, '%H:%M').time()
                     hora_fin_obj = datetime.strptime(hora_fin_str, '%H:%M').time()
+                    
+                    # Verificar conflictos
+                    conflicto = Reserva.objects.filter(
+                        espacio=espacio,
+                        fecha=fecha_obj,
+                        hora_inicio__lt=hora_fin_obj,
+                        hora_fin__gt=hora_inicio_obj
+                    ).exists()
+                    
+                    if conflicto:
+                        messages.error(request, f'Conflicto en horario {hora_inicio_str}-{hora_fin_str}')
+                        return redirect('nueva_reserva')
+                    
+                    # Crear reserva individual para este bloque
+                    Reserva.objects.create(
+                        oficina=oficina,
+                        espacio=espacio,
+                        fecha=fecha_obj,
+                        hora_inicio=hora_inicio_obj,
+                        hora_fin=hora_fin_obj,
+                        nombre_visitante=nombre_visitante,
+                        placa_visitante=placa_visitante,
+                        empresa_visitante=empresa_visitante
+                    )
+                    reservas_creadas += 1
+                    
                 except ValueError:
-                    messages.error(request, f'Formato de hora inválido en: {bloque_horario}')
+                    messages.error(request, f'Formato inválido: {bloque}')
                     return redirect('nueva_reserva')
-                
-                # Verificar que no haya conflictos para este bloque específico
-                conflicto = Reserva.objects.filter(
-                    espacio=espacio,
-                    fecha=fecha_obj,
-                    hora_inicio__lt=hora_fin_obj,
-                    hora_fin__gt=hora_inicio_obj
-                ).exists()
-                
-                if conflicto:
-                    messages.error(request, f'Ya hay una reserva en el horario {hora_inicio_str}-{hora_fin_str}')
-                    return redirect('nueva_reserva')
-                
-                # Crear la reserva para este bloque
-                reserva = Reserva.objects.create(
-                    oficina=oficina,
-                    espacio=espacio,
-                    fecha=fecha_obj,
-                    hora_inicio=hora_inicio_obj,
-                    hora_fin=hora_fin_obj,
-                    nombre_visitante=nombre_visitante,
-                    placa_visitante=placa_visitante,
-                    empresa_visitante=empresa_visitante
-                )
-                reservas_creadas.append(reserva)
             
-            # Mensaje de éxito
-            if len(reservas_creadas) == 1:
-                messages.success(request, 'Reserva creada exitosamente!')
+            if reservas_creadas > 0:
+                messages.success(request, f'Se crearon {reservas_creadas} reserva(s) exitosamente!')
+                return redirect('mis_reservas')
             else:
-                messages.success(request, f'{len(reservas_creadas)} reservas creadas exitosamente!')
-            
-            return redirect('mis_reservas')
+                messages.error(request, 'No se pudo crear ninguna reserva')
+                return redirect('nueva_reserva')
                 
-        except Espacio.DoesNotExist:
-            messages.error(request, 'El espacio seleccionado no existe')
-            return redirect('nueva_reserva')
         except Exception as e:
             messages.error(request, f'Error al crear la reserva: {str(e)}')
             return redirect('nueva_reserva')
     
-    # GET request - mostrar formulario
+    # GET request
     espacios = Espacio.objects.filter(
         Q(activo=True) & (
             Q(tipo__in=['sala', 'directorio', 'terraza']) |
@@ -247,7 +258,6 @@ def nueva_reserva(request):
         'fecha_minima': date.today().isoformat(),
     }
     return render(request, 'reservas/nueva_reserva.html', context)
- 
 
 def logout_view(request):
     logout(request)
