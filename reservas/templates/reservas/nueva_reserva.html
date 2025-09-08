@@ -721,7 +721,7 @@
             showLoadingState();
             
             try {
-                const response = await fetch(`/reservas/ajax/verificar-disponibilidad/?espacio_id=${currentSpaceId}&fecha=${currentDate}`, {
+                const response = await fetch(`/ajax/verificar-disponibilidad/?espacio_id=${currentSpaceId}&fecha=${currentDate}`, {
                     method: 'GET',
                     headers: {
                         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
