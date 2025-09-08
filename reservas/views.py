@@ -181,16 +181,124 @@ def mis_reservas(request):
         oficina = request.user.oficina
         reservas = Reserva.objects.filter(oficina=oficina).order_by('-fecha')
         
+        # ===== CÁLCULOS DINÁMICOS PARA ESTADÍSTICAS =====
+        
+        # 1. Calcular horas totales reservadas este mes
+        from datetime import date, timedelta
+        hoy = date.today()
+        primer_dia_mes = hoy.replace(day=1)
+        
+        reservas_este_mes = Reserva.objects.filter(
+            oficina=oficina,
+            fecha__gte=primer_dia_mes,
+            fecha__lte=hoy
+        )
+        
+        horas_este_mes = 0
+        for reserva in reservas_este_mes:
+            horas_este_mes += reserva.duracion_horas()
+        
+        # 2. Encontrar espacio favorito (más usado)
+        from django.db.models import Count
+        espacio_favorito = Reserva.objects.filter(
+            oficina=oficina
+        ).values(
+            'espacio__nombre'
+        ).annotate(
+            total=Count('id')
+        ).order_by('-total').first()
+        
+        espacio_favorito_nombre = espacio_favorito['espacio__nombre'] if espacio_favorito else 'Ninguno'
+        
+        # 3. Calcular ranking de la oficina (comparar con otras)
+        # Contar reservas de esta oficina este mes
+        mis_reservas_mes = reservas_este_mes.count()
+        
+        # Contar reservas de todas las oficinas este mes y rankear
+        todas_las_oficinas = Oficina.objects.annotate(
+            reservas_mes=Count(
+                'reserva',
+                filter=Q(reserva__fecha__gte=primer_dia_mes, reserva__fecha__lte=hoy)
+            )
+        ).order_by('-reservas_mes')
+        
+        mi_ranking = 1
+        for i, otra_oficina in enumerate(todas_las_oficinas, 1):
+            if otra_oficina.id == oficina.id:
+                mi_ranking = i
+                break
+        
+        # 4. Calcular estadísticas adicionales
+        total_reservas_activas = reservas.filter(fecha__gte=hoy).count()
+        reservas_pasadas = reservas.filter(fecha__lt=hoy).count()
+        
+        # 5. Próximas reservas (las 3 más cercanas)
+        proximas_reservas = reservas.filter(fecha__gte=hoy).order_by('fecha', 'hora_inicio')[:3]
+        
+        # 6. Calcular promedio de horas por reserva
+        if reservas_este_mes.count() > 0:
+            promedio_horas = horas_este_mes / reservas_este_mes.count()
+        else:
+            promedio_horas = 0
+        
+        # 7. Comparación con mes anterior
+        mes_anterior = (primer_dia_mes - timedelta(days=1)).replace(day=1)
+        fin_mes_anterior = primer_dia_mes - timedelta(days=1)
+        
+        reservas_mes_anterior = Reserva.objects.filter(
+            oficina=oficina,
+            fecha__gte=mes_anterior,
+            fecha__lte=fin_mes_anterior
+        )
+        
+        horas_mes_anterior = 0
+        for reserva in reservas_mes_anterior:
+            horas_mes_anterior += reserva.duracion_horas()
+        
+        # Calcular crecimiento
+        if horas_mes_anterior > 0:
+            crecimiento_porcentaje = ((horas_este_mes - horas_mes_anterior) / horas_mes_anterior) * 100
+        else:
+            crecimiento_porcentaje = 100 if horas_este_mes > 0 else 0
+        
+        # 8. Distribución por tipo de espacio
+        tipos_espacios = Reserva.objects.filter(
+            oficina=oficina
+        ).values(
+            'espacio__tipo'
+        ).annotate(
+            cantidad=Count('id')
+        ).order_by('-cantidad')
+        
         context = {
             'reservas': reservas,
             'oficina': oficina,
+            
+            # ESTADÍSTICAS DINÁMICAS
+            'total_reservas_activas': total_reservas_activas,
+            'horas_este_mes': int(horas_este_mes),
+            'reservas_este_mes': reservas_este_mes.count(),
+            'espacio_favorito': espacio_favorito_nombre,
+            'mi_ranking': mi_ranking,
+            'total_oficinas': todas_las_oficinas.count(),
+            
+            # ESTADÍSTICAS ADICIONALES
+            'reservas_pasadas': reservas_pasadas,
+            'promedio_horas': round(promedio_horas, 1),
+            'crecimiento_porcentaje': round(crecimiento_porcentaje, 1),
+            'proximas_reservas': proximas_reservas,
+            'tipos_espacios': tipos_espacios,
+            
+            # COMPARATIVAS
+            'horas_mes_anterior': int(horas_mes_anterior),
+            'mejora_vs_anterior': horas_este_mes > horas_mes_anterior,
         }
+        
         return render(request, 'reservas/mis_reservas.html', context)
-    except:
-        messages.error(request, 'No se encontró información de la oficina')
+        
+    except Exception as e:
+        messages.error(request, f'Error al cargar información: {str(e)}')
         return redirect('login')
-
-# ===== NUEVAS VISTAS AJAX =====
 
 @require_GET
 @login_required
