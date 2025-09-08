@@ -3,8 +3,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Count, Q, Sum
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
 from datetime import date, time, datetime, timedelta
 from .models import Oficina, Espacio, Reserva
+import json
 
 
 def login_view(request):
@@ -187,6 +190,153 @@ def mis_reservas(request):
         messages.error(request, 'No se encontró información de la oficina')
         return redirect('login')
 
+# ===== NUEVAS VISTAS AJAX =====
+
+@require_GET
+@login_required
+def verificar_disponibilidad_ajax(request):
+    """
+    Vista AJAX para verificar disponibilidad de horarios en tiempo real
+    """
+    espacio_id = request.GET.get('espacio_id')
+    fecha = request.GET.get('fecha')
+    
+    if not espacio_id or not fecha:
+        return JsonResponse({'error': 'Parámetros faltantes'}, status=400)
+    
+    try:
+        espacio = Espacio.objects.get(id=espacio_id)
+        fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
+        
+        # Obtener todas las reservas existentes para ese espacio y fecha
+        reservas_existentes = Reserva.objects.filter(
+            espacio=espacio,
+            fecha=fecha_obj
+        ).values('hora_inicio', 'hora_fin')
+        
+        # Generar horarios según tipo de espacio
+        horarios_disponibles = generar_horarios_por_tipo(espacio.tipo)
+        
+        # Marcar horarios ocupados
+        for horario in horarios_disponibles:
+            horario['ocupado'] = False
+            hora_inicio_horario = datetime.strptime(horario['inicio'], '%H:%M').time()
+            hora_fin_horario = datetime.strptime(horario['fin'], '%H:%M').time()
+            
+            # Verificar si hay conflicto con alguna reserva existente
+            for reserva in reservas_existentes:
+                if (hora_inicio_horario < reserva['hora_fin'] and 
+                    hora_fin_horario > reserva['hora_inicio']):
+                    horario['ocupado'] = True
+                    break
+        
+        return JsonResponse({
+            'horarios': horarios_disponibles,
+            'tipo_espacio': espacio.tipo,
+            'nombre_espacio': espacio.nombre
+        })
+        
+    except Espacio.DoesNotExist:
+        return JsonResponse({'error': 'Espacio no encontrado'}, status=404)
+    except ValueError:
+        return JsonResponse({'error': 'Formato de fecha inválido'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+def generar_horarios_por_tipo(tipo_espacio):
+    """
+    Genera los horarios disponibles según el tipo de espacio
+    """
+    if 'directorio' in tipo_espacio.lower():
+        return [
+            {'inicio': '08:00', 'fin': '10:00', 'label': '8:00 AM - 10:00 AM'},
+            {'inicio': '10:15', 'fin': '12:15', 'label': '10:15 AM - 12:15 PM'},
+            {'inicio': '13:00', 'fin': '15:00', 'label': '1:00 PM - 3:00 PM'},
+            {'inicio': '15:15', 'fin': '17:15', 'label': '3:15 PM - 5:15 PM'}
+        ]
+    elif 'estacionamiento' in tipo_espacio.lower():
+        return [
+            {'inicio': '07:00', 'fin': '08:00', 'label': '7:00 AM - 8:00 AM'},
+            {'inicio': '08:00', 'fin': '09:00', 'label': '8:00 AM - 9:00 AM'},
+            {'inicio': '09:00', 'fin': '10:00', 'label': '9:00 AM - 10:00 AM'},
+            {'inicio': '10:00', 'fin': '11:00', 'label': '10:00 AM - 11:00 AM'},
+            {'inicio': '11:00', 'fin': '12:00', 'label': '11:00 AM - 12:00 PM'},
+            {'inicio': '12:00', 'fin': '13:00', 'label': '12:00 PM - 1:00 PM'},
+            {'inicio': '13:00', 'fin': '14:00', 'label': '1:00 PM - 2:00 PM'},
+            {'inicio': '14:00', 'fin': '15:00', 'label': '2:00 PM - 3:00 PM'},
+            {'inicio': '15:00', 'fin': '16:00', 'label': '3:00 PM - 4:00 PM'},
+            {'inicio': '16:00', 'fin': '17:00', 'label': '4:00 PM - 5:00 PM'},
+            {'inicio': '17:00', 'fin': '18:00', 'label': '5:00 PM - 6:00 PM'}
+        ]
+    else:  # salas y terraza
+        return [
+            {'inicio': '08:00', 'fin': '09:00', 'label': '8:00 AM - 9:00 AM'},
+            {'inicio': '09:30', 'fin': '10:30', 'label': '9:30 AM - 10:30 AM'},
+            {'inicio': '11:00', 'fin': '12:00', 'label': '11:00 AM - 12:00 PM'},
+            {'inicio': '13:00', 'fin': '14:00', 'label': '1:00 PM - 2:00 PM'},
+            {'inicio': '14:30', 'fin': '15:30', 'label': '2:30 PM - 3:30 PM'},
+            {'inicio': '16:00', 'fin': '17:00', 'label': '4:00 PM - 5:00 PM'}
+        ]
+
+@require_GET
+@login_required
+def obtener_calendario_ocupacion_ajax(request):
+    """
+    Vista AJAX para obtener datos de ocupación del calendario
+    """
+    espacio_id = request.GET.get('espacio_id')
+    mes = request.GET.get('mes')  # formato: YYYY-MM
+    
+    if not espacio_id:
+        return JsonResponse({'error': 'ID de espacio requerido'}, status=400)
+    
+    try:
+        espacio = Espacio.objects.get(id=espacio_id)
+        
+        # Si no se especifica mes, usar el actual
+        if mes:
+            year, month = map(int, mes.split('-'))
+        else:
+            hoy = date.today()
+            year, month = hoy.year, hoy.month
+        
+        # Obtener primer y último día del mes
+        primer_dia = date(year, month, 1)
+        if month == 12:
+            ultimo_dia = date(year + 1, 1, 1) - timedelta(days=1)
+        else:
+            ultimo_dia = date(year, month + 1, 1) - timedelta(days=1)
+        
+        # Obtener todas las reservas del mes
+        reservas_mes = Reserva.objects.filter(
+            espacio=espacio,
+            fecha__gte=primer_dia,
+            fecha__lte=ultimo_dia
+        ).values('fecha').annotate(
+            total_reservas=Count('id')
+        )
+        
+        # Convertir a diccionario para fácil acceso
+        ocupacion_por_dia = {
+            str(reserva['fecha']): reserva['total_reservas'] 
+            for reserva in reservas_mes
+        }
+        
+        return JsonResponse({
+            'ocupacion_por_dia': ocupacion_por_dia,
+            'mes_solicitado': f"{year}-{month:02d}",
+            'espacio_nombre': espacio.nombre
+        })
+        
+    except Espacio.DoesNotExist:
+        return JsonResponse({'error': 'Espacio no encontrado'}, status=404)
+    except ValueError:
+        return JsonResponse({'error': 'Formato de mes inválido'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+# ===== VISTA ORIGINAL MODIFICADA =====
+
 @login_required
 def nueva_reserva(request):
     try:
@@ -232,7 +382,7 @@ def nueva_reserva(request):
                     hora_inicio_obj = datetime.strptime(hora_inicio_str, '%H:%M').time()
                     hora_fin_obj = datetime.strptime(hora_fin_str, '%H:%M').time()
                     
-                    # Verificar conflictos
+                    # Verificar conflictos (doble verificación en backend)
                     conflicto = Reserva.objects.filter(
                         espacio=espacio,
                         fecha=fecha_obj,
@@ -286,6 +436,7 @@ def nueva_reserva(request):
         'fecha_minima': date.today().isoformat(),
     }
     return render(request, 'reservas/nueva_reserva.html', context)
+
 def logout_view(request):
     logout(request)
     return redirect('login')
