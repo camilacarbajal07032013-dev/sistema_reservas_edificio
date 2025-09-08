@@ -590,9 +590,9 @@
                 <div class="stat-card primary">
                     <div class="stat-header">
                         <div>
-                            <div class="stat-number">{{ reservas|length }}</div>
+                            <div class="stat-number">{{ total_reservas_activas }}</div>
                             <div class="stat-label">Reservas Activas</div>
-                            <div class="stat-subtitle">Total programadas</div>
+                            <div class="stat-subtitle">Próximas programadas</div>
                         </div>
                         <div class="stat-icon primary">
                             <i class="fas fa-calendar-check"></i>
@@ -603,7 +603,7 @@
                 <div class="stat-card success">
                     <div class="stat-header">
                         <div>
-                            <div class="stat-number">8h</div>
+                            <div class="stat-number">{{ horas_este_mes }}h</div>
                             <div class="stat-label">Tiempo Reservado</div>
                             <div class="stat-subtitle">Este mes</div>
                         </div>
@@ -616,7 +616,7 @@
                 <div class="stat-card warning">
                     <div class="stat-header">
                         <div>
-                            <div class="stat-number">Salas</div>
+                            <div class="stat-number">{{ espacio_favorito|truncatechars:10 }}</div>
                             <div class="stat-label">Espacio Favorito</div>
                             <div class="stat-subtitle">Más usado</div>
                         </div>
@@ -629,9 +629,9 @@
                 <div class="stat-card info">
                     <div class="stat-header">
                         <div>
-                            <div class="stat-number">#5</div>
+                            <div class="stat-number">#{{ mi_ranking }}</div>
                             <div class="stat-label">Ranking</div>
-                            <div class="stat-subtitle">Entre oficinas</div>
+                            <div class="stat-subtitle">de {{ total_oficinas }} oficinas</div>
                         </div>
                         <div class="stat-icon info">
                             <i class="fas fa-trophy"></i>
