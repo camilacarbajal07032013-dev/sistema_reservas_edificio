@@ -829,15 +829,28 @@
         Chart.defaults.font.family = 'Segoe UI, sans-serif';
         Chart.defaults.color = '#6c757d';
 
+        // Datos hardcodeados que funcionan siempre
+        const chartData = {
+            semana: {
+                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                data: [12, 19, 15, 25, 22, 8, 5]
+            },
+            oficinas: {
+                labels: ['Oficina 301', 'Oficina 302', 'Oficina 401', 'Oficina 501', 'Otras'],
+                data: [30, 25, 20, 15, 10],
+                colors: ['#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#95a5a6']
+            }
+        };
+
         // Usage Chart
         const usageCtx = document.getElementById('usageChart').getContext('2d');
         const usageChart = new Chart(usageCtx, {
             type: 'line',
             data: {
-                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                labels: chartData.semana.labels,
                 datasets: [{
                     label: 'Horas Reservadas',
-                    data: [12, 19, 15, 25, 22, 8, 5],
+                    data: chartData.semana.data,
                     borderColor: '#3498db',
                     backgroundColor: 'rgba(52, 152, 219, 0.1)',
                     borderWidth: 3,
@@ -864,10 +877,10 @@
         const officeChart = new Chart(officeCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Oficina 301', 'Oficina 302', 'Oficina 401', 'Oficina 501', 'Otras'],
+                labels: chartData.oficinas.labels,
                 datasets: [{
-                    data: [30, 25, 20, 15, 10],
-                    backgroundColor: ['#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#95a5a6'],
+                    data: chartData.oficinas.data,
+                    backgroundColor: chartData.oficinas.colors,
                     borderWidth: 0
                 }]
             },
@@ -914,12 +927,13 @@
 
         // Animate on load
         document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.usage-fill').forEach((fill, index) => {
-                const randomWidth = Math.floor(Math.random() * 80) + 20; // 20-100%
-                fill.style.width = randomWidth + '%';
+            // Barras de progreso aleatorias
+            document.querySelectorAll('.usage-fill').forEach((fill) => {
+                const width = Math.floor(Math.random() * 80) + 20;
+                fill.style.width = width + '%';
             });
             
-            // Tu código de animación existente...
+            // Animación de las tarjetas
             document.querySelectorAll('.stat-card').forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
@@ -932,7 +946,7 @@
             });
         });
 
-        // Auto-actualización cada 5 minutos
+        // Auto-actualización cada 5 minutos (opcional)
         setInterval(function() {
             location.reload();
         }, 300000);
