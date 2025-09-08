@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Corporativo | {{ oficina.numero }}</title>
+    <title>Dashboard Personal | {{ oficina.numero }} - {{ oficina.nombre_empresa }}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -27,17 +27,6 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
             position: relative;
             overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100"><polygon fill="rgba(255,255,255,0.05)" points="0,0 1000,0 1000,60 0,100"/></svg>');
-            background-size: cover;
         }
 
         .container {
@@ -81,6 +70,33 @@
             border: 1px solid rgba(255,255,255,0.2);
         }
 
+        .header-stats {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .header-stat {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            min-width: 100px;
+        }
+
+        .header-stat .number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .header-stat .label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 0.25rem;
+        }
+
         .nav-buttons {
             display: flex;
             gap: 1rem;
@@ -112,17 +128,6 @@
             box-shadow: 0 6px 20px rgba(46,204,113,0.4);
         }
 
-        .btn-secondary {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.25);
-            transform: translateY(-2px);
-        }
-
         .btn-danger {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
@@ -148,17 +153,6 @@
             overflow: hidden;
         }
 
-        .welcome-banner::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 200px;
-            height: 200px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-        }
-
         .welcome-banner h2 {
             font-size: 1.8rem;
             font-weight: 700;
@@ -172,6 +166,101 @@
             opacity: 0.9;
             position: relative;
             z-index: 1;
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stat-card.primary::before { 
+            background: linear-gradient(to right, #3498db, #2980b9); 
+        }
+        .stat-card.success::before { 
+            background: linear-gradient(to right, #27ae60, #2ecc71); 
+        }
+        .stat-card.warning::before { 
+            background: linear-gradient(to right, #f39c12, #e67e22); 
+        }
+        .stat-card.info::before { 
+            background: linear-gradient(to right, #9b59b6, #8e44ad); 
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.primary { 
+            background: linear-gradient(to bottom right, #3498db, #2980b9); 
+        }
+        .stat-icon.success { 
+            background: linear-gradient(to bottom right, #27ae60, #2ecc71); 
+        }
+        .stat-icon.warning { 
+            background: linear-gradient(to bottom right, #f39c12, #e67e22); 
+        }
+        .stat-icon.info { 
+            background: linear-gradient(to bottom right, #9b59b6, #8e44ad); 
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .stat-subtitle {
+            font-size: 0.85rem;
+            color: #95a5a6;
+            margin-top: 0.25rem;
         }
 
         .alert {
@@ -203,8 +292,6 @@
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.1);
             overflow: hidden;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
         }
 
         .section-header {
@@ -262,7 +349,7 @@
 
         .reservation-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 1.5rem;
             flex-wrap: wrap;
@@ -422,6 +509,10 @@
                 gap: 1rem;
             }
             
+            .stats-section {
+                grid-template-columns: 1fr;
+            }
+            
             .reservation-details {
                 grid-template-columns: 1fr;
                 gap: 1rem;
@@ -430,38 +521,7 @@
             .visitor-details {
                 grid-template-columns: 1fr;
             }
-            
-            .reservations-section {
-                border-radius: 15px;
-            }
-            
-            .section-header,
-            .reservations-grid {
-                padding: 1.5rem;
-            }
         }
-
-        /* Animaciones */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .reservation-card {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        .reservation-card:nth-child(1) { animation-delay: 0.1s; }
-        .reservation-card:nth-child(2) { animation-delay: 0.2s; }
-        .reservation-card:nth-child(3) { animation-delay: 0.3s; }
-        .reservation-card:nth-child(4) { animation-delay: 0.4s; }
-        .reservation-card:nth-child(5) { animation-delay: 0.5s; }
 
         .icon {
             font-size: 1.2rem;
@@ -479,6 +539,22 @@
                     </h1>
                     <div class="company-name">{{ oficina.nombre_empresa }}</div>
                 </div>
+                
+                <div class="header-stats">
+                    <div class="header-stat">
+                        <span class="number">{{ reservas|length }}</span>
+                        <span class="label">Reservas</span>
+                    </div>
+                    <div class="header-stat">
+                        <span class="number">3</span>
+                        <span class="label">Este Mes</span>
+                    </div>
+                    <div class="header-stat">
+                        <span class="number">8h</span>
+                        <span class="label">Total</span>
+                    </div>
+                </div>
+                
                 <div class="nav-buttons">
                     <a href="{% url 'nueva_reserva' %}" class="btn btn-primary">
                         <i class="fas fa-plus-circle"></i>
@@ -496,8 +572,8 @@
     <div class="container">
         <div class="main-content">
             <div class="welcome-banner">
-                <h2><i class="fas fa-calendar-check"></i> Panel de Reservas</h2>
-                <p>Gestione sus reservas de espacios de manera eficiente y profesional</p>
+                <h2><i class="fas fa-tachometer-alt"></i> Dashboard Personal</h2>
+                <p>Gestione eficientemente sus reservas de espacios corporativos</p>
             </div>
 
             {% if messages %}
@@ -509,13 +585,69 @@
                 {% endfor %}
             {% endif %}
 
+            <!-- Personal Stats -->
+            <div class="stats-section">
+                <div class="stat-card primary">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-number">{{ reservas|length }}</div>
+                            <div class="stat-label">Reservas Activas</div>
+                            <div class="stat-subtitle">Total programadas</div>
+                        </div>
+                        <div class="stat-icon primary">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-number">8h</div>
+                            <div class="stat-label">Tiempo Reservado</div>
+                            <div class="stat-subtitle">Este mes</div>
+                        </div>
+                        <div class="stat-icon success">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-number">Salas</div>
+                            <div class="stat-label">Espacio Favorito</div>
+                            <div class="stat-subtitle">Más usado</div>
+                        </div>
+                        <div class="stat-icon warning">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card info">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-number">#5</div>
+                            <div class="stat-label">Ranking</div>
+                            <div class="stat-subtitle">Entre oficinas</div>
+                        </div>
+                        <div class="stat-icon info">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reservas Section -->
             <div class="reservations-section">
                 <div class="section-header">
                     <h2>
                         <i class="fas fa-list-alt"></i>
-                        Mis Reservas Activas
+                        Mis Reservas Programadas
                     </h2>
-                    <p>Administre y revise todas sus reservas programadas</p>
+                    <p>Administre y revise todas sus reservas activas</p>
                 </div>
 
                 <div class="reservations-grid">
@@ -625,29 +757,18 @@
     </div>
 
     <script>
-        // Animación de entrada suave
+        // Animación simple sin errores
         document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.reservation-card');
-            cards.forEach((card, index) => {
+            const cards = document.querySelectorAll('.stat-card, .reservation-card');
+            cards.forEach(function(card, index) {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
                 
-                setTimeout(() => {
+                setTimeout(function() {
                     card.style.transition = 'all 0.6s ease';
                     card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
                 }, index * 100);
-            });
-        });
-
-        // Efecto hover mejorado
-        document.querySelectorAll('.reservation-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-8px) scale(1.02)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
             });
         });
     </script>
