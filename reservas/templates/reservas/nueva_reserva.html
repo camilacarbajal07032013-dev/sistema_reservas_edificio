@@ -214,6 +214,28 @@
             transform: translateY(-2px);
         }
 
+        /* NUEVOS ESTILOS PARA ESTADO DE DISPONIBILIDAD */
+        .availability-status {
+            display: none;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .availability-status.loading {
+            display: block;
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+
+        .availability-status.loaded {
+            display: block;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+
         .time-blocks {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -236,12 +258,51 @@
             transition: all 0.3s ease;
             cursor: pointer;
             background: white;
+            position: relative;
         }
 
-        .time-block:hover {
-            border-color: #3498db;
-            background: #f8fbff;
+        /* ESTADOS DE DISPONIBILIDAD */
+        .time-block.disponible {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #d5f4e6 0%, #fafffe 100%);
+        }
+
+        .time-block.disponible:hover {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #a8e6cf 0%, #d5f4e6 100%);
             transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .time-block.ocupado {
+            border-color: #e74c3c;
+            background: linear-gradient(135deg, #fadbd8 0%, #fdf2f2 100%);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .time-block.ocupado::after {
+            content: "OCUPADO";
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            background: #e74c3c;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 5px;
+            font-weight: 700;
+        }
+
+        .time-block.ocupado input[type="checkbox"] {
+            display: none;
+        }
+
+        .time-block.selected {
+            border-color: #3498db;
+            background: linear-gradient(135deg, #ebf3fd 0%, #f8fbff 100%);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
         }
 
         .time-block input[type="checkbox"] {
@@ -256,11 +317,6 @@
             color: #2980b9;
         }
 
-        .time-block.selected {
-            border-color: #3498db;
-            background: linear-gradient(135deg, #ebf3fd 0%, #f8fbff 100%);
-        }
-
         .time-label {
             flex: 1;
             cursor: pointer;
@@ -269,11 +325,41 @@
             color: #2c3e50;
         }
 
+        .time-block.ocupado .time-label {
+            color: #7f8c8d;
+            text-decoration: line-through;
+        }
+
         .no-space {
             text-align: center;
             color: #6c757d;
             font-style: italic;
             padding: 2rem;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading-spinner.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 1rem;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .selected-summary {
@@ -448,7 +534,7 @@
                         <i class="fas fa-calendar-plus icon"></i>
                         Nueva Reserva
                     </h1>
-                    <p>Sistema de Gestión Corporativa</p>
+                    <p>Sistema de Gestión Corporativa - Disponibilidad en Tiempo Real</p>
                 </div>
                 <div class="nav-buttons">
                     <a href="{% url 'mis_reservas' %}" class="btn btn-secondary">
@@ -520,8 +606,21 @@
                             <i class="fas fa-clock icon"></i>
                             Seleccionar Bloques de Horario (Múltiple)
                         </label>
+                        
+                        <!-- Estado de disponibilidad -->
+                        <div id="availability-status" class="availability-status">
+                            <i class="fas fa-sync-alt fa-spin"></i>
+                            Verificando disponibilidad...
+                        </div>
+                        
+                        <!-- Spinner de carga -->
+                        <div class="loading-spinner" id="loading-spinner">
+                            <div class="spinner"></div>
+                            <p>Cargando horarios disponibles...</p>
+                        </div>
+                        
                         <div class="time-blocks" id="time-blocks">
-                            <p class="no-space">Primero seleccione un espacio...</p>
+                            <p class="no-space">Primero seleccione un espacio y fecha...</p>
                         </div>
                         
                         <div id="hidden-horarios"></div>
@@ -586,6 +685,9 @@
     <script>
         let selectedTimeSlots = [];
         let currentSpaceType = '';
+        let currentSpaceId = null;
+        let currentDate = null;
+        let availabilityData = null;
         
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date().toISOString().split('T')[0];
@@ -602,68 +704,128 @@
             }, 100);
         });
 
-        function updateHorarios() {
+        // ===== NUEVA FUNCIÓN AJAX PARA VERIFICAR DISPONIBILIDAD =====
+        async function verificarDisponibilidad() {
             const espacio = document.getElementById('espacio');
+            const fecha = document.getElementById('fecha');
+            
+            if (!espacio.value || !fecha.value) {
+                resetTimeBlocks();
+                return;
+            }
+            
+            currentSpaceId = espacio.value;
+            currentDate = fecha.value;
+            
+            // Mostrar estado de carga
+            showLoadingState();
+            
+            try {
+                const response = await fetch(`/reservas/ajax/verificar-disponibilidad/?espacio_id=${currentSpaceId}&fecha=${currentDate}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                availabilityData = data;
+                
+                // Actualizar interfaz con los datos recibidos
+                updateHorariosConDisponibilidad(data);
+                showSuccessState();
+                
+            } catch (error) {
+                console.error('Error al verificar disponibilidad:', error);
+                showErrorState(error.message);
+            }
+        }
+
+        function showLoadingState() {
+            const status = document.getElementById('availability-status');
+            const spinner = document.getElementById('loading-spinner');
             const timeBlocks = document.getElementById('time-blocks');
             
+            status.className = 'availability-status loading';
+            status.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Verificando disponibilidad...';
+            
+            spinner.classList.add('active');
+            timeBlocks.innerHTML = '';
+        }
+
+        function showSuccessState() {
+            const status = document.getElementById('availability-status');
+            const spinner = document.getElementById('loading-spinner');
+            
+            status.className = 'availability-status loaded';
+            status.innerHTML = '<i class="fas fa-check-circle"></i> Disponibilidad actualizada en tiempo real';
+            
+            spinner.classList.remove('active');
+            
+            // Ocultar después de 3 segundos
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+
+        function showErrorState(message) {
+            const status = document.getElementById('availability-status');
+            const spinner = document.getElementById('loading-spinner');
+            const timeBlocks = document.getElementById('time-blocks');
+            
+            status.className = 'availability-status';
+            status.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
+            status.style.color = 'white';
+            status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error: ${message}`;
+            
+            spinner.classList.remove('active');
+            timeBlocks.innerHTML = '<p class="no-space">Error al cargar horarios. Intente nuevamente.</p>';
+        }
+
+        function updateHorariosConDisponibilidad(data) {
+            const timeBlocks = document.getElementById('time-blocks');
+            const espacioTexto = data.nombre_espacio.toLowerCase();
+            currentSpaceType = espacioTexto;
+            
+            // Limpiar selecciones previas
             selectedTimeSlots = [];
             updateHiddenInputs();
             
             timeBlocks.innerHTML = '';
             
-            if (!espacio.value) {
-                timeBlocks.innerHTML = '<p class="no-space">Primero seleccione un espacio...</p>';
+            if (!data.horarios || data.horarios.length === 0) {
+                timeBlocks.innerHTML = '<p class="no-space">No hay horarios disponibles para este espacio.</p>';
                 toggleVisitorInfo();
                 return;
             }
             
-            const espacioTexto = espacio.options[espacio.selectedIndex].text.toLowerCase();
-            currentSpaceType = espacioTexto;
-            
-            let horarios = [];
-            
-            if (espacioTexto.includes('directorio')) {
-                horarios = [
-                    {inicio: '08:00', fin: '10:00', label: '8:00 AM - 10:00 AM'},
-                    {inicio: '10:15', fin: '12:15', label: '10:15 AM - 12:15 PM'},
-                    {inicio: '13:00', fin: '15:00', label: '1:00 PM - 3:00 PM'},
-                    {inicio: '15:15', fin: '17:15', label: '3:15 PM - 5:15 PM'}
-                ];
-            } else if (espacioTexto.includes('estacionamiento')) {
-                horarios = [
-                    {inicio: '07:00', fin: '08:00', label: '7:00 AM - 8:00 AM'},
-                    {inicio: '08:00', fin: '09:00', label: '8:00 AM - 9:00 AM'},
-                    {inicio: '09:00', fin: '10:00', label: '9:00 AM - 10:00 AM'},
-                    {inicio: '10:00', fin: '11:00', label: '10:00 AM - 11:00 AM'},
-                    {inicio: '11:00', fin: '12:00', label: '11:00 AM - 12:00 PM'},
-                    {inicio: '12:00', fin: '13:00', label: '12:00 PM - 1:00 PM'},
-                    {inicio: '13:00', fin: '14:00', label: '1:00 PM - 2:00 PM'},
-                    {inicio: '14:00', fin: '15:00', label: '2:00 PM - 3:00 PM'},
-                    {inicio: '15:00', fin: '16:00', label: '3:00 PM - 4:00 PM'},
-                    {inicio: '16:00', fin: '17:00', label: '4:00 PM - 5:00 PM'},
-                    {inicio: '17:00', fin: '18:00', label: '5:00 PM - 6:00 PM'}
-                ];    
-            } else {
-                horarios = [
-                    {inicio: '08:00', fin: '09:00', label: '8:00 AM - 9:00 AM'},
-                    {inicio: '09:30', fin: '10:30', label: '9:30 AM - 10:30 AM'},
-                    {inicio: '11:00', fin: '12:00', label: '11:00 AM - 12:00 PM'},
-                    {inicio: '13:00', fin: '14:00', label: '1:00 PM - 2:00 PM'},
-                    {inicio: '14:30', fin: '15:30', label: '2:30 PM - 3:30 PM'},
-                    {inicio: '16:00', fin: '17:00', label: '4:00 PM - 5:00 PM'}
-                ];
-            }
-            
-            horarios.forEach((bloque, index) => {
+            data.horarios.forEach((bloque, index) => {
                 const timeBlock = document.createElement('div');
-                timeBlock.className = 'time-block';
+                
+                // Aplicar clases según disponibilidad
+                let blockClass = 'time-block';
+                let disabledAttr = '';
+                
+                if (bloque.ocupado) {
+                    blockClass += ' ocupado';
+                    disabledAttr = 'disabled';
+                } else {
+                    blockClass += ' disponible';
+                }
+                
+                timeBlock.className = blockClass;
                 timeBlock.innerHTML = `
                     <input type="checkbox" id="time_${index}" 
                            value="${bloque.inicio}-${bloque.fin}" 
                            data-inicio="${bloque.inicio}"
                            data-fin="${bloque.fin}"
                            data-label="${bloque.label}"
-                           onchange="updateSelectedTimes()">
+                           onchange="updateSelectedTimes()"
+                           ${disabledAttr}>
                     <label for="time_${index}" class="time-label">
                         ${bloque.label}
                     </label>
@@ -672,6 +834,20 @@
             });
             
             toggleVisitorInfo();
+        }
+
+        function resetTimeBlocks() {
+            const timeBlocks = document.getElementById('time-blocks');
+            const status = document.getElementById('availability-status');
+            const spinner = document.getElementById('loading-spinner');
+            
+            timeBlocks.innerHTML = '<p class="no-space">Primero seleccione un espacio y fecha...</p>';
+            status.style.display = 'none';
+            spinner.classList.remove('active');
+            
+            selectedTimeSlots = [];
+            updateHiddenInputs();
+            updateSummary('');
         }
 
         function updateSelectedTimes() {
@@ -769,7 +945,7 @@
             const timeBlocks = document.querySelectorAll('.time-block');
             timeBlocks.forEach(block => {
                 const checkbox = block.querySelector('input[type="checkbox"]');
-                if (checkbox.checked) {
+                if (checkbox && checkbox.checked) {
                     block.classList.add('selected');
                 } else {
                     block.classList.remove('selected');
@@ -858,9 +1034,13 @@
             errorDiv.style.display = 'none';
         }
 
-        // Event Listeners
+        // ===== EVENT LISTENERS ACTUALIZADOS =====
         document.getElementById('espacio').addEventListener('change', function() {
-            updateHorarios();
+            verificarDisponibilidad();
+        });
+
+        document.getElementById('fecha').addEventListener('change', function() {
+            verificarDisponibilidad();
         });
 
         document.getElementById('placa_visitante').addEventListener('input', function() {
