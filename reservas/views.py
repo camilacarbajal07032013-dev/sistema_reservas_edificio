@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.db.models import Count, Q, Sum
 from datetime import date, time, datetime, timedelta
 from .models import Oficina, Espacio, Reserva
+from django.utils import timezone
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -212,13 +213,13 @@ def nueva_reserva(request):
             espacio = Espacio.objects.get(id=espacio_id)
             fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
             
-            # NUEVA VALIDACIÓN: Restricción de 30 minutos antes
-            ahora = datetime.now()
+            # NUEVA VALIDACIÓN: Restricción de 30 minutos antes (CORREGIDO)
+            ahora = timezone.now()  # Usar timezone.now() en lugar de datetime.now()
             hoy = ahora.date()
             
             # Solo aplicar restricción si la reserva es para hoy
             if fecha_obj == hoy:
-                hora_limite = ahora + timedelta(minutes=30)
+                hora_actual_minutos = ahora.hour * 60 + ahora.minute
                 
                 for bloque in bloques_horarios:
                     if '-' not in bloque:
@@ -228,11 +229,11 @@ def nueva_reserva(request):
                         hora_inicio_str, hora_fin_str = bloque.split('-')
                         hora_inicio_obj = datetime.strptime(hora_inicio_str, '%H:%M').time()
                         
-                        # Combinar fecha de hoy con la hora de inicio del bloque
-                        datetime_inicio = datetime.combine(fecha_obj, hora_inicio_obj)
+                        # Convertir hora de inicio a minutos desde medianoche
+                        minutos_inicio = hora_inicio_obj.hour * 60 + hora_inicio_obj.minute
                         
                         # Verificar si el bloque inicia en menos de 30 minutos
-                        if datetime_inicio <= hora_limite:
+                        if minutos_inicio <= hora_actual_minutos + 30:
                             messages.error(request, 
                                 f'No se puede reservar el horario {hora_inicio_str}-{hora_fin_str} '
                                 f'porque debe hacerse al menos 30 minutos antes de la hora de inicio.'
@@ -310,9 +311,16 @@ def nueva_reserva(request):
         )
     )
     
+    # Obtener fecha y hora actual del servidor usando timezone
+    ahora_servidor = timezone.now()
+    fecha_hoy_servidor = ahora_servidor.strftime('%Y-%m-%d')
+    hora_actual_minutos = ahora_servidor.hour * 60 + ahora_servidor.minute
+    
     context = {
         'espacios': espacios,
         'fecha_minima': date.today().isoformat(),
+        'fecha_hoy': fecha_hoy_servidor,  # NUEVO
+        'hora_actual_minutos': hora_actual_minutos,  # NUEVO
     }
     return render(request, 'reservas/nueva_reserva.html', context)
 
