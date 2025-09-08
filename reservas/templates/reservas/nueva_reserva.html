@@ -824,52 +824,27 @@
                 return false;
             }
             
-            // NUEVA VALIDACIÓN: Restricción de 30 minutos antes (solo para HOY)
+            // NUEVA VALIDACIÓN: Restricción de 30 minutos antes
             const fechaSeleccionada = new Date(fecha);
             const ahora = new Date();
-            
-            // DEBUG: Mostrar información en consola
-            console.log('=== DEBUG VALIDACIÓN ===');
-            console.log('Fecha seleccionada:', fecha);
-            console.log('Date object:', fechaSeleccionada);
-            console.log('Fecha actual:', ahora);
-            console.log('Hora actual:', ahora.getHours(), ':', ahora.getMinutes());
-            
-            // Comparar solo las fechas (sin hora) para determinar si es hoy
-            const fechaHoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+            const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
             const fechaSeleccionadaSinHora = new Date(fechaSeleccionada.getFullYear(), fechaSeleccionada.getMonth(), fechaSeleccionada.getDate());
             
-            console.log('Fecha hoy (sin hora):', fechaHoy);
-            console.log('Fecha seleccionada (sin hora):', fechaSeleccionadaSinHora);
-            console.log('Son la misma fecha?', fechaSeleccionadaSinHora.getTime() === fechaHoy.getTime());
-            
-            // SOLO aplicar restricción si la fecha seleccionada es HOY
-            if (fechaSeleccionadaSinHora.getTime() === fechaHoy.getTime()) {
-                console.log('✓ Es para hoy, verificando horarios...');
+            // Solo aplicar restricción si es para hoy
+            if (fechaSeleccionadaSinHora.getTime() === hoy.getTime()) {
                 const horaActual = ahora.getHours() * 60 + ahora.getMinutes(); // minutos desde medianoche
-                console.log('Minutos actuales desde medianoche:', horaActual);
-                console.log('Límite (actual + 30):', horaActual + 30);
                 
                 for (let slot of selectedTimeSlots) {
                     const [horaInicio, minutoInicio] = slot.inicio.split(':').map(Number);
                     const minutosInicio = horaInicio * 60 + minutoInicio;
                     
-                    console.log(`Horario ${slot.label}:`);
-                    console.log('  - Minutos inicio:', minutosInicio);
-                    console.log('  - ¿Menor o igual al límite?', minutosInicio <= horaActual + 30);
-                    
                     // Verificar si el bloque inicia en menos de 30 minutos
                     if (minutosInicio <= horaActual + 30) {
-                        console.log('❌ BLOQUE RECHAZADO');
                         showError(`No se puede reservar el horario ${slot.label} porque debe hacerse al menos 30 minutos antes de la hora de inicio.`);
                         event.preventDefault();
                         return false;
-                    } else {
-                        console.log('✓ BLOQUE ACEPTADO');
                     }
                 }
-            } else {
-                console.log('✓ Es para una fecha futura, sin restricción');
             }
             
             if (currentSpaceType.includes('estacionamiento')) {
