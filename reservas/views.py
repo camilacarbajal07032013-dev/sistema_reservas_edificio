@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Count, Q, Sum
 from datetime import date, time, datetime, timedelta
-import json
 from .models import Oficina, Espacio, Reserva
 
 def login_view(request):
