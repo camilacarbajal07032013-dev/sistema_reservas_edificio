@@ -213,36 +213,6 @@ def nueva_reserva(request):
             espacio = Espacio.objects.get(id=espacio_id)
             fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
             
-            # NUEVA VALIDACIÓN: Restricción de 30 minutos antes
-            ahora = datetime.now()
-            hoy = ahora.date()
-            
-            # Solo aplicar restricción si la reserva es para hoy
-            if fecha_obj == hoy:
-                hora_limite = ahora + timedelta(minutes=30)
-                
-                for bloque in bloques_horarios:
-                    if '-' not in bloque:
-                        continue
-                    
-                    try:
-                        hora_inicio_str, hora_fin_str = bloque.split('-')
-                        hora_inicio_obj = datetime.strptime(hora_inicio_str, '%H:%M').time()
-                        
-                        # Combinar fecha de hoy con la hora de inicio del bloque
-                        datetime_inicio = datetime.combine(fecha_obj, hora_inicio_obj)
-                        
-                        # Verificar si el bloque inicia en menos de 30 minutos
-                        if datetime_inicio <= hora_limite:
-                            messages.error(request, 
-                                f'No se puede reservar el horario {hora_inicio_str}-{hora_fin_str} '
-                                f'porque debe hacerse al menos 30 minutos antes de la hora de inicio.'
-                            )
-                            return redirect('nueva_reserva')
-                    except ValueError:
-                        messages.error(request, f'Formato de hora inválido: {bloque}')
-                        return redirect('nueva_reserva')
-            
             # Validar límites según tipo de espacio
             if espacio.tipo.lower() in ['sala'] and len(bloques_horarios) > 2:
                 messages.error(request, 'Las salas permiten máximo 2 bloques por día')
@@ -316,7 +286,6 @@ def nueva_reserva(request):
         'fecha_minima': date.today().isoformat(),
     }
     return render(request, 'reservas/nueva_reserva.html', context)
-
 def logout_view(request):
     logout(request)
     return redirect('login')
