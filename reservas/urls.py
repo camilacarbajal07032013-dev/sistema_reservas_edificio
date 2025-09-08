@@ -8,6 +8,10 @@ urlpatterns = [
     path('mis-reservas/', views.mis_reservas, name='mis_reservas'),
     path('nueva-reserva/', views.nueva_reserva, name='nueva_reserva'),
     path('logout/', views.logout_view, name='logout'),
+        # NUEVAS URLs AJAX
+    path('ajax/verificar-disponibilidad/', views.verificar_disponibilidad_ajax, name='verificar_disponibilidad_ajax'),
+    path('ajax/calendario-ocupacion/', views.obtener_calendario_ocupacion_ajax, name='calendario_ocupacion_ajax'),
+    
     path('importar-usuarios/', views.importar_usuarios, name='importar_usuarios'),
     path('ver-usuarios/', views.ver_usuarios, name='ver_usuarios'),
 ]
