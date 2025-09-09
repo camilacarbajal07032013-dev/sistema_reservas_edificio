@@ -915,9 +915,15 @@
         // Animate on load
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.usage-fill').forEach((fill, index) => {
-                const randomWidth = Math.floor(Math.random() * 80) + 20; // 20-100%
-                fill.style.width = randomWidth + '%';
-            });
+            // Obtener el número de reservas de la fila correspondiente
+            const row = fill.closest('tr');
+            const reservasText = row.querySelector('td:nth-child(2) strong').textContent;
+            const numReservas = parseInt(reservasText);
+            
+            // Calcular porcentaje basado en reservas reales (máximo 20 reservas = 100%)
+            const porcentaje = Math.min((numReservas / 20) * 100, 100);
+            fill.style.width = porcentaje + '%';
+        });
             
             // Tu código de animación existente...
             document.querySelectorAll('.stat-card').forEach((card, index) => {
