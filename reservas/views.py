@@ -33,6 +33,8 @@ def dashboard(request):
         return redirect('admin_dashboard')
     return redirect('mis_reservas')
 
+# Reemplaza tu función admin_dashboard en views.py con esta versión corregida
+
 @login_required
 def admin_dashboard(request):
     if not request.user.is_superuser:
@@ -142,10 +144,30 @@ def admin_dashboard(request):
         total=Count('id')
     ).order_by('-total').first()
     
-    # Top oficinas
+    # Top oficinas CON CÁLCULOS REALES DE PROMEDIO
     oficinas_activas = Oficina.objects.annotate(
-        total_reservas=Count('reserva')
+        total_reservas=Count('reserva', filter=Q(reserva__fecha__gte=mes_actual, reserva__fecha__lte=hoy))
     ).order_by('-total_reservas')[:10]
+    
+    # CALCULAR PROMEDIO REAL DE HORAS POR OFICINA
+    for oficina in oficinas_activas:
+        # Obtener todas las reservas de esta oficina este mes
+        reservas_oficina = Reserva.objects.filter(
+            oficina=oficina,
+            fecha__gte=mes_actual,
+            fecha__lte=hoy
+        )
+        
+        if reservas_oficina.count() > 0:
+            horas_totales_oficina = sum(r.duracion_horas() for r in reservas_oficina)
+            oficina.promedio_horas = round(horas_totales_oficina / reservas_oficina.count(), 1)
+            oficina.horas_totales_mes = int(horas_totales_oficina)
+        else:
+            oficina.promedio_horas = 0
+            oficina.horas_totales_mes = 0
+        
+        # Calcular porcentaje de la barra (basado en máximo 20 reservas = 100%)
+        oficina.porcentaje_barra = min((oficina.total_reservas / 20) * 100, 100) if oficina.total_reservas > 0 else 0
     
     # Reservas recientes
     reservas_recientes = Reserva.objects.select_related(
