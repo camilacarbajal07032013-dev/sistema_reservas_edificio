@@ -505,11 +505,11 @@ def nueva_reserva(request):
             fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
             
             # Validar límites según tipo de espacio
-            if espacio.tipo.lower() in ['sala'] and len(bloques_horarios) > 2:
-                messages.error(request, 'Las salas permiten máximo 2 bloques por día')
+            if espacio.tipo.lower() in ['sala'] and len(bloques_horarios) > 5:
+                messages.error(request, 'Las salas permiten máximo 5 bloques por día')
                 return redirect('nueva_reserva')
-            elif 'directorio' in espacio.tipo.lower() and len(bloques_horarios) > 2:
-                messages.error(request, 'El directorio permite máximo 2 bloques por día')
+            elif 'directorio' in espacio.tipo.lower() and len(bloques_horarios) > 4:
+                messages.error(request, 'El directorio permite máximo 4 bloques por día')
                 return redirect('nueva_reserva')
             
             reservas_creadas = 0
