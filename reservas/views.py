@@ -408,14 +408,14 @@ def generar_horarios_por_tipo(tipo_espacio):
     else:  # salas
         return [
             {'inicio': '08:00', 'fin': '09:00', 'label': '8:00 AM - 9:00 AM'},
-            {'inicio': '09:00', 'fin': '10:00', 'label': '9:30 AM - 10:30 AM'},
-            {'inicio': '10:00', 'fin': '11:00', 'label': '11:00 AM - 12:00 PM'},
-            {'inicio': '11:00', 'fin': '12:00', 'label': '1:00 PM - 2:00 PM'},
-            {'inicio': '12:00', 'fin': '13:00', 'label': '2:30 PM - 3:30 PM'},
-            {'inicio': '13:00', 'fin': '14:00', 'label': '4:00 PM - 5:00 PM'},
-            {'inicio': '13:00', 'fin': '14:00', 'label': '4:00 PM - 5:00 PM'},
-            {'inicio': '13:00', 'fin': '14:00', 'label': '4:00 PM - 5:00 PM'},
-            {'inicio': '13:00', 'fin': '14:00', 'label': '4:00 PM - 5:00 PM'}
+            {'inicio': '09:00', 'fin': '10:00', 'label': '9:00 AM - 10:00 AM'},
+            {'inicio': '10:00', 'fin': '11:00', 'label': '10:00 AM - 11:00 AM'},
+            {'inicio': '11:00', 'fin': '12:00', 'label': '11:00 AM - 12:00 PM'},
+            {'inicio': '12:00', 'fin': '13:00', 'label': '12:00 PM - 1:00 PM'},
+            {'inicio': '13:00', 'fin': '14:00', 'label': '1:00 PM - 2:00 PM'},
+            {'inicio': '14:00', 'fin': '15:00', 'label': '2:00 PM - 3:00 PM'},
+            {'inicio': '15:00', 'fin': '16:00', 'label': '3:00 PM - 4:00 PM'},
+            {'inicio': '16:00', 'fin': '17:00', 'label': '4:00 PM - 5:00 PM'}
             
         ]
 
