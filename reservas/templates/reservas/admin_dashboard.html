@@ -839,9 +839,9 @@
                         <label for="dateFilter">Período:</label>
                         <div class="filter-buttons">
                             <button class="filter-btn active" data-period="today">Hoy</button>
-                            <button class="filter-btn" data-period="week">7 días</button>
-                            <button class="filter-btn" data-period="month">30 días</button>
-                            <button class="filter-btn" data-period="all">Todo</button>
+                            <button class="filter-btn" data-period="upcoming">Próximas</button>
+                            <button class="filter-btn" data-period="week">Esta semana</button>
+                            <button class="filter-btn" data-period="all">Todas</button>
                         </div>
                     </div>
                     
@@ -851,12 +851,13 @@
                     </div>
                     
                     <div class="filter-group">
-                        <label for="statusFilter">Estado:</label>
-                        <select id="statusFilter" class="status-select">
-                            <option value="all">Todas</option>
-                            <option value="upcoming">Próximas</option>
-                            <option value="completed">Completadas</option>
-                            <option value="today">Solo hoy</option>
+                        <label for="spaceFilter">Espacio:</label>
+                        <select id="spaceFilter" class="space-select">
+                            <option value="all">Todos los espacios</option>
+                            <option value="sala">Salas de reuniones</option>
+                            <option value="directorio">Directorio</option>
+                            <option value="terraza">Terraza</option>
+                            <option value="estacionamiento">Estacionamiento</option>
                         </select>
                     </div>
                     
@@ -881,7 +882,6 @@
                             </tr>
                         </thead>
                         <tbody id="reservationsTableBody">
-
                             <!-- Aquí irán tus reservas dinámicas -->
                             {% for reserva in reservas_recientes %}
                             <tr class="reservation-row" data-date="{{ reserva.fecha|date:'Y-m-d' }}" data-status="{% if reserva.fecha == today %}today{% elif reserva.fecha > today %}upcoming{% else %}completed{% endif %}">
@@ -1124,7 +1124,7 @@
         function initializeFilters() {
             const filterButtons = document.querySelectorAll('.filter-btn');
             const customDateInput = document.getElementById('customDate');
-            const statusSelect = document.getElementById('statusFilter');
+            const spaceSelect = document.getElementById('spaceFilter');
             
             filterButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -1142,14 +1142,14 @@
                 applyFilters();
             });
 
-            statusSelect.addEventListener('change', applyFilters);
+            spaceSelect.addEventListener('change', applyFilters);
             applyFilters();
         }
 
         function applyFilters() {
             const activeFilter = document.querySelector('.filter-btn.active');
             const customDate = document.getElementById('customDate').value;
-            const statusFilter = document.getElementById('statusFilter').value;
+            const spaceFilter = document.getElementById('spaceFilter').value;
             const rows = document.querySelectorAll('.reservation-row:not(.no-data)');
             const noResults = document.getElementById('noResults');
             
@@ -1162,6 +1162,7 @@
                 const rowDate = row.getAttribute('data-date');
                 const rowStatus = row.getAttribute('data-status');
                 
+                // Filtro por período
                 if (activeFilter) {
                     const period = activeFilter.getAttribute('data-period');
                     const rowDateObj = new Date(rowDate);
@@ -1202,15 +1203,47 @@
                                 }
                             }
                             break;
-                        case 'week':
-                            const weekAgo = new Date(now);
-                            weekAgo.setDate(weekAgo.getDate() - 7);
-                            showRow = rowDateObj >= weekAgo;
+                        case 'upcoming':
+                            // Para próximas: fecha futura O fecha de hoy pero que no haya terminado
+                            if (rowDate > today) {
+                                showRow = true;
+                            } else if (rowDate === today) {
+                                const timeCell = row.querySelector('td:nth-child(3)');
+                                if (timeCell) {
+                                    const timeText = timeCell.textContent;
+                                    const endTimeMatch = timeText.match(/- (\d{1,2}):(\d{2}) (AM|PM)/);
+                                    
+                                    if (endTimeMatch) {
+                                        let endHour = parseInt(endTimeMatch[1]);
+                                        const endMinute = parseInt(endTimeMatch[2]);
+                                        const ampm = endTimeMatch[3];
+                                        
+                                        // Convertir a formato 24 horas
+                                        if (ampm === 'PM' && endHour !== 12) {
+                                            endHour += 12;
+                                        } else if (ampm === 'AM' && endHour === 12) {
+                                            endHour = 0;
+                                        }
+                                        
+                                        const endTime = new Date();
+                                        endTime.setHours(endHour, endMinute, 0, 0);
+                                        
+                                        showRow = now < endTime; // Solo mostrar si aún no termina
+                                    } else {
+                                        showRow = true; // Si no puede parsear, mostrar por defecto
+                                    }
+                                } else {
+                                    showRow = true;
+                                }
+                            } else {
+                                showRow = false; // Fechas pasadas no se muestran
+                            }
                             break;
-                        case 'month':
-                            const monthAgo = new Date(now);
-                            monthAgo.setDate(monthAgo.getDate() - 30);
-                            showRow = rowDateObj >= monthAgo;
+                        case 'week':
+                            // Esta semana: desde hoy hasta 7 días en el futuro
+                            const weekFromNow = new Date(now);
+                            weekFromNow.setDate(weekFromNow.getDate() + 7);
+                            showRow = rowDateObj >= new Date(today) && rowDateObj <= weekFromNow;
                             break;
                         case 'all':
                             showRow = true;
@@ -1223,20 +1256,28 @@
                     showRow = rowDate === customDate;
                 }
                 
-                // Filtro por estado - aplicar después de actualizar estados
-                const currentStatus = row.getAttribute('data-status');
-                if (statusFilter !== 'all' && showRow) {
-                    if (statusFilter === 'upcoming') {
-                        // Para upcoming: fecha futura O fecha de hoy pero que no haya terminado
-                        if (rowDate > today) {
-                            showRow = true;
-                        } else if (rowDate === today) {
-                            showRow = currentStatus !== 'completed';
-                        } else {
-                            showRow = false;
+                // Filtro por espacio
+                if (spaceFilter !== 'all' && showRow) {
+                    const spaceCell = row.querySelector('td:nth-child(2) strong');
+                    if (spaceCell) {
+                        const spaceName = spaceCell.textContent.toLowerCase();
+                        
+                        switch(spaceFilter) {
+                            case 'sala':
+                                showRow = spaceName.includes('sala');
+                                break;
+                            case 'directorio':
+                                showRow = spaceName.includes('directorio');
+                                break;
+                            case 'terraza':
+                                showRow = spaceName.includes('terraza');
+                                break;
+                            case 'estacionamiento':
+                                showRow = spaceName.includes('estacionamiento');
+                                break;
+                            default:
+                                showRow = true;
                         }
-                    } else {
-                        showRow = currentStatus === statusFilter;
                     }
                 }
                 
