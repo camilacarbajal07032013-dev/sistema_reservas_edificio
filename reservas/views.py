@@ -401,7 +401,7 @@ def generar_horarios_por_tipo(tipo_espacio):
     
     elif 'terraza' in tipo_espacio.lower():
         return [
-            {'inicio': '08:00', 'fin': '11:00', 'label': '8:00 AM - 11:30 AM'},
+            {'inicio': '08:00', 'fin': '11:00', 'label': '8:00 AM - 11:00 AM'},
             {'inicio': '14:00', 'fin': '17:00', 'label': '2:00 PM - 5:00 PM'},
             ]
     
