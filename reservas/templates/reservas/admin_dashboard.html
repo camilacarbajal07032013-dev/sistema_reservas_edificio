@@ -431,7 +431,131 @@
             color: #3498db;
             margin: 0.5rem 0;
         }
-        
+
+        /* Filtros de Reservas */
+        .filters-container {
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 1.5rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-width: 120px;
+        }
+
+        .filter-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .date-input,
+        .status-select {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: white;
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+
+        .date-input:focus,
+        .status-select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .btn-reset {
+            padding: 0.5rem 1rem;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-reset:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            opacity: 0.5;
+        }
+
+        .reservation-row {
+            transition: all 0.3s ease;
+        }
+
+        .reservation-row.hidden {
+            display: none;
+        }
+
+        .reservation-row.upcoming {
+            border-left: 3px solid #28a745;
+        }
+
+        .reservation-row.today {
+            border-left: 3px solid #ffc107;
+            background: rgba(255, 193, 7, 0.05);
+        }
+
+        .reservation-row.completed {
+            opacity: 0.7;
+            border-left: 3px solid #6c757d;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .charts-grid {
@@ -456,6 +580,16 @@
             .chart-header {
                 flex-direction: column;
                 align-items: flex-start;
+            }
+
+            .filters-container {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .filter-buttons {
+                flex-wrap: wrap;
             }
         }
 
@@ -698,6 +832,41 @@
                     </div>
                     <div class="table-subtitle">Actividad en tiempo real del sistema</div>
                 </div>
+
+                <!-- Filtros de Reservas -->
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label for="dateFilter">Período:</label>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-period="today">Hoy</button>
+                            <button class="filter-btn" data-period="week">7 días</button>
+                            <button class="filter-btn" data-period="month">30 días</button>
+                            <button class="filter-btn" data-period="all">Todo</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="customDate">Fecha específica:</label>
+                        <input type="date" id="customDate" class="date-input">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="statusFilter">Estado:</label>
+                        <select id="statusFilter" class="status-select">
+                            <option value="all">Todas</option>
+                            <option value="upcoming">Próximas</option>
+                            <option value="completed">Completadas</option>
+                            <option value="today">Solo hoy</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <button class="btn-reset" onclick="resetFilters()">
+                            <i class="fas fa-refresh"></i> Limpiar
+                        </button>
+                    </div>
+                </div>
+
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
@@ -711,9 +880,180 @@
                                 <th>Creada</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="reservationsTableBody">
+                            <!-- Reservas de hoy -->
+                            <tr class="reservation-row today" data-date="2025-09-19" data-status="today">
+                                <td>
+                                    <div class="office-badge">302</div>
+                                </td>
+                                <td>
+                                    <strong>Sala 1</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">Sala de reuniones</div>
+                                </td>
+                                <td>
+                                    <strong>19 Sep 2025</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">
+                                        10:00 AM - 12:00 PM
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>2h</strong>
+                                </td>
+                                <td>
+                                    <strong>María González</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">
+                                        🚗 ABC-123
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-confirmed">
+                                        <i class="fas fa-check-circle"></i> Confirmada
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.9rem;">18/09</div>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">3:30 PM</div>
+                                </td>
+                            </tr>
+
+                            <tr class="reservation-row today" data-date="2025-09-19" data-status="today">
+                                <td>
+                                    <div class="office-badge">401</div>
+                                </td>
+                                <td>
+                                    <strong>Terraza</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">Evento</div>
+                                </td>
+                                <td>
+                                    <strong>19 Sep 2025</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">
+                                        2:00 PM - 6:00 PM
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>4h</strong>
+                                </td>
+                                <td>
+                                    <span style="color: #6c757d;">-</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-confirmed">
+                                        <i class="fas fa-check-circle"></i> Confirmada
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.9rem;">17/09</div>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">11:15 AM</div>
+                                </td>
+                            </tr>
+
+                            <!-- Reservas próximas -->
+                            <tr class="reservation-row upcoming" data-date="2025-09-20" data-status="upcoming">
+                                <td>
+                                    <div class="office-badge">305</div>
+                                </td>
+                                <td>
+                                    <strong>Sala 2</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">Sala de reuniones</div>
+                                </td>
+                                <td>
+                                    <strong>20 Sep 2025</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">
+                                        9:00 AM - 11:00 AM
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>2h</strong>
+                                </td>
+                                <td>
+                                    <strong>Carlos Ruiz</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">
+                                        🚗 XYZ-789
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-confirmed">
+                                        <i class="fas fa-check-circle"></i> Confirmada
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.9rem;">19/09</div>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">8:45 AM</div>
+                                </td>
+                            </tr>
+
+                            <!-- Reservas completadas -->
+                            <tr class="reservation-row completed" data-date="2025-09-18" data-status="completed">
+                                <td>
+                                    <div class="office-badge">301</div>
+                                </td>
+                                <td>
+                                    <strong>Directorio</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">Reunión</div>
+                                </td>
+                                <td>
+                                    <strong>18 Sep 2025</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">
+                                        1:00 PM - 3:00 PM
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>2h</strong>
+                                </td>
+                                <td>
+                                    <strong>Ana López</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">
+                                        🚗 DEF-456
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge" style="background: #d1ecf1; color: #0c5460;">
+                                        <i class="fas fa-check"></i> Completada
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.9rem;">17/09</div>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">2:20 PM</div>
+                                </td>
+                            </tr>
+
+                            <tr class="reservation-row completed" data-date="2025-09-17" data-status="completed">
+                                <td>
+                                    <div class="office-badge">502</div>
+                                </td>
+                                <td>
+                                    <strong>Estacionamiento</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">Cliente</div>
+                                </td>
+                                <td>
+                                    <strong>17 Sep 2025</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">
+                                        10:30 AM - 12:30 PM
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>2h</strong>
+                                </td>
+                                <td>
+                                    <strong>Pedro Martínez</strong>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">
+                                        🚗 GHI-321
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge" style="background: #d1ecf1; color: #0c5460;">
+                                        <i class="fas fa-check"></i> Completada
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.9rem;">16/09</div>
+                                    <div style="font-size: 0.8rem; color: #6c757d;">4:10 PM</div>
+                                </td>
+                            </tr>
+
+                            <!-- Aquí irán tus reservas dinámicas -->
                             {% for reserva in reservas_recientes %}
-                            <tr>
+                            <tr class="reservation-row" data-date="{{ reserva.fecha|date:'Y-m-d' }}" data-status="{% if reserva.fecha == today %}today{% elif reserva.fecha > today %}upcoming{% else %}completed{% endif %}">
                                 <td>
                                     <div class="office-badge">{{ reserva.oficina.numero }}</div>
                                 </td>
@@ -751,7 +1091,8 @@
                                 </td>
                             </tr>
                             {% empty %}
-                            <tr>
+                            <!-- Este se muestra solo si no hay reservas en la base de datos -->
+                            <tr class="reservation-row no-data" data-date="1970-01-01" data-status="completed">
                                 <td colspan="7" style="text-align: center; padding: 3rem; color: #6c757d;">
                                     <i class="fas fa-calendar-times" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
                                     No hay reservas registradas aún
@@ -760,6 +1101,13 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                    
+                    <!-- Mensaje cuando no hay resultados -->
+                    <div id="noResults" class="no-results" style="display: none;">
+                        <i class="fas fa-search"></i>
+                        <h3>No se encontraron reservas</h3>
+                        <p>No hay reservas que coincidan con los filtros seleccionados</p>
+                    </div>
                 </div>
             </div>
 
@@ -915,15 +1263,15 @@
         // Animate on load
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.usage-fill').forEach((fill, index) => {
-            // Obtener el número de reservas de la fila correspondiente
-            const row = fill.closest('tr');
-            const reservasText = row.querySelector('td:nth-child(2) strong').textContent;
-            const numReservas = parseInt(reservasText);
-            
-            // Calcular porcentaje basado en reservas reales (máximo 20 reservas = 100%)
-            const porcentaje = Math.min((numReservas / 20) * 100, 100);
-            fill.style.width = porcentaje + '%';
-        });
+                // Obtener el número de reservas de la fila correspondiente
+                const row = fill.closest('tr');
+                const reservasText = row.querySelector('td:nth-child(2) strong').textContent;
+                const numReservas = parseInt(reservasText);
+                
+                // Calcular porcentaje basado en reservas reales (máximo 20 reservas = 100%)
+                const porcentaje = Math.min((numReservas / 20) * 100, 100);
+                fill.style.width = porcentaje + '%';
+            });
             
             // Tu código de animación existente...
             document.querySelectorAll('.stat-card').forEach((card, index) => {
@@ -936,7 +1284,125 @@
                     card.style.transform = 'translateY(0)';
                 }, index * 100);
             });
+
+            // Inicializar filtros
+            initializeFilters();
         });
+
+        // Sistema de filtros para reservas
+        function initializeFilters() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const customDateInput = document.getElementById('customDate');
+            const statusSelect = document.getElementById('statusFilter');
+            
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    customDateInput.value = '';
+                    applyFilters();
+                });
+            });
+
+            customDateInput.addEventListener('change', function() {
+                if (this.value) {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                }
+                applyFilters();
+            });
+
+            statusSelect.addEventListener('change', applyFilters);
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const activeFilter = document.querySelector('.filter-btn.active');
+            const customDate = document.getElementById('customDate').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const rows = document.querySelectorAll('.reservation-row:not(.no-data)');
+            const noResults = document.getElementById('noResults');
+            
+            let visibleCount = 0;
+            const today = new Date().toISOString().split('T')[0];
+            
+            rows.forEach(row => {
+                let showRow = true;
+                const rowDate = row.getAttribute('data-date');
+                const rowStatus = row.getAttribute('data-status');
+                
+                if (activeFilter) {
+                    const period = activeFilter.getAttribute('data-period');
+                    const rowDateObj = new Date(rowDate);
+                    const todayObj = new Date(today);
+                    
+                    switch(period) {
+                        case 'today':
+                            showRow = rowDate === today;
+                            break;
+                        case 'week':
+                            const weekAgo = new Date(todayObj);
+                            weekAgo.setDate(weekAgo.getDate() - 7);
+                            showRow = rowDateObj >= weekAgo;
+                            break;
+                        case 'month':
+                            const monthAgo = new Date(todayObj);
+                            monthAgo.setDate(monthAgo.getDate() - 30);
+                            showRow = rowDateObj >= monthAgo;
+                            break;
+                        case 'all':
+                            showRow = true;
+                            break;
+                    }
+                }
+                
+                if (customDate && showRow) {
+                    showRow = rowDate === customDate;
+                }
+                
+                if (statusFilter !== 'all' && showRow) {
+                    showRow = rowStatus === statusFilter;
+                }
+                
+                if (showRow) {
+                    row.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+            
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+            
+            updateResultsCounter(visibleCount);
+        }
+
+        function resetFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-period') === 'today') {
+                    btn.classList.add('active');
+                }
+            });
+            
+            document.getElementById('customDate').value = '';
+            document.getElementById('statusFilter').value = 'all';
+            applyFilters();
+        }
+
+        function updateResultsCounter(count) {
+            const subtitle = document.querySelector('.data-table-section .table-subtitle');
+            if (count === 0) {
+                subtitle.textContent = 'No se encontraron reservas con los filtros actuales';
+            } else if (count === 1) {
+                subtitle.textContent = '1 reserva encontrada';
+            } else {
+                subtitle.textContent = `${count} reservas encontradas`;
+            }
+        }
 
         // Auto-actualización cada 10 segundos
         setInterval(function() {
