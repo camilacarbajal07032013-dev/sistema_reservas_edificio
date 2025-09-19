@@ -484,7 +484,8 @@
         }
 
         .date-input,
-        .status-select {
+        .status-select,
+        .space-select {
             padding: 0.5rem 0.75rem;
             border: 1px solid #dee2e6;
             border-radius: 6px;
@@ -492,10 +493,13 @@
             background: white;
             color: #495057;
             transition: all 0.3s ease;
+            min-width: 160px;
+            font-weight: 500;
         }
 
         .date-input:focus,
-        .status-select:focus {
+        .status-select:focus,
+        .space-select:focus {
             outline: none;
             border-color: #3498db;
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
