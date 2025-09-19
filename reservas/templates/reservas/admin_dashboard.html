@@ -1154,7 +1154,8 @@
             const noResults = document.getElementById('noResults');
             
             let visibleCount = 0;
-            const today = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
             
             rows.forEach(row => {
                 let showRow = true;
@@ -1164,19 +1165,50 @@
                 if (activeFilter) {
                     const period = activeFilter.getAttribute('data-period');
                     const rowDateObj = new Date(rowDate);
-                    const todayObj = new Date(today);
                     
                     switch(period) {
                         case 'today':
                             showRow = rowDate === today;
+                            
+                            // Si es una reserva de hoy, verificar si ya terminó
+                            if (showRow && rowDate === today) {
+                                const timeCell = row.querySelector('td:nth-child(3)');
+                                if (timeCell) {
+                                    const timeText = timeCell.textContent;
+                                    const endTimeMatch = timeText.match(/- (\d{1,2}):(\d{2}) (AM|PM)/);
+                                    
+                                    if (endTimeMatch) {
+                                        let endHour = parseInt(endTimeMatch[1]);
+                                        const endMinute = parseInt(endTimeMatch[2]);
+                                        const ampm = endTimeMatch[3];
+                                        
+                                        // Convertir a formato 24 horas
+                                        if (ampm === 'PM' && endHour !== 12) {
+                                            endHour += 12;
+                                        } else if (ampm === 'AM' && endHour === 12) {
+                                            endHour = 0;
+                                        }
+                                        
+                                        const endTime = new Date();
+                                        endTime.setHours(endHour, endMinute, 0, 0);
+                                        
+                                        // Si ya pasó la hora de fin, marcar como completada
+                                        if (now >= endTime) {
+                                            row.setAttribute('data-status', 'completed');
+                                            row.classList.remove('today', 'upcoming');
+                                            row.classList.add('completed');
+                                        }
+                                    }
+                                }
+                            }
                             break;
                         case 'week':
-                            const weekAgo = new Date(todayObj);
+                            const weekAgo = new Date(now);
                             weekAgo.setDate(weekAgo.getDate() - 7);
                             showRow = rowDateObj >= weekAgo;
                             break;
                         case 'month':
-                            const monthAgo = new Date(todayObj);
+                            const monthAgo = new Date(now);
                             monthAgo.setDate(monthAgo.getDate() - 30);
                             showRow = rowDateObj >= monthAgo;
                             break;
@@ -1186,14 +1218,29 @@
                     }
                 }
                 
+                // Filtro por fecha personalizada
                 if (customDate && showRow) {
                     showRow = rowDate === customDate;
                 }
                 
+                // Filtro por estado - aplicar después de actualizar estados
+                const currentStatus = row.getAttribute('data-status');
                 if (statusFilter !== 'all' && showRow) {
-                    showRow = rowStatus === statusFilter;
+                    if (statusFilter === 'upcoming') {
+                        // Para upcoming: fecha futura O fecha de hoy pero que no haya terminado
+                        if (rowDate > today) {
+                            showRow = true;
+                        } else if (rowDate === today) {
+                            showRow = currentStatus !== 'completed';
+                        } else {
+                            showRow = false;
+                        }
+                    } else {
+                        showRow = currentStatus === statusFilter;
+                    }
                 }
                 
+                // Mostrar/ocultar fila
                 if (showRow) {
                     row.classList.remove('hidden');
                     visibleCount++;
@@ -1235,10 +1282,10 @@
             }
         }
 
-        // Auto-actualización cada 60 segundos
+        // Auto-actualización cada 10 segundos
         setInterval(function() {
             location.reload();
-        }, 60000);
+        }, 10000);
     </script>
 </body>
 </html>
