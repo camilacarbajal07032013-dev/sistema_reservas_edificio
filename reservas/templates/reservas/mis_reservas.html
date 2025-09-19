@@ -674,8 +674,8 @@
                     <div class="filter-group">
                         <label for="timeFilter">Período:</label>
                         <div class="filter-buttons">
-                            <button class="filter-btn active" data-period="today">Hoy</button>
-                            <button class="filter-btn" data-period="upcoming">Próximas</button>
+                            <button class="filter-btn active" data-period="upcoming">Próximas</button>
+                            <button class="filter-btn" data-period="today">Hoy</button>
                             <button class="filter-btn" data-period="week">Esta semana</button>
                             <button class="filter-btn" data-period="all">Todas</button>
                         </div>
@@ -711,6 +711,7 @@
 
                 <div class="reservations-grid">
                     {% if reservas %}
+
                         <!-- Aquí irán tus reservas dinámicas -->
                         {% for reserva in reservas %}
                             <div class="reservation-card" data-date="{{ reserva.fecha|date:'Y-m-d' }}" data-status="{% if reserva.fecha == today %}today{% elif reserva.fecha > today %}upcoming{% else %}completed{% endif %}" data-space="{% if 'Sala' in reserva.espacio.nombre %}sala{% elif 'Directorio' in reserva.espacio.nombre %}directorio{% elif 'Terraza' in reserva.espacio.nombre %}terraza{% else %}estacionamiento{% endif %}">
@@ -871,8 +872,8 @@
             const noResults = document.getElementById('noResults');
             
             let visibleCount = 0;
-            const today = new Date().toISOString().split('T')[0];
-            const todayObj = new Date(today);
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
             
             cards.forEach(card => {
                 let showCard = true;
@@ -887,15 +888,52 @@
                     
                     switch(period) {
                         case 'upcoming':
-                            showCard = cardDateObj >= todayObj;
+                            // Para reservas próximas: debe ser fecha futura O fecha de hoy pero hora futura
+                            if (cardDate > today) {
+                                showCard = true; // Fechas futuras siempre se muestran
+                            } else if (cardDate === today) {
+                                // Si es hoy, verificar si la reserva ya pasó
+                                const timeElements = card.querySelectorAll('.detail-content p');
+                                let endTime = null;
+                                
+                                // Buscar el elemento que contiene el horario
+                                timeElements.forEach(element => {
+                                    const timeText = element.textContent;
+                                    const endTimeMatch = timeText.match(/- (\d{1,2}):(\d{2}) (AM|PM)/);
+                                    
+                                    if (endTimeMatch) {
+                                        let endHour = parseInt(endTimeMatch[1]);
+                                        const endMinute = parseInt(endTimeMatch[2]);
+                                        const ampm = endTimeMatch[3];
+                                        
+                                        // Convertir a formato 24 horas
+                                        if (ampm === 'PM' && endHour !== 12) {
+                                            endHour += 12;
+                                        } else if (ampm === 'AM' && endHour === 12) {
+                                            endHour = 0;
+                                        }
+                                        
+                                        endTime = new Date();
+                                        endTime.setHours(endHour, endMinute, 0, 0);
+                                    }
+                                });
+                                
+                                if (endTime) {
+                                    showCard = now < endTime; // Solo mostrar si aún no termina
+                                } else {
+                                    showCard = true; // Si no puede parsear, mostrar por defecto
+                                }
+                            } else {
+                                showCard = false; // Fechas pasadas no se muestran
+                            }
                             break;
                         case 'today':
                             showCard = cardDate === today;
                             break;
                         case 'week':
-                            const weekFromNow = new Date(todayObj);
+                            const weekFromNow = new Date(now);
                             weekFromNow.setDate(weekFromNow.getDate() + 7);
-                            showCard = cardDateObj >= todayObj && cardDateObj <= weekFromNow;
+                            showCard = cardDateObj >= new Date(today) && cardDateObj <= weekFromNow;
                             break;
                         case 'all':
                             showCard = true;
