@@ -401,7 +401,7 @@ def generar_horarios_por_tipo(tipo_espacio):
     
     elif 'terraza' in tipo_espacio.lower():
         return [
-            {'inicio': '08:00', 'fin': '11:30', 'label': '8:00 AM - 11:30 AM'},
+            {'inicio': '08:00', 'fin': '11:00', 'label': '8:00 AM - 11:30 AM'},
             {'inicio': '14:00', 'fin': '17:00', 'label': '2:00 PM - 5:00 PM'},
             ]
     
@@ -508,8 +508,8 @@ def nueva_reserva(request):
             if espacio.tipo.lower() in ['sala'] and len(bloques_horarios) > 5:
                 messages.error(request, 'Las salas permiten máximo 5 bloques por día')
                 return redirect('nueva_reserva')
-            elif 'directorio' in espacio.tipo.lower() and len(bloques_horarios) > 4:
-                messages.error(request, 'El directorio permite máximo 4 bloques por día')
+            elif 'directorio' in espacio.tipo.lower() and len(bloques_horarios) > 2:
+                messages.error(request, 'El directorio permite máximo 2 bloques por día')
                 return redirect('nueva_reserva')
             
             reservas_creadas = 0
