@@ -847,15 +847,54 @@
             
             selectedTimeSlots = [];
             updateHiddenInputs();
-            updateSummary('');
+            updateSummary('', '');
+        }
+
+        function getMaxBlocks() {
+            if (currentSpaceType.includes('estacionamiento')) {
+                return 0; // Sin límite
+            } else if (currentSpaceType.includes('directorio')) {
+                return 5; // 5 bloques máximo
+            } else if (currentSpaceType.includes('sala')) {
+                return 5; // 5 bloques máximo para salas
+            }
+            return 2; // Por defecto
+        }
+
+        function getMinBlocks() {
+            if (currentSpaceType.includes('directorio')) {
+                return 2; // Mínimo 2 bloques para directorio
+            }
+            return 1; // Por defecto mínimo 1 bloque
+        }
+
+        function getLimitMessage() {
+            if (currentSpaceType.includes('estacionamiento')) {
+                return 'Sin límite de horarios';
+            } else if (currentSpaceType.includes('directorio')) {
+                return 'Máximo 5 bloques (5 horas)';
+            } else if (currentSpaceType.includes('sala')) {
+                return 'Máximo 5 bloques (5 horas)';
+            }
+            return 'Máximo 2 bloques';
+        }
+
+        function getMinMessage() {
+            if (currentSpaceType.includes('directorio')) {
+                return 'Mínimo 2 bloques (2 horas) requeridos para directorio';
+            }
+            return '';
         }
 
         function updateSelectedTimes() {
             const checkboxes = document.querySelectorAll('#time-blocks input[type="checkbox"]:checked');
             
             let maxBlocks = getMaxBlocks();
+            let minBlocks = getMinBlocks();
             let limitMessage = getLimitMessage();
+            let minMessage = getMinMessage();
             
+            // Validar máximo
             if (checkboxes.length > maxBlocks && maxBlocks > 0) {
                 const lastChecked = Array.from(checkboxes).pop();
                 lastChecked.checked = false;
@@ -876,31 +915,15 @@
             }));
             
             updateHiddenInputs();
-            updateSummary(limitMessage);
+            updateSummary(limitMessage, minMessage);
             updateVisualStyles();
-            hideError();
-        }
-
-        function getMaxBlocks() {
-            if (currentSpaceType.includes('estacionamiento')) {
-                return 0; // Sin límite
-            } else if (currentSpaceType.includes('directorio')) {
-                return 3; // 3 bloques máximo
-            } else if (currentSpaceType.includes('sala')) {
-                return 5; // 5 bloques máximo para salas
+            
+            // Validar mínimo para mostrar advertencia
+            if (checkboxes.length > 0 && checkboxes.length < minBlocks) {
+                showError(`${minMessage}. Seleccionados: ${checkboxes.length}/${minBlocks}`);
+            } else {
+                hideError();
             }
-            return 2; // Por defecto
-        }
-
-        function getLimitMessage() {
-            if (currentSpaceType.includes('estacionamiento')) {
-                return 'Sin límite de horarios';
-            } else if (currentSpaceType.includes('directorio')) {
-                return 'Máximo 3 bloques (6 horas)';
-            } else if (currentSpaceType.includes('sala')) {
-                return 'Máximo 5 bloques (5 horas)';
-            }
-            return 'Máximo 2 bloques';
         }
 
         function updateHiddenInputs() {
@@ -924,16 +947,22 @@
             }
         }
         
-        function updateSummary(limitMessage) {
+        function updateSummary(limitMessage, minMessage) {
             const summary = document.getElementById('selected-summary');
             const summaryText = document.getElementById('summary-text');
             
             if (selectedTimeSlots.length > 0) {
                 summary.classList.add('active');
                 const labels = selectedTimeSlots.map(slot => slot.label);
+                
+                let statusText = `${limitMessage} - Seleccionados: ${selectedTimeSlots.length}`;
+                if (minMessage) {
+                    statusText += ` (${minMessage})`;
+                }
+                
                 summaryText.innerHTML = `
                     <strong>${labels.join(' | ')}</strong><br>
-                    <small style="color: #6c757d; font-style: italic;">${limitMessage} - Seleccionados: ${selectedTimeSlots.length}</small>
+                    <small style="color: #6c757d; font-style: italic;">${statusText}</small>
                 `;
             } else {
                 summary.classList.remove('active');
@@ -981,6 +1010,7 @@
             const espacio = document.getElementById('espacio').value;
             const fecha = document.getElementById('fecha').value;
             const horariosSeleccionados = selectedTimeSlots.length;
+            const minBlocks = getMinBlocks();
             
             if (!espacio) {
                 showError('Debe seleccionar un espacio válido');
@@ -996,6 +1026,14 @@
             
             if (horariosSeleccionados === 0) {
                 showError('Debe seleccionar al menos un bloque de horario válido');
+                event.preventDefault();
+                return false;
+            }
+            
+            // Validar mínimo de bloques
+            if (horariosSeleccionados < minBlocks) {
+                const minMessage = getMinMessage();
+                showError(`${minMessage}. Actualmente seleccionados: ${horariosSeleccionados}/${minBlocks}`);
                 event.preventDefault();
                 return false;
             }
