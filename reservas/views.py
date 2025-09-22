@@ -379,11 +379,17 @@ def generar_horarios_por_tipo(tipo_espacio):
     """
     if 'directorio' in tipo_espacio.lower():
         return [
-            {'inicio': '08:00', 'fin': '10:00', 'label': '8:00 AM - 10:00 AM'},
-            {'inicio': '10:00', 'fin': '12:00', 'label': '10:00 AM - 12:00 PM'},
-            {'inicio': '12:00', 'fin': '14:00', 'label': '12:00 PM - 2:00 PM'},
-            {'inicio': '14:00', 'fin': '16:00', 'label': '2:00 PM - 4:00 PM'},
-            {'inicio': '16:00', 'fin': '18:00', 'label': '4:00 PM - 6:00 PM'}
+            {'inicio': '08:00', 'fin': '09:00', 'label': '8:00 AM - 9:00 AM'},
+            {'inicio': '09:00', 'fin': '10:00', 'label': '9:00 AM - 10:00 AM'},
+            {'inicio': '10:00', 'fin': '11:00', 'label': '10:00 AM - 11:00 AM'},
+            {'inicio': '11:00', 'fin': '12:00', 'label': '11:00 AM - 12:00 PM'},
+            {'inicio': '12:00', 'fin': '13:00', 'label': '12:00 PM - 1:00 PM'},
+            {'inicio': '13:00', 'fin': '14:00', 'label': '1:00 PM - 2:00 PM'},
+            {'inicio': '14:00', 'fin': '15:00', 'label': '2:00 PM - 3:00 PM'},
+            {'inicio': '15:00', 'fin': '16:00', 'label': '3:00 PM - 4:00 PM'},
+            {'inicio': '16:00', 'fin': '17:00', 'label': '4:00 PM - 5:00 PM'},
+            {'inicio': '17:00', 'fin': '18:00', 'label': '5:00 PM - 6:00 PM'},
+            {'inicio': '18:00', 'fin': '19:00', 'label': '6:00 PM - 7:00 PM'}
         ]
     elif 'estacionamiento' in tipo_espacio.lower():
         return [
@@ -509,9 +515,13 @@ def nueva_reserva(request):
             if espacio.tipo.lower() in ['sala'] and len(bloques_horarios) > 5:
                 messages.error(request, 'Las salas permiten máximo 5 bloques por día')
                 return redirect('nueva_reserva')
-            elif 'directorio' in espacio.tipo.lower() and len(bloques_horarios) > 3:
-                messages.error(request, 'El directorio permite máximo 3 bloques por día')
-                return redirect('nueva_reserva')
+            elif 'directorio' in espacio.tipo.lower():
+                if len(bloques_horarios) < 2:
+                    messages.error(request, 'El directorio requiere mínimo 2 bloques de horario')
+                    return redirect('nueva_reserva')
+                elif len(bloques_horarios) > 5:
+                    messages.error(request, 'El directorio permite máximo 5 bloques por día')
+                    return redirect('nueva_reserva')
             
             reservas_creadas = 0
             
