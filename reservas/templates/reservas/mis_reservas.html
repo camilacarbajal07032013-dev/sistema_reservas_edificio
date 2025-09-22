@@ -236,7 +236,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 2rem;
-            align-items: end;
+            align-items: flex-end;
         }
 
         .filter-group {
@@ -244,6 +244,7 @@
             flex-direction: column;
             gap: 0.5rem;
             min-width: 120px;
+            align-items: flex-start;
         }
 
         .filter-group label {
@@ -252,12 +253,18 @@
             color: #495057;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            height: 18px;
+            display: flex;
+            align-items: center;
         }
 
         .filter-buttons {
             display: flex;
             gap: 0.25rem;
             flex-wrap: wrap;
+            height: 42px;
+            align-items: center;
         }
 
         .filter-btn {
