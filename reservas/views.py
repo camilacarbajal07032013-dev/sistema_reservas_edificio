@@ -422,7 +422,8 @@ def generar_horarios_por_tipo(tipo_espacio):
             {'inicio': '13:00', 'fin': '14:00', 'label': '1:00 PM - 2:00 PM'},
             {'inicio': '14:00', 'fin': '15:00', 'label': '2:00 PM - 3:00 PM'},
             {'inicio': '15:00', 'fin': '16:00', 'label': '3:00 PM - 4:00 PM'},
-            {'inicio': '16:00', 'fin': '17:00', 'label': '4:00 PM - 5:00 PM'}
+            {'inicio': '16:00', 'fin': '17:00', 'label': '4:00 PM - 5:00 PM'},
+            {'inicio': '17:00', 'fin': '18:00', 'label': '5:00 PM - 6:00 PM'}
             
         ]
 
