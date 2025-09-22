@@ -214,7 +214,7 @@
             transform: translateY(-2px);
         }
 
-        /* NUEVOS ESTILOS PARA ESTADO DE DISPONIBILIDAD */
+        /* ESTILOS PARA ESTADO DE DISPONIBILIDAD */
         .availability-status {
             display: none;
             padding: 1rem;
@@ -293,6 +293,20 @@
             padding: 0.2rem 0.5rem;
             border-radius: 5px;
             font-weight: 700;
+        }
+
+        /* NUEVOS ESTILOS PARA HORARIOS PASADOS */
+        .time-block.pasado {
+            border-color: #f39c12;
+            background: linear-gradient(135deg, #fef9e7 0%, #fcf3cf 100%);
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .time-block.pasado .time-label {
+            color: #9a7c00;
+            text-decoration: line-through;
+            font-style: italic;
         }
 
         .time-block.ocupado input[type="checkbox"] {
@@ -704,7 +718,32 @@
             }, 100);
         });
 
-        // ===== NUEVA FUNCIÓN AJAX PARA VERIFICAR DISPONIBILIDAD =====
+        // ===== NUEVA FUNCIÓN PARA VERIFICAR SI EL HORARIO YA PASÓ =====
+        function isTimeSlotPassed(horaInicio, fecha) {
+            const hoy = new Date();
+            const fechaSeleccionada = new Date(fecha);
+            
+            // Si la fecha seleccionada NO es hoy, no bloquear nada
+            if (fechaSeleccionada.toDateString() !== hoy.toDateString()) {
+                return false;
+            }
+            
+            // Si es hoy, verificar si la hora ya pasó
+            const [hora, minuto] = horaInicio.split(':').map(Number);
+            const horaActual = hoy.getHours();
+            const minutoActual = hoy.getMinutes();
+            
+            // Comparar horas y minutos
+            if (hora < horaActual) {
+                return true; // La hora ya pasó
+            } else if (hora === horaActual && minuto <= minutoActual) {
+                return true; // Misma hora pero minutos pasados o iguales
+            }
+            
+            return false; // La hora es futura
+        }
+
+        // ===== FUNCIÓN AJAX PARA VERIFICAR DISPONIBILIDAD =====
         async function verificarDisponibilidad() {
             const espacio = document.getElementById('espacio');
             const fecha = document.getElementById('fecha');
@@ -786,6 +825,7 @@
             timeBlocks.innerHTML = '<p class="no-space">Error al cargar horarios. Intente nuevamente.</p>';
         }
 
+        // ===== FUNCIÓN ACTUALIZADA PARA HORARIOS CON BLOQUEO DE PASADOS =====
         function updateHorariosConDisponibilidad(data) {
             const timeBlocks = document.getElementById('time-blocks');
             const espacioTexto = data.nombre_espacio.toLowerCase();
@@ -809,10 +849,20 @@
                 // Aplicar clases según disponibilidad
                 let blockClass = 'time-block';
                 let disabledAttr = '';
+                let razonBloqueo = '';
+                
+                // NUEVA LÓGICA: Verificar si el horario ya pasó
+                const horarioPasado = isTimeSlotPassed(bloque.inicio, currentDate);
                 
                 if (bloque.ocupado) {
                     blockClass += ' ocupado';
                     disabledAttr = 'disabled';
+                    razonBloqueo = 'OCUPADO';
+                } else if (horarioPasado) {
+                    // NUEVO: Bloquear horarios pasados
+                    blockClass += ' ocupado pasado';
+                    disabledAttr = 'disabled';
+                    razonBloqueo = 'PASADO';
                 } else {
                     blockClass += ' disponible';
                 }
@@ -830,6 +880,26 @@
                         ${bloque.label}
                     </label>
                 `;
+                
+                // NUEVO: Agregar etiqueta específica para horarios ocupados/pasados
+                if (razonBloqueo) {
+                    const etiqueta = document.createElement('span');
+                    etiqueta.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        right: 10px;
+                        transform: translateY(-50%);
+                        background: ${razonBloqueo === 'PASADO' ? '#f39c12' : '#e74c3c'};
+                        color: white;
+                        font-size: 0.7rem;
+                        padding: 0.2rem 0.5rem;
+                        border-radius: 5px;
+                        font-weight: 700;
+                    `;
+                    etiqueta.textContent = razonBloqueo;
+                    timeBlock.appendChild(etiqueta);
+                }
+                
                 timeBlocks.appendChild(timeBlock);
             });
             
@@ -1072,7 +1142,7 @@
             errorDiv.style.display = 'none';
         }
 
-        // ===== EVENT LISTENERS ACTUALIZADOS =====
+        // ===== EVENT LISTENERS =====
         document.getElementById('espacio').addEventListener('change', function() {
             verificarDisponibilidad();
         });
