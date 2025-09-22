@@ -693,8 +693,13 @@
                     </div>
                     
                     <div class="filter-group">
-                        <label for="customDate">Fecha específica:</label>
-                        <input type="date" id="customDate" class="date-input">
+                        <label for="statusFilter">Estado:</label>
+                        <select id="statusFilter" class="status-select">
+                            <option value="all">Todos</option>
+                            <option value="upcoming">Próximas</option>
+                            <option value="today">Solo hoy</option>
+                            <option value="completed">Completadas</option>
+                        </select>
                     </div>
                     
                     <div class="filter-group">
