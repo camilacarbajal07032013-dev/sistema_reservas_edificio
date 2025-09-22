@@ -425,6 +425,7 @@ function applyFilters() {
             box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
         }
 
+        .date-input,
         .space-select,
         .status-select {
             padding: 0.5rem 0.75rem;
@@ -434,9 +435,12 @@ function applyFilters() {
             background: white;
             color: #495057;
             transition: all 0.3s ease;
-            min-width: 150px;
+            min-width: 160px;
+            font-weight: 500;
+            height: 42px;
         }
 
+        .date-input:focus,
         .space-select:focus,
         .status-select:focus {
             outline: none;
@@ -851,7 +855,6 @@ function applyFilters() {
 
                 <div class="reservations-grid">
                     {% if reservas %}
-
                         <!-- Aquí irán tus reservas dinámicas -->
                         {% for reserva in reservas %}
                             <div class="reservation-card" data-date="{{ reserva.fecha|date:'Y-m-d' }}" data-status="{% if reserva.fecha == today %}today{% elif reserva.fecha > today %}upcoming{% else %}completed{% endif %}" data-space="{% if 'Sala' in reserva.espacio.nombre %}sala{% elif 'Directorio' in reserva.espacio.nombre %}directorio{% elif 'Terraza' in reserva.espacio.nombre %}terraza{% else %}estacionamiento{% endif %}">
