@@ -509,8 +509,8 @@ def nueva_reserva(request):
             if espacio.tipo.lower() in ['sala'] and len(bloques_horarios) > 5:
                 messages.error(request, 'Las salas permiten máximo 5 bloques por día')
                 return redirect('nueva_reserva')
-            elif 'directorio' in espacio.tipo.lower() and len(bloques_horarios) > 2:
-                messages.error(request, 'El directorio permite máximo 2 bloques por día')
+            elif 'directorio' in espacio.tipo.lower() and len(bloques_horarios) > 3:
+                messages.error(request, 'El directorio permite máximo 3 bloques por día')
                 return redirect('nueva_reserva')
             
             reservas_creadas = 0
