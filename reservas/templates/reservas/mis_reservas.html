@@ -236,7 +236,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 2rem;
-            align-items: flex-end;
+            align-items: end;
         }
 
         .filter-group {
@@ -244,7 +244,6 @@
             flex-direction: column;
             gap: 0.5rem;
             min-width: 120px;
-            align-items: flex-start;
         }
 
         .filter-group label {
@@ -253,18 +252,12 @@
             color: #495057;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
-            height: 18px;
-            display: flex;
-            align-items: center;
         }
 
         .filter-buttons {
             display: flex;
             gap: 0.25rem;
             flex-wrap: wrap;
-            height: 42px;
-            align-items: center;
         }
 
         .filter-btn {
@@ -288,7 +281,6 @@
             box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
         }
 
-        .date-input,
         .space-select,
         .status-select {
             padding: 0.5rem 0.75rem;
@@ -298,12 +290,9 @@
             background: white;
             color: #495057;
             transition: all 0.3s ease;
-            min-width: 160px;
-            font-weight: 500;
-            height: 42px;
+            min-width: 150px;
         }
 
-        .date-input:focus,
         .space-select:focus,
         .status-select:focus {
             outline: none;
@@ -688,14 +677,8 @@
                             <button class="filter-btn active" data-period="upcoming">Próximas</button>
                             <button class="filter-btn" data-period="today">Hoy</button>
                             <button class="filter-btn" data-period="week">Esta semana</button>
-                            <button class="filter-btn" data-period="completed">Completadas</button>
                             <button class="filter-btn" data-period="all">Todas</button>
                         </div>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label for="customDate">Fecha específica:</label>
-                        <input type="date" id="customDate" class="date-input">
                     </div>
                     
                     <div class="filter-group">
@@ -710,6 +693,16 @@
                     </div>
                     
                     <div class="filter-group">
+                        <label for="statusFilter">Estado:</label>
+                        <select id="statusFilter" class="status-select">
+                            <option value="all">Todos</option>
+                            <option value="upcoming">Próximas</option>
+                            <option value="today">Solo hoy</option>
+                            <option value="completed">Completadas</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
                         <button class="btn-reset" onclick="resetFilters()">
                             <i class="fas fa-refresh"></i> Limpiar
                         </button>
@@ -718,6 +711,7 @@
 
                 <div class="reservations-grid">
                     {% if reservas %}
+
                         <!-- Aquí irán tus reservas dinámicas -->
                         {% for reserva in reservas %}
                             <div class="reservation-card" data-date="{{ reserva.fecha|date:'Y-m-d' }}" data-status="{% if reserva.fecha == today %}today{% elif reserva.fecha > today %}upcoming{% else %}completed{% endif %}" data-space="{% if 'Sala' in reserva.espacio.nombre %}sala{% elif 'Directorio' in reserva.espacio.nombre %}directorio{% elif 'Terraza' in reserva.espacio.nombre %}terraza{% else %}estacionamiento{% endif %}">
