@@ -381,8 +381,9 @@ def generar_horarios_por_tipo(tipo_espacio):
         return [
             {'inicio': '08:00', 'fin': '10:00', 'label': '8:00 AM - 10:00 AM'},
             {'inicio': '10:00', 'fin': '12:00', 'label': '10:00 AM - 12:00 PM'},
-            {'inicio': '13:00', 'fin': '15:00', 'label': '1:00 PM - 3:00 PM'},
-            {'inicio': '15:00', 'fin': '17:00', 'label': '3:00 PM - 5:00 PM'}
+            {'inicio': '12:00', 'fin': '14:00', 'label': '12:00 PM - 2:00 PM'},
+            {'inicio': '14:00', 'fin': '16:00', 'label': '2:00 PM - 4:00 PM'},
+            {'inicio': '16:00', 'fin': '18:00', 'label': '4:00 PM - 6:00 PM'}
         ]
     elif 'estacionamiento' in tipo_espacio.lower():
         return [
