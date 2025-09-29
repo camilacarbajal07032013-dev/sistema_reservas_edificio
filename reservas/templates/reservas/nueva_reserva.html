@@ -971,16 +971,16 @@
             if (currentSpaceType.includes('estacionamiento')) {
                 return 0; // Sin límite
             } else if (currentSpaceType.includes('directorio')) {
-                return 5; // 5 bloques máximo
+                return 8; // 8 bloques máximo
             } else if (currentSpaceType.includes('sala')) {
-                return 5; // 5 bloques máximo para salas
+                return 8; // 8 bloques máximo para salas
             }
             return 2; // Por defecto
         }
 
         function getMinBlocks() {
             if (currentSpaceType.includes('directorio')) {
-                return 2; // Mínimo 2 bloques para directorio
+                return 8; // Mínimo 8 bloques para directorio
             }
             return 1; // Por defecto mínimo 1 bloque
         }
@@ -989,9 +989,9 @@
             if (currentSpaceType.includes('estacionamiento')) {
                 return 'Sin límite de horarios';
             } else if (currentSpaceType.includes('directorio')) {
-                return 'Máximo 5 bloques (5 horas)';
+                return 'Máximo 8 bloques (8 horas)';
             } else if (currentSpaceType.includes('sala')) {
-                return 'Máximo 5 bloques (5 horas)';
+                return 'Máximo 8 bloques (8 horas)';
             }
             return 'Máximo 2 bloques';
         }
