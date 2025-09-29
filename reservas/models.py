@@ -9,31 +9,6 @@ class Oficina(models.Model):
     
     def __str__(self):
         return f"{self.numero} - {self.nombre_empresa}"
-
-class Espacio(models.Model):
-    TIPOS = [
-        ('sala', 'Sala'),
-        ('directorio', 'Directorio'), 
-        ('terraza', 'Terraza'),
-        ('estacionamiento', 'Estacionamiento'),
-    ]
-    
-    nombre = models.CharField(max_length=50)
-    tipo = models.CharField(max_length=20, choices=TIPOS)
-    activo = models.BooleanField(default=True)
-    
-    # NUEVOS CAMPOS PARA ESTACIONAMIENTOS
-    es_estacionamiento_visita = models.BooleanField(default=False)
-    oficina_propietaria = models.ForeignKey(
-        'Oficina', 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True,
-        related_name='estacionamientos_propios',
-        help_text="Oficina dueña de este estacionamiento"
-    
-    
-    )
     
 class Espacio(models.Model):
     TIPOS = [
@@ -41,6 +16,7 @@ class Espacio(models.Model):
         ('directorio', 'Directorio'), 
         ('terraza', 'Terraza'),
         ('estacionamiento', 'Estacionamiento'),
+        ('comedor', 'Comedor'),
     ]
     
     nombre = models.CharField(max_length=50)
