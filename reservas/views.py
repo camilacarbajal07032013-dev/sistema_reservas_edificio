@@ -585,7 +585,7 @@ def nueva_reserva(request):
     # GET request
     espacios = Espacio.objects.filter(
         Q(activo=True) & (
-            Q(tipo__in=['sala', 'directorio', 'terraza']) |
+            Q(tipo__in=['sala', 'directorio', 'terraza', 'comedor']) |
             Q(tipo='estacionamiento', es_estacionamiento_visita=True) |
             Q(tipo='estacionamiento', oficina_propietaria=oficina)
         )
