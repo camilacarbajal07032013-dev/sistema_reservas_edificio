@@ -974,7 +974,10 @@
                 return 8; // 8 bloques máximo
             } else if (currentSpaceType.includes('sala')) {
                 return 8; // 8 bloques máximo para salas
+            } else if (currentSpaceType.includes('comedor')) {
+                return 5; // 8 bloques máximo para salas
             }
+            
             return 2; // Por defecto
         }
 
@@ -991,6 +994,8 @@
             } else if (currentSpaceType.includes('directorio')) {
                 return 'Máximo 8 bloques (8 horas)';
             } else if (currentSpaceType.includes('sala')) {
+                return 'Máximo 8 bloques (8 horas)';
+            } else if (currentSpaceType.includes('comedor')) {
                 return 'Máximo 8 bloques (8 horas)';
             }
             return 'Máximo 2 bloques';
