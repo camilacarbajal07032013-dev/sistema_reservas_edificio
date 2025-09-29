@@ -689,6 +689,7 @@
                             <option value="directorio">Directorio</option>
                             <option value="terraza">Terraza</option>
                             <option value="estacionamiento">Estacionamiento</option>
+                            <option value="comedor">Comedor</option>
                         </select>
                     </div>
                     
@@ -714,11 +715,11 @@
 
                         <!-- Aquí irán tus reservas dinámicas -->
                         {% for reserva in reservas %}
-                            <div class="reservation-card" data-date="{{ reserva.fecha|date:'Y-m-d' }}" data-status="{% if reserva.fecha == today %}today{% elif reserva.fecha > today %}upcoming{% else %}completed{% endif %}" data-space="{% if 'Sala' in reserva.espacio.nombre %}sala{% elif 'Directorio' in reserva.espacio.nombre %}directorio{% elif 'Terraza' in reserva.espacio.nombre %}terraza{% else %}estacionamiento{% endif %}">
+                            <div class="reservation-card" data-date="{{ reserva.fecha|date:'Y-m-d' }}" data-status="{% if reserva.fecha == today %}today{% elif reserva.fecha > today %}upcoming{% else %}completed{% endif %}" data-space="{% if 'Sala' in reserva.espacio.nombre %}sala{% elif 'Directorio' in reserva.espacio.nombre %}directorio{% elif 'Terraza' in reserva.espacio.nombre %}terraza{% elif 'Comedor' in reserva.espacio.nombre %}comedor{% else %}estacionamiento{% endif %}">
                                 <div class="reservation-header">
                                     <div class="space-info">
                                         <h3>
-                                            <i class="fas fa-{% if 'Sala' in reserva.espacio.nombre %}users{% elif 'Directorio' in reserva.espacio.nombre %}building{% elif 'Terraza' in reserva.espacio.nombre %}tree{% else %}car{% endif %}"></i>
+                                            <i class="fas fa-{% if 'Sala' in reserva.espacio.nombre %}users{% elif 'Directorio' in reserva.espacio.nombre %}building{% elif 'Terraza' in reserva.espacio.nombre %}tree{% elif 'Comedor' in reserva.espacio.nombre %}utensils{% else %}car{% endif %}"></i>
                                             {{ reserva.espacio.nombre }}
                                         </h3>
                                         <span class="space-type">{{ reserva.espacio.get_tipo_display }}</span>
