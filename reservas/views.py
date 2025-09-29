@@ -520,7 +520,7 @@ def nueva_reserva(request):
                 if len(bloques_horarios) < 2:
                     messages.error(request, 'El directorio requiere mínimo 2 bloques de horario')
                     return redirect('nueva_reserva')
-                elif len(bloques_horarios) > 5:
+                elif len(bloques_horarios) > 8:
                     messages.error(request, 'El directorio permite máximo 5 bloques por día')
                     return redirect('nueva_reserva')
             
