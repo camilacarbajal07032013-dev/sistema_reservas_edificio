@@ -9,6 +9,69 @@ from datetime import date, time, datetime, timedelta
 from .models import Oficina, Espacio, Reserva
 import json
 
+def agrupar_reservas_consecutivas(reservas_query):
+    """
+    Agrupa reservas consecutivas del mismo espacio, fecha y oficina
+    """
+    reservas = list(reservas_query)
+    if not reservas:
+        return []
+    
+    agrupadas = []
+    i = 0
+    
+    while i < len(reservas):
+        grupo = [reservas[i]]
+        j = i + 1
+        
+        # Buscar reservas consecutivas
+        while j < len(reservas):
+            anterior = grupo[-1]
+            actual = reservas[j]
+            
+            # Verificar si son consecutivas
+            if (anterior.oficina == actual.oficina and
+                anterior.espacio == actual.espacio and
+                anterior.fecha == actual.fecha and
+                anterior.hora_fin == actual.hora_inicio):
+                grupo.append(actual)
+                j += 1
+            else:
+                break
+        
+        # Crear objeto de reserva agrupada
+        if len(grupo) > 1:
+            # Si hay múltiples reservas, crear una agrupada
+            primera = grupo[0]
+            ultima = grupo[-1]
+            
+            # Crear un objeto similar a Reserva pero con datos combinados
+            class ReservaAgrupada:
+                def __init__(self, reservas_grupo):
+                    self.oficina = reservas_grupo[0].oficina
+                    self.espacio = reservas_grupo[0].espacio
+                    self.fecha = reservas_grupo[0].fecha
+                    self.hora_inicio = reservas_grupo[0].hora_inicio
+                    self.hora_fin = reservas_grupo[-1].hora_fin
+                    self.fecha_creacion = reservas_grupo[0].fecha_creacion
+                    self.nombre_visitante = reservas_grupo[0].nombre_visitante
+                    self.placa_visitante = reservas_grupo[0].placa_visitante
+                    self.empresa_visitante = reservas_grupo[0].empresa_visitante
+                    self._duracion = sum(r.duracion_horas() for r in reservas_grupo)
+                    self.es_agrupada = True
+                    
+                def duracion_horas(self):
+                    return self._duracion
+            
+            agrupadas.append(ReservaAgrupada(grupo))
+        else:
+            # Si es una sola reserva, agregarla tal cual
+            grupo[0].es_agrupada = False
+            agrupadas.append(grupo[0])
+        
+        i = j
+    
+    return agrupadas
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -170,9 +233,10 @@ def admin_dashboard(request):
         oficina.porcentaje_barra = min((oficina.total_reservas / 20) * 100, 100) if oficina.total_reservas > 0 else 0
     
     # Reservas recientes
-    reservas_recientes = Reserva.objects.select_related(
+    reservas_query = Reserva.objects.select_related(
         'oficina', 'espacio'
-    ).order_by('-fecha_creacion')
+    ).order_by('oficina', 'espacio', 'fecha', 'hora_inicio')[:50]
+    reservas_recientes = agrupar_reservas_consecutivas(reservas_query)
     
     context = {
         # Métricas principales
@@ -201,7 +265,8 @@ def admin_dashboard(request):
 def mis_reservas(request):
     try:
         oficina = request.user.oficina
-        reservas = Reserva.objects.filter(oficina=oficina).order_by('-fecha')
+        reservas_query = Reserva.objects.filter(oficina=oficina).order_by('fecha', 'espacio', 'hora_inicio')
+        reservas = agrupar_reservas_consecutivas(reservas_query)
         
         # ===== CÁLCULOS DINÁMICOS PARA ESTADÍSTICAS =====
         
