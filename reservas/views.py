@@ -172,7 +172,7 @@ def admin_dashboard(request):
     # Reservas recientes
     reservas_recientes = Reserva.objects.select_related(
         'oficina', 'espacio'
-    ).order_by('-fecha_creacion')[:15]
+    ).order_by('-fecha_creacion')
     
     context = {
         # Métricas principales
