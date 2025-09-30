@@ -233,10 +233,9 @@ def admin_dashboard(request):
         oficina.porcentaje_barra = min((oficina.total_reservas / 20) * 100, 100) if oficina.total_reservas > 0 else 0
     
     # Reservas recientes
-    reservas_query = Reserva.objects.select_related(
+    reservas_recientes = Reserva.objects.select_related(
         'oficina', 'espacio'
-    ).order_by('oficina', 'espacio', 'fecha', 'hora_inicio')[:50]
-    reservas_recientes = agrupar_reservas_consecutivas(reservas_query)
+    ).order_by('-fecha_creacion')
     
     context = {
         # Métricas principales
@@ -265,8 +264,7 @@ def admin_dashboard(request):
 def mis_reservas(request):
     try:
         oficina = request.user.oficina
-        reservas_query = Reserva.objects.filter(oficina=oficina).order_by('fecha', 'espacio', 'hora_inicio')
-        reservas = agrupar_reservas_consecutivas(reservas_query)
+        reservas = Reserva.objects.filter(oficina=oficina).order_by('-fecha')
         
         # ===== CÁLCULOS DINÁMICOS PARA ESTADÍSTICAS =====
         
