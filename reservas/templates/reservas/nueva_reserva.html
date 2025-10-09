@@ -966,14 +966,14 @@
         }
 
         function getMaxBlocks() {
-            if (currentSpaceType.includes('estacionamiento')) {
+            if (currentSpaceType.includes('estacionamiento') || currentSpaceType.includes('terraza')) {
                 return 0; // Sin límite
             } else if (currentSpaceType.includes('directorio')) {
                 return 8; // 8 bloques máximo
             } else if (currentSpaceType.includes('sala')) {
                 return 8; // 8 bloques máximo para salas
             } else if (currentSpaceType.includes('comedor')) {
-                return 5; // 8 bloques máximo para salas
+                return 5; // 5 bloques máximo para comedor
             }
             
             return 5; // Por defecto
@@ -981,13 +981,13 @@
 
         function getMinBlocks() {
             if (currentSpaceType.includes('directorio')) {
-                return 2; // Mínimo 8 bloques para directorio
+                return 2; // Mínimo 2 bloques para directorio
             }
             return 1; // Por defecto mínimo 1 bloque
         }
 
         function getLimitMessage() {
-            if (currentSpaceType.includes('estacionamiento')) {
+            if (currentSpaceType.includes('estacionamiento') || currentSpaceType.includes('terraza')) {
                 return 'Sin límite de horarios';
             } else if (currentSpaceType.includes('directorio')) {
                 return 'Máximo 8 bloques (8 horas)';
