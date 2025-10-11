@@ -6,8 +6,8 @@ from django.db.models import Count, Q, Sum
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from datetime import date, time, datetime, timedelta
-from .models import Oficina, Espacio, Reserva
 from django.utils import timezone
+from .models import Oficina, Espacio, Reserva
 import json
 
 def agrupar_reservas_consecutivas(reservas_query):
@@ -73,54 +73,6 @@ def agrupar_reservas_consecutivas(reservas_query):
         i = j
     
     return agrupadas
-
-def eliminar_reserva(request, reserva_id):
-    """
-    Elimina una reserva si cumple con la regla de 30 minutos de anticipación
-    """
-    try:
-        oficina = request.user.oficina
-        reserva = get_object_or_404(Reserva, id=reserva_id, oficina=oficina)
-        
-        # Obtener fecha y hora actual
-        ahora = timezone.now()
-        
-        # Combinar fecha y hora de inicio de la reserva
-        fecha_hora_reserva = datetime.combine(reserva.fecha, reserva.hora_inicio)
-        
-        # Hacer timezone-aware si es necesario
-        if timezone.is_naive(fecha_hora_reserva):
-            fecha_hora_reserva = timezone.make_aware(fecha_hora_reserva)
-        
-        # Calcular diferencia
-        diferencia = fecha_hora_reserva - ahora
-        minutos_diferencia = diferencia.total_seconds() / 60
-        
-        # Validar regla de 30 minutos
-        if minutos_diferencia < 30:
-            messages.error(
-                request, 
-                f'⚠️ No se puede cancelar esta reserva. Debe hacerlo con al menos 30 minutos de anticipación. '
-                f'(Faltan {int(minutos_diferencia)} minutos para que inicie)'
-            )
-            return redirect('mis_reservas')
-        
-        # Si pasa la validación, eliminar
-        espacio_nombre = reserva.espacio.nombre
-        fecha_reserva = reserva.fecha.strftime('%d/%m/%Y')
-        hora_reserva = reserva.hora_inicio.strftime('%I:%M %p')
-        
-        reserva.delete()
-        
-        messages.success(
-            request,
-            f'✅ Reserva eliminada exitosamente: {espacio_nombre} - {fecha_reserva} a las {hora_reserva}'
-        )
-        
-    except Exception as e:
-        messages.error(request, f'❌ Error al eliminar la reserva: {str(e)}')
-    
-    return redirect('mis_reservas')
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -714,6 +666,55 @@ def nueva_reserva(request):
         'fecha_minima': date.today().isoformat(),
     }
     return render(request, 'reservas/nueva_reserva.html', context)
+
+@login_required
+def eliminar_reserva(request, reserva_id):
+    """
+    Elimina una reserva si cumple con la regla de 30 minutos de anticipación
+    """
+    try:
+        oficina = request.user.oficina
+        reserva = get_object_or_404(Reserva, id=reserva_id, oficina=oficina)
+        
+        # Obtener fecha y hora actual
+        ahora = timezone.now()
+        
+        # Combinar fecha y hora de inicio de la reserva
+        fecha_hora_reserva = datetime.combine(reserva.fecha, reserva.hora_inicio)
+        
+        # Hacer timezone-aware si es necesario
+        if timezone.is_naive(fecha_hora_reserva):
+            fecha_hora_reserva = timezone.make_aware(fecha_hora_reserva)
+        
+        # Calcular diferencia
+        diferencia = fecha_hora_reserva - ahora
+        minutos_diferencia = diferencia.total_seconds() / 60
+        
+        # Validar regla de 30 minutos
+        if minutos_diferencia < 30:
+            messages.error(
+                request, 
+                f'⚠️ No se puede cancelar esta reserva. Debe hacerlo con al menos 30 minutos de anticipación. '
+                f'(Faltan {int(minutos_diferencia)} minutos para que inicie)'
+            )
+            return redirect('mis_reservas')
+        
+        # Si pasa la validación, eliminar
+        espacio_nombre = reserva.espacio.nombre
+        fecha_reserva = reserva.fecha.strftime('%d/%m/%Y')
+        hora_reserva = reserva.hora_inicio.strftime('%I:%M %p')
+        
+        reserva.delete()
+        
+        messages.success(
+            request,
+            f'✅ Reserva eliminada exitosamente: {espacio_nombre} - {fecha_reserva} a las {hora_reserva}'
+        )
+        
+    except Exception as e:
+        messages.error(request, f'❌ Error al eliminar la reserva: {str(e)}')
+    
+    return redirect('mis_reservas')
 
 def logout_view(request):
     logout(request)
