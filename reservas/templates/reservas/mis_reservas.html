@@ -1071,7 +1071,7 @@
                 // Crear formulario para enviar POST request
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = `/eliminar-reserva/${reservaId}/`;
+                form.action = '/eliminar-reserva/' + parseInt(reservaId) + '/';
                 
                 // Agregar token CSRF
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
