@@ -86,7 +86,7 @@
             gap: 1rem;
             flex-wrap: wrap;
         }
-
+        
         .btn {
             padding: 0.75rem 1.5rem;
             border: none;
@@ -193,6 +193,12 @@
         }
 
         .alert-danger {
+            background: linear-gradient(135deg, #fadbd8 0%, #f1948a 100%);
+            border-left-color: #e74c3c;
+            color: #c0392b;
+        }
+
+        .alert-error {
             background: linear-gradient(135deg, #fadbd8 0%, #f1948a 100%);
             border-left-color: #e74c3c;
             color: #c0392b;
@@ -515,6 +521,37 @@
             color: #b7701a;
         }
 
+        /* ESTILOS PARA BOTÓN DE ELIMINAR */
+        .btn-delete {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231,76,60,0.4);
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+        }
+
+        .reservation-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+        }
+
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
@@ -798,6 +835,19 @@
                                         </div>
                                     </div>
                                 {% endif %}
+
+                                <!-- BOTÓN DE ELIMINAR -->
+                                <div class="reservation-actions">
+                                    <button class="btn-delete" 
+                                            data-reserva-id="{{ reserva.id }}"
+                                            data-espacio="{{ reserva.espacio.nombre }}"
+                                            data-fecha="{{ reserva.fecha|date:'d/m/Y' }}"
+                                            data-hora="{{ reserva.hora_inicio|time:'g:i A' }}"
+                                            onclick="confirmarEliminacion(this)">
+                                        <i class="fas fa-trash-alt"></i>
+                                        Cancelar Reserva
+                                    </button>
+                                </div>
                             </div>
                         {% endfor %}
                     {% else %}
@@ -889,15 +939,12 @@
                     
                     switch(period) {
                         case 'upcoming':
-                            // Para reservas próximas: debe ser fecha futura O fecha de hoy pero hora futura
                             if (cardDate > today) {
-                                showCard = true; // Fechas futuras siempre se muestran
+                                showCard = true;
                             } else if (cardDate === today) {
-                                // Si es hoy, verificar si la reserva ya pasó
                                 const timeElements = card.querySelectorAll('.detail-content p');
                                 let endTime = null;
                                 
-                                // Buscar el elemento que contiene el horario
                                 timeElements.forEach(element => {
                                     const timeText = element.textContent;
                                     const endTimeMatch = timeText.match(/- (\d{1,2}):(\d{2}) (AM|PM)/);
@@ -907,7 +954,6 @@
                                         const endMinute = parseInt(endTimeMatch[2]);
                                         const ampm = endTimeMatch[3];
                                         
-                                        // Convertir a formato 24 horas
                                         if (ampm === 'PM' && endHour !== 12) {
                                             endHour += 12;
                                         } else if (ampm === 'AM' && endHour === 12) {
@@ -920,12 +966,12 @@
                                 });
                                 
                                 if (endTime) {
-                                    showCard = now < endTime; // Solo mostrar si aún no termina
+                                    showCard = now < endTime;
                                 } else {
-                                    showCard = true; // Si no puede parsear, mostrar por defecto
+                                    showCard = true;
                                 }
                             } else {
-                                showCard = false; // Fechas pasadas no se muestran
+                                showCard = false;
                             }
                             break;
                         case 'today':
@@ -973,7 +1019,6 @@
         }
 
         function resetFilters() {
-            // Activar filtro "Próximas" por defecto
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.getAttribute('data-period') === 'upcoming') {
@@ -981,11 +1026,9 @@
                 }
             });
             
-            // Limpiar otros filtros
             document.getElementById('spaceFilter').value = 'all';
             document.getElementById('statusFilter').value = 'all';
             
-            // Aplicar filtros
             applyFilters();
         }
 
@@ -1014,6 +1057,33 @@
                 }
             });
         });
+
+        // FUNCIÓN PARA CONFIRMAR ELIMINACIÓN
+        function confirmarEliminacion(reservaId, espacio, fecha, hora) {
+            const mensaje = `¿Está seguro que desea cancelar esta reserva?\n\n` +
+                          `📍 Espacio: ${espacio}\n` +
+                          `📅 Fecha: ${fecha}\n` +
+                          `🕐 Hora: ${hora}\n\n` +
+                          `Esta acción no se puede deshacer.`;
+            
+            if (confirm(mensaje)) {
+                // Crear formulario para enviar POST request
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/eliminar-reserva/${reservaId}/`;
+                
+                // Agregar token CSRF
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = csrfToken;
+                
+                form.appendChild(csrfInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
     </script>
 </body>
 </html>
