@@ -839,15 +839,13 @@
 
                                 <!-- BOTÓN DE ELIMINAR -->
                                 <div class="reservation-actions">
-                                    <button class="btn-delete" 
-                                            data-reserva-id="{{ reserva.id }}"
-                                            data-espacio="{{ reserva.espacio.nombre }}"
-                                            data-fecha="{{ reserva.fecha|date:'d/m/Y' }}"
-                                            data-hora="{{ reserva.hora_inicio|time:'g:i A' }}"
-                                            onclick="confirmarEliminacion(this)">
-                                        <i class="fas fa-trash-alt"></i>
-                                        Cancelar Reserva
-                                    </button>
+                                    <form method="POST" action="{% url 'eliminar_reserva' reserva.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                            Cancelar Reserva
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         {% endfor %}
@@ -1059,32 +1057,6 @@
             });
         });
 
-        // FUNCIÓN PARA CONFIRMAR ELIMINACIÓN
-        function confirmarEliminacion(reservaId, espacio, fecha, hora) {
-            const mensaje = `¿Está seguro que desea cancelar esta reserva?\n\n` +
-                          `📍 Espacio: ${espacio}\n` +
-                          `📅 Fecha: ${fecha}\n` +
-                          `🕐 Hora: ${hora}\n\n` +
-                          `Esta acción no se puede deshacer.`;
-            
-            if (confirm(mensaje)) {
-                // Crear formulario para enviar POST request
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '/eliminar-reserva/' + parseInt(reservaId) + '/';
-                
-                // Agregar token CSRF
-                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = 'csrfmiddlewaretoken';
-                csrfInput.value = csrfToken;
-                
-                form.appendChild(csrfInput);
-                document.body.appendChild(form);
-                form.submit();
-            }
-        }
     </script>
 </body>
 </html>
