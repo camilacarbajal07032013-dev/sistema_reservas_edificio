@@ -699,7 +699,7 @@ def eliminar_reserva(request, reserva_id):
             messages.error(
                 request, 
                 f'⚠️ No se puede cancelar esta reserva. Debe hacerlo con al menos 30 minutos de anticipación. '
-                f'(Faltan {int(minutos_diferencia)} minutos para que inicie)'
+
             )
             return redirect('mis_reservas')
         
