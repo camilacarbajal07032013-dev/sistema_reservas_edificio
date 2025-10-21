@@ -1113,7 +1113,7 @@
             
             const espacioTexto = espacio.options[espacio.selectedIndex].text.toLowerCase();
             
-            if (espacioTexto.includes('estacionamiento')) {
+            if (espacioTexto.includes('estacionamiento') || espacioTexto.includes('estac')) {
                 visitorInfo.classList.add('active');
                 document.getElementById('nombre_visitante').required = true;
                 document.getElementById('placa_visitante').required = true;
