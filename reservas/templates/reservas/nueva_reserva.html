@@ -973,10 +973,10 @@
             } else if (currentSpaceType.includes('sala')) {
                 return 8; // 8 bloques máximo para salas
             } else if (currentSpaceType.includes('comedor')) {
-                return 5; // 5 bloques máximo para comedor
+                return 8; // 5 bloques máximo para comedor
             }
             
-            return 5; // Por defecto
+            return 8; // Por defecto
         }
 
         function getMinBlocks() {
@@ -996,7 +996,7 @@
             } else if (currentSpaceType.includes('comedor')) {
                 return 'Máximo 8 bloques (8 horas)';
             }
-            return 'Máximo 5 bloques';
+            return 'Máximo 8 bloques';
         }
 
         function getMinMessage() {
