@@ -721,52 +721,8 @@
 
         // ===== FUNCIÓN CORREGIDA PARA VERIFICAR SI EL HORARIO YA PASÓ =====
         function isTimeSlotPassed(horaInicio, fecha) {
-            try {
-                const ahora = new Date();
-                const fechaSeleccionada = new Date(fecha + 'T00:00:00');
-                
-                console.log('DEBUG - Hora actual:', ahora);
-                console.log('DEBUG - Fecha seleccionada:', fechaSeleccionada);
-                console.log('DEBUG - Hora inicio bloque:', horaInicio);
-                
-                // Comparar solo las fechas (año, mes, día)
-                const esMismaFecha = (
-                    fechaSeleccionada.getFullYear() === ahora.getFullYear() &&
-                    fechaSeleccionada.getMonth() === ahora.getMonth() &&
-                    fechaSeleccionada.getDate() === ahora.getDate()
-                );
-                
-                console.log('DEBUG - Es misma fecha?', esMismaFecha);
-                
-                // Si la fecha seleccionada NO es hoy, no bloquear nada
-                if (!esMismaFecha) {
-                    console.log('DEBUG - Fecha futura, no bloquear');
-                    return false;
-                }
-                
-                // Si es hoy, verificar si la hora ya pasó
-                const [hora, minuto] = horaInicio.split(':').map(Number);
-                const horaActual = ahora.getHours();
-                const minutoActual = ahora.getMinutes();
-                
-                console.log('DEBUG - Hora del bloque:', hora, ':', minuto);
-                console.log('DEBUG - Hora actual:', horaActual, ':', minutoActual);
-                
-                // Comparar horas y minutos
-                let yaPaso = false;
-                if (hora < horaActual) {
-                    yaPaso = true; // La hora ya pasó
-                } else if (hora === horaActual && minuto <= minutoActual) {
-                    yaPaso = true; // Misma hora pero minutos pasados o iguales
-                }
-                
-                console.log('DEBUG - Ya pasó?', yaPaso);
-                return yaPaso;
-                
-            } catch (error) {
-                console.error('Error en isTimeSlotPassed:', error);
-                return false;
-            }
+            // Desactivar bloqueo por tiempo pasado
+            return false;
         }
 
         // ===== FUNCIÓN AJAX PARA VERIFICAR DISPONIBILIDAD =====
