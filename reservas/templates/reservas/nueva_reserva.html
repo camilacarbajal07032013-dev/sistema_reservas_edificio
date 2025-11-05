@@ -721,8 +721,43 @@
 
         // ===== FUNCIÓN CORREGIDA PARA VERIFICAR SI EL HORARIO YA PASÓ =====
         function isTimeSlotPassed(horaInicio, fecha) {
-            // Desactivar bloqueo por tiempo pasado
-            return false;
+            try {
+                const ahora = new Date();
+                const fechaSeleccionada = new Date(fecha + 'T00:00:00');
+                
+                const esMismaFecha = (
+                    fechaSeleccionada.getFullYear() === ahora.getFullYear() &&
+                    fechaSeleccionada.getMonth() === ahora.getMonth() &&
+                    fechaSeleccionada.getDate() === ahora.getDate()
+                );
+                
+                if (!esMismaFecha) {
+                    return false;
+                }
+                
+                // Obtener hora de INICIO del bloque
+                const [hora, minuto] = horaInicio.split(':').map(Number);
+                
+                // Crear hora de FIN del bloque (asumiendo bloques de 1 hora)
+                const horaFin = hora + 1;
+                const minutoFin = minuto;
+                
+                const horaActual = ahora.getHours();
+                const minutoActual = ahora.getMinutes();
+                
+                // Bloquear solo si la hora actual es DESPUÉS del fin del bloque
+                if (horaActual > horaFin) {
+                    return true;
+                } else if (horaActual === horaFin && minutoActual > minutoFin) {
+                    return true;
+                }
+                
+                return false;
+                
+            } catch (error) {
+                console.error('Error en isTimeSlotPassed:', error);
+                return false;
+            }
         }
 
         // ===== FUNCIÓN AJAX PARA VERIFICAR DISPONIBILIDAD =====
