@@ -671,6 +671,7 @@ def nueva_reserva(request):
     }
     return render(request, 'reservas/nueva_reserva.html', context)
 
+@login_required
 
 def logout_view(request):
     logout(request)
