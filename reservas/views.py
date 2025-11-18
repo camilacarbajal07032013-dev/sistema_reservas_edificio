@@ -672,6 +672,31 @@ def nueva_reserva(request):
     return render(request, 'reservas/nueva_reserva.html', context)
 
 @login_required
+def eliminar_reserva(request, reserva_id):
+    """
+    Elimina una reserva sin restricciones de tiempo
+    """
+    try:
+        oficina = request.user.oficina
+        reserva = get_object_or_404(Reserva, id=reserva_id, oficina=oficina)
+        
+        # Guardar información para el mensaje de confirmación
+        espacio_nombre = reserva.espacio.nombre
+        fecha_reserva = reserva.fecha.strftime('%d/%m/%Y')
+        hora_reserva = reserva.hora_inicio.strftime('%I:%M %p')
+        
+        # Eliminar la reserva directamente
+        reserva.delete()
+        
+        messages.success(
+            request,
+            f'✅ Reserva eliminada exitosamente: {espacio_nombre} - {fecha_reserva} a las {hora_reserva}'
+        )
+        
+    except Exception as e:
+        messages.error(request, f'❌ Error al eliminar la reserva: {str(e)}')
+    
+    return redirect('mis_reservas')
 
 def logout_view(request):
     logout(request)
