@@ -695,7 +695,7 @@ def eliminar_reserva(request, reserva_id):
         minutos_diferencia = diferencia.total_seconds() / 60
         
         # Validar regla de 30 minutos
-        if minutos_diferencia < 1:
+        if minutos_diferencia < 30:
             messages.error(
                 request, 
                 f'⚠️ No se puede cancelar esta reserva. Debe hacerlo con al menos 30 minutos de anticipación. '
