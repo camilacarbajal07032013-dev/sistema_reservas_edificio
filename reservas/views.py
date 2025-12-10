@@ -13,6 +13,7 @@ import json
 def agrupar_reservas_consecutivas(reservas_query):
     """
     Agrupa reservas consecutivas del mismo espacio, fecha y oficina
+    MEJORADO: Maneja múltiples IDs para eliminación en bloque
     """
     reservas = list(reservas_query)
     if not reservas:
@@ -43,12 +44,9 @@ def agrupar_reservas_consecutivas(reservas_query):
         # Crear objeto de reserva agrupada
         if len(grupo) > 1:
             # Si hay múltiples reservas, crear una agrupada
-            primera = grupo[0]
-            ultima = grupo[-1]
-            
-            # Crear un objeto similar a Reserva pero con datos combinados
             class ReservaAgrupada:
                 def __init__(self, reservas_grupo):
+                    self.id = reservas_grupo[0].id  # ID principal (para compatibilidad)
                     self.oficina = reservas_grupo[0].oficina
                     self.espacio = reservas_grupo[0].espacio
                     self.fecha = reservas_grupo[0].fecha
@@ -60,6 +58,8 @@ def agrupar_reservas_consecutivas(reservas_query):
                     self.empresa_visitante = reservas_grupo[0].empresa_visitante
                     self._duracion = sum(r.duracion_horas() for r in reservas_grupo)
                     self.es_agrupada = True
+                    self.reservas_ids = [r.id for r in reservas_grupo]  # Todos los IDs del grupo
+                    self.cantidad_bloques = len(reservas_grupo)
                     
                 def duracion_horas(self):
                     return self._duracion
@@ -68,6 +68,8 @@ def agrupar_reservas_consecutivas(reservas_query):
         else:
             # Si es una sola reserva, agregarla tal cual
             grupo[0].es_agrupada = False
+            grupo[0].reservas_ids = [grupo[0].id]  # Para consistencia en template
+            grupo[0].cantidad_bloques = 1
             agrupadas.append(grupo[0])
         
         i = j
@@ -96,8 +98,6 @@ def dashboard(request):
     if request.user.is_superuser:
         return redirect('admin_dashboard')
     return redirect('mis_reservas')
-
-# Reemplaza tu función admin_dashboard en views.py con esta versión corregida
 
 @login_required
 def admin_dashboard(request):
@@ -134,13 +134,11 @@ def admin_dashboard(request):
         crecimiento_diario = 100 if reservas_hoy > 0 else 0
     
     # 3. HORAS TOTALES y porcentaje semanal
-    # Calcular horas de esta semana
     reservas_esta_semana = Reserva.objects.filter(fecha__gte=hace_una_semana, fecha__lte=hoy)
     horas_esta_semana = 0
     for reserva in reservas_esta_semana:
         horas_esta_semana += reserva.duracion_horas()
     
-    # Calcular horas de la semana anterior (hace 14 días a hace 7 días)
     hace_dos_semanas = hoy - timedelta(days=14)
     reservas_semana_anterior = Reserva.objects.filter(fecha__gte=hace_dos_semanas, fecha__lt=hace_una_semana)
     horas_semana_anterior = 0
@@ -153,21 +151,16 @@ def admin_dashboard(request):
         crecimiento_semanal = 100 if horas_esta_semana > 0 else 0
     
     # 4. OCUPACIÓN y porcentaje vs mes anterior
-    # Obtener espacios activos
     espacios_activos = Espacio.objects.filter(activo=True).count()
-    
-    # Calcular capacidad total mensual (espacios * días del mes * horas promedio por día)
     dias_mes_actual = (hoy - mes_actual).days + 1
-    horas_por_dia = 10  # Ajusta según tu operación (ej: 8AM a 6PM = 10 horas)
+    horas_por_dia = 10
     capacidad_mes_actual = espacios_activos * dias_mes_actual * horas_por_dia
     
-    # Ocupación actual
     if capacidad_mes_actual > 0:
         ocupacion_actual = (reservas_mes_actual * 100) / capacidad_mes_actual
     else:
         ocupacion_actual = 0
     
-    # Ocupación mes anterior
     dias_mes_anterior = (mes_actual - mes_anterior).days
     capacidad_mes_anterior = espacios_activos * dias_mes_anterior * horas_por_dia
     
@@ -176,13 +169,12 @@ def admin_dashboard(request):
     else:
         ocupacion_anterior = 0
     
-    # Cambio en ocupación
     if ocupacion_anterior > 0:
         cambio_ocupacion = ocupacion_actual - ocupacion_anterior
     else:
         cambio_ocupacion = ocupacion_actual
     
-    # HORARIO PICO - Mejorado
+    # HORARIO PICO
     horarios_count = {}
     reservas_con_hora = Reserva.objects.all()
     
@@ -208,14 +200,12 @@ def admin_dashboard(request):
         total=Count('id')
     ).order_by('-total').first()
     
-    # Top oficinas CON CÁLCULOS REALES DE PROMEDIO
+    # Top oficinas
     oficinas_activas = Oficina.objects.annotate(
         total_reservas=Count('reserva', filter=Q(reserva__fecha__gte=mes_actual, reserva__fecha__lte=hoy))
     ).order_by('-total_reservas')[:10]
     
-    # CALCULAR PROMEDIO REAL DE HORAS POR OFICINA
     for oficina in oficinas_activas:
-        # Obtener todas las reservas de esta oficina este mes
         reservas_oficina = Reserva.objects.filter(
             oficina=oficina,
             fecha__gte=mes_actual,
@@ -230,29 +220,23 @@ def admin_dashboard(request):
             oficina.promedio_horas = 0
             oficina.horas_totales_mes = 0
         
-        # Calcular porcentaje de la barra (basado en máximo 20 reservas = 100%)
         oficina.porcentaje_barra = min((oficina.total_reservas / 20) * 100, 100) if oficina.total_reservas > 0 else 0
     
-    # Reservas recientes
+    # Reservas recientes AGRUPADAS
     reservas_query = Reserva.objects.select_related(
         'oficina', 'espacio'
     ).order_by('oficina', 'espacio', 'fecha', 'hora_inicio')
     reservas_recientes = agrupar_reservas_consecutivas(reservas_query)
     
     context = {
-        # Métricas principales
         'total_reservas': total_reservas,
         'reservas_hoy': reservas_hoy,
         'horas_totales': int(horas_esta_semana),
         'ocupacion': round(ocupacion_actual, 1),
-        
-        # Porcentajes de crecimiento/cambio
         'crecimiento_mensual': round(crecimiento_mensual, 1),
         'crecimiento_diario': round(crecimiento_diario, 1),
         'crecimiento_semanal': round(crecimiento_semanal, 1),
         'cambio_ocupacion': round(cambio_ocupacion, 1),
-        
-        # Otros datos
         'horario_pico': horario_pico[0],
         'porcentaje_pico': round((horario_pico[1] / total_reservas * 100), 0) if total_reservas > 0 else 0,
         'espacio_favorito': espacio_favorito['espacio__nombre'] if espacio_favorito else 'No definido',
@@ -266,12 +250,19 @@ def admin_dashboard(request):
 def mis_reservas(request):
     try:
         oficina = request.user.oficina
-        reservas = Reserva.objects.filter(oficina=oficina).order_by('-fecha')
         
-        # ===== CÁLCULOS DINÁMICOS PARA ESTADÍSTICAS =====
+        # ORDENAR Y AGRUPAR RESERVAS
+        reservas_query = Reserva.objects.filter(
+            oficina=oficina
+        ).select_related('espacio').order_by('espacio', 'fecha', 'hora_inicio')
         
-        # 1. Calcular horas totales reservadas este mes
-        from datetime import date, timedelta
+        # Agrupar reservas consecutivas
+        reservas_agrupadas = agrupar_reservas_consecutivas(reservas_query)
+        
+        # Ordenar por fecha descendente
+        reservas_agrupadas.sort(key=lambda r: r.fecha, reverse=True)
+        
+        # CÁLCULOS DINÁMICOS
         hoy = date.today()
         primer_dia_mes = hoy.replace(day=1)
         
@@ -281,27 +272,18 @@ def mis_reservas(request):
             fecha__lte=hoy
         )
         
-        horas_este_mes = 0
-        for reserva in reservas_este_mes:
-            horas_este_mes += reserva.duracion_horas()
+        horas_este_mes = sum(reserva.duracion_horas() for reserva in reservas_este_mes)
         
-        # 2. Encontrar espacio favorito (más usado)
-        from django.db.models import Count
         espacio_favorito = Reserva.objects.filter(
             oficina=oficina
-        ).values(
-            'espacio__nombre'
-        ).annotate(
+        ).values('espacio__nombre').annotate(
             total=Count('id')
         ).order_by('-total').first()
         
         espacio_favorito_nombre = espacio_favorito['espacio__nombre'] if espacio_favorito else 'Ninguno'
         
-        # 3. Calcular ranking de la oficina (comparar con otras)
-        # Contar reservas de esta oficina este mes
+        # Ranking
         mis_reservas_mes = reservas_este_mes.count()
-        
-        # Contar reservas de todas las oficinas este mes y rankear
         todas_las_oficinas = Oficina.objects.annotate(
             reservas_mes=Count(
                 'reserva',
@@ -315,20 +297,18 @@ def mis_reservas(request):
                 mi_ranking = i
                 break
         
-        # 4. Calcular estadísticas adicionales
-        total_reservas_activas = reservas.filter(fecha__gte=hoy).count()
-        reservas_pasadas = reservas.filter(fecha__lt=hoy).count()
+        # Estadísticas adicionales
+        total_reservas_activas = sum(1 for r in reservas_agrupadas if r.fecha >= hoy)
+        reservas_pasadas = sum(1 for r in reservas_agrupadas if r.fecha < hoy)
         
-        # 5. Próximas reservas (las 3 más cercanas)
-        proximas_reservas = reservas.filter(fecha__gte=hoy).order_by('fecha', 'hora_inicio')[:3]
+        proximas_reservas = [r for r in reservas_agrupadas if r.fecha >= hoy][:3]
         
-        # 6. Calcular promedio de horas por reserva
         if reservas_este_mes.count() > 0:
             promedio_horas = horas_este_mes / reservas_este_mes.count()
         else:
             promedio_horas = 0
         
-        # 7. Comparación con mes anterior
+        # Comparación con mes anterior
         mes_anterior = (primer_dia_mes - timedelta(days=1)).replace(day=1)
         fin_mes_anterior = primer_dia_mes - timedelta(days=1)
         
@@ -338,45 +318,35 @@ def mis_reservas(request):
             fecha__lte=fin_mes_anterior
         )
         
-        horas_mes_anterior = 0
-        for reserva in reservas_mes_anterior:
-            horas_mes_anterior += reserva.duracion_horas()
+        horas_mes_anterior = sum(reserva.duracion_horas() for reserva in reservas_mes_anterior)
         
-        # Calcular crecimiento
         if horas_mes_anterior > 0:
             crecimiento_porcentaje = ((horas_este_mes - horas_mes_anterior) / horas_mes_anterior) * 100
         else:
             crecimiento_porcentaje = 100 if horas_este_mes > 0 else 0
         
-        # 8. Distribución por tipo de espacio
+        # Distribución por tipo
         tipos_espacios = Reserva.objects.filter(
             oficina=oficina
-        ).values(
-            'espacio__tipo'
-        ).annotate(
+        ).values('espacio__tipo').annotate(
             cantidad=Count('id')
         ).order_by('-cantidad')
         
         context = {
-            'reservas': reservas,
+            'reservas': reservas_agrupadas,
             'oficina': oficina,
-            
-            # ESTADÍSTICAS DINÁMICAS
+            'today': hoy,
             'total_reservas_activas': total_reservas_activas,
             'horas_este_mes': int(horas_este_mes),
             'reservas_este_mes': reservas_este_mes.count(),
             'espacio_favorito': espacio_favorito_nombre,
             'mi_ranking': mi_ranking,
             'total_oficinas': todas_las_oficinas.count(),
-            
-            # ESTADÍSTICAS ADICIONALES
             'reservas_pasadas': reservas_pasadas,
             'promedio_horas': round(promedio_horas, 1),
             'crecimiento_porcentaje': round(crecimiento_porcentaje, 1),
             'proximas_reservas': proximas_reservas,
             'tipos_espacios': tipos_espacios,
-            
-            # COMPARATIVAS
             'horas_mes_anterior': int(horas_mes_anterior),
             'mejora_vs_anterior': horas_este_mes > horas_mes_anterior,
         }
@@ -390,9 +360,7 @@ def mis_reservas(request):
 @require_GET
 @login_required
 def verificar_disponibilidad_ajax(request):
-    """
-    Vista AJAX para verificar disponibilidad de horarios en tiempo real
-    """
+    """Vista AJAX para verificar disponibilidad"""
     espacio_id = request.GET.get('espacio_id')
     fecha = request.GET.get('fecha')
     
@@ -403,22 +371,18 @@ def verificar_disponibilidad_ajax(request):
         espacio = Espacio.objects.get(id=espacio_id)
         fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
         
-        # Obtener todas las reservas existentes para ese espacio y fecha
         reservas_existentes = Reserva.objects.filter(
             espacio=espacio,
             fecha=fecha_obj
         ).values('hora_inicio', 'hora_fin')
         
-        # Generar horarios según tipo de espacio
         horarios_disponibles = generar_horarios_por_tipo(espacio.tipo)
         
-        # Marcar horarios ocupados
         for horario in horarios_disponibles:
             horario['ocupado'] = False
             hora_inicio_horario = datetime.strptime(horario['inicio'], '%H:%M').time()
             hora_fin_horario = datetime.strptime(horario['fin'], '%H:%M').time()
             
-            # Verificar si hay conflicto con alguna reserva existente
             for reserva in reservas_existentes:
                 if (hora_inicio_horario < reserva['hora_fin'] and 
                     hora_fin_horario > reserva['hora_inicio']):
@@ -439,9 +403,7 @@ def verificar_disponibilidad_ajax(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 def generar_horarios_por_tipo(tipo_espacio):
-    """
-    Genera los horarios disponibles según el tipo de espacio
-    """
+    """Genera horarios según tipo de espacio"""
     if 'directorio' in tipo_espacio.lower():
         return [
             {'inicio': '08:00', 'fin': '09:00', 'label': '8:00 AM - 9:00 AM'},
@@ -474,7 +436,6 @@ def generar_horarios_por_tipo(tipo_espacio):
             {'inicio': '20:00', 'fin': '21:00', 'label': '8:00 PM - 9:00 PM'},
             {'inicio': '21:00', 'fin': '22:00', 'label': '9:00 PM - 10:00 PM'}
         ]
-    
     elif 'terraza' in tipo_espacio.lower():
         return [
             {'inicio': '15:00', 'fin': '16:00', 'label': '3:00 PM - 4:00 PM'},
@@ -484,15 +445,13 @@ def generar_horarios_por_tipo(tipo_espacio):
             {'inicio': '19:00', 'fin': '20:00', 'label': '7:00 PM - 8:00 PM'},
             {'inicio': '20:00', 'fin': '21:00', 'label': '8:00 PM - 9:00 PM'},
             {'inicio': '21:00', 'fin': '22:00', 'label': '9:00 PM - 10:00 PM'},
-            ]
-    
+        ]
     elif 'comedor' in tipo_espacio.lower():
         return [
-        {'inicio': '8:00', 'fin': '9:00', 'label': '8:00 AM - 9:00 AM'},
-        {'inicio': '9:00', 'fin': '10:00', 'label': '9:00 AM - 10:00 AM'},
-        {'inicio': '10:00', 'fin': '11:00', 'label': '10:00 AM - 11:00 AM'},
-    ]
-
+            {'inicio': '8:00', 'fin': '9:00', 'label': '8:00 AM - 9:00 AM'},
+            {'inicio': '9:00', 'fin': '10:00', 'label': '9:00 AM - 10:00 AM'},
+            {'inicio': '10:00', 'fin': '11:00', 'label': '10:00 AM - 11:00 AM'},
+        ]
     else:  # salas
         return [
             {'inicio': '08:00', 'fin': '09:00', 'label': '8:00 AM - 9:00 AM'},
@@ -505,17 +464,14 @@ def generar_horarios_por_tipo(tipo_espacio):
             {'inicio': '15:00', 'fin': '16:00', 'label': '3:00 PM - 4:00 PM'},
             {'inicio': '16:00', 'fin': '17:00', 'label': '4:00 PM - 5:00 PM'},
             {'inicio': '17:00', 'fin': '18:00', 'label': '5:00 PM - 6:00 PM'}
-            
         ]
 
 @require_GET
 @login_required
 def obtener_calendario_ocupacion_ajax(request):
-    """
-    Vista AJAX para obtener datos de ocupación del calendario
-    """
+    """Vista AJAX para calendario"""
     espacio_id = request.GET.get('espacio_id')
-    mes = request.GET.get('mes')  # formato: YYYY-MM
+    mes = request.GET.get('mes')
     
     if not espacio_id:
         return JsonResponse({'error': 'ID de espacio requerido'}, status=400)
@@ -523,21 +479,18 @@ def obtener_calendario_ocupacion_ajax(request):
     try:
         espacio = Espacio.objects.get(id=espacio_id)
         
-        # Si no se especifica mes, usar el actual
         if mes:
             year, month = map(int, mes.split('-'))
         else:
             hoy = date.today()
             year, month = hoy.year, hoy.month
         
-        # Obtener primer y último día del mes
         primer_dia = date(year, month, 1)
         if month == 12:
             ultimo_dia = date(year + 1, 1, 1) - timedelta(days=1)
         else:
             ultimo_dia = date(year, month + 1, 1) - timedelta(days=1)
         
-        # Obtener todas las reservas del mes
         reservas_mes = Reserva.objects.filter(
             espacio=espacio,
             fecha__gte=primer_dia,
@@ -546,7 +499,6 @@ def obtener_calendario_ocupacion_ajax(request):
             total_reservas=Count('id')
         )
         
-        # Convertir a diccionario para fácil acceso
         ocupacion_por_dia = {
             str(reserva['fecha']): reserva['total_reservas'] 
             for reserva in reservas_mes
@@ -565,8 +517,6 @@ def obtener_calendario_ocupacion_ajax(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-# ===== VISTA ORIGINAL MODIFICADA =====
-
 @login_required
 def nueva_reserva(request):
     try:
@@ -580,7 +530,6 @@ def nueva_reserva(request):
         fecha = request.POST.get('fecha')
         bloques_horarios = request.POST.getlist('bloques_horarios')
         
-        # Campos para estacionamientos
         nombre_visitante = request.POST.get('nombre_visitante', '')
         placa_visitante = request.POST.get('placa_visitante', '')
         empresa_visitante = request.POST.get('empresa_visitante', '')
@@ -593,7 +542,6 @@ def nueva_reserva(request):
             espacio = Espacio.objects.get(id=espacio_id)
             fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
             
-            # Validar límites según tipo de espacio
             if espacio.tipo.lower() in ['sala','comedor'] and len(bloques_horarios) > 8:
                 messages.error(request, f'{espacio.tipo} permite máximo 8 bloques por día')
                 return redirect('nueva_reserva')
@@ -616,7 +564,6 @@ def nueva_reserva(request):
                     hora_inicio_obj = datetime.strptime(hora_inicio_str, '%H:%M').time()
                     hora_fin_obj = datetime.strptime(hora_fin_str, '%H:%M').time()
                     
-                    # Verificar conflictos (doble verificación en backend)
                     conflicto = Reserva.objects.filter(
                         espacio=espacio,
                         fecha=fecha_obj,
@@ -628,7 +575,6 @@ def nueva_reserva(request):
                         messages.error(request, f'Conflicto en horario {hora_inicio_str}-{hora_fin_str}')
                         return redirect('nueva_reserva')
                     
-                    # Crear reserva individual para este bloque
                     Reserva.objects.create(
                         oficina=oficina,
                         espacio=espacio,
@@ -656,7 +602,6 @@ def nueva_reserva(request):
             messages.error(request, f'Error al crear la reserva: {str(e)}')
             return redirect('nueva_reserva')
     
-    # GET request
     espacios = Espacio.objects.filter(
         Q(activo=True) & (
             Q(tipo__in=['sala', 'directorio', 'terraza', 'comedor']) |
@@ -674,27 +619,50 @@ def nueva_reserva(request):
 @login_required
 def eliminar_reserva(request, reserva_id):
     """
-    Elimina una reserva sin restricciones de tiempo
+    Elimina una reserva o un grupo de reservas agrupadas
+    MEJORADO: Puede eliminar múltiples reservas si vienen de un grupo
     """
     try:
         oficina = request.user.oficina
-        reserva = get_object_or_404(Reserva, id=reserva_id, oficina=oficina)
         
-        # Guardar información para el mensaje de confirmación
-        espacio_nombre = reserva.espacio.nombre
-        fecha_reserva = reserva.fecha.strftime('%d/%m/%Y')
-        hora_reserva = reserva.hora_inicio.strftime('%I:%M %p')
+        # Verificar si se envían múltiples IDs (reserva agrupada)
+        ids_a_eliminar = request.POST.getlist('reservas_ids')
         
-        # Eliminar la reserva directamente
-        reserva.delete()
-        
-        messages.success(
-            request,
-            f'✅ Reserva eliminada exitosamente: {espacio_nombre} - {fecha_reserva} a las {hora_reserva}'
-        )
+        if ids_a_eliminar:
+            # Eliminar múltiples reservas (grupo)
+            reservas = Reserva.objects.filter(id__in=ids_a_eliminar, oficina=oficina)
+            cantidad = reservas.count()
+            
+            if cantidad > 0:
+                primera_reserva = reservas.first()
+                espacio_nombre = primera_reserva.espacio.nombre
+                fecha_reserva = primera_reserva.fecha.strftime('%d/%m/%Y')
+                
+                reservas.delete()
+                
+                messages.success(
+                    request,
+                    f'✅ Se eliminaron {cantidad} bloque(s) de reserva: {espacio_nombre} - {fecha_reserva}'
+                )
+            else:
+                messages.error(request, '❌ No se encontraron las reservas')
+        else:
+            # Eliminar reserva individual
+            reserva = get_object_or_404(Reserva, id=reserva_id, oficina=oficina)
+            
+            espacio_nombre = reserva.espacio.nombre
+            fecha_reserva = reserva.fecha.strftime('%d/%m/%Y')
+            hora_reserva = reserva.hora_inicio.strftime('%I:%M %p')
+            
+            reserva.delete()
+            
+            messages.success(
+                request,
+                f'✅ Reserva eliminada: {espacio_nombre} - {fecha_reserva} a las {hora_reserva}'
+            )
         
     except Exception as e:
-        messages.error(request, f'❌ Error al eliminar la reserva: {str(e)}')
+        messages.error(request, f'❌ Error al eliminar: {str(e)}')
     
     return redirect('mis_reservas')
 
@@ -709,7 +677,6 @@ def importar_usuarios(request):
     import os
     
     try:
-        # Buscar archivos disponibles
         archivo = None
         for nombre in ['usuarios_limpio.json', 'usuarios_utf8.json', 'usuarios.json']:
             if os.path.exists(nombre):
@@ -719,13 +686,8 @@ def importar_usuarios(request):
         if not archivo:
             return HttpResponse("❌ Ningún archivo de usuarios encontrado")
         
-        # Contar usuarios antes
         usuarios_antes = User.objects.count()
-        
-        # Importar datos
         call_command('loaddata', archivo)
-        
-        # Contar usuarios después
         usuarios_despues = User.objects.count()
         
         return HttpResponse(f"✅ Importación exitosa usando {archivo}!<br>Usuarios antes: {usuarios_antes}<br>Usuarios después: {usuarios_despues}")
