@@ -112,17 +112,6 @@
             box-shadow: 0 6px 20px rgba(46,204,113,0.4);
         }
 
-        .btn-secondary {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.25);
-            transform: translateY(-2px);
-        }
-
         .btn-danger {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
@@ -192,13 +181,7 @@
             color: #1e7e34;
         }
 
-        .alert-danger {
-            background: linear-gradient(135deg, #fadbd8 0%, #f1948a 100%);
-            border-left-color: #e74c3c;
-            color: #c0392b;
-        }
-
-        .alert-error {
+        .alert-danger, .alert-error {
             background: linear-gradient(135deg, #fadbd8 0%, #f1948a 100%);
             border-left-color: #e74c3c;
             color: #c0392b;
@@ -234,7 +217,6 @@
             font-size: 1rem;
         }
 
-        /* Filtros de Reservas */
         .filters-container {
             background: #f8f9fa;
             border-bottom: 1px solid #dee2e6;
@@ -425,14 +407,18 @@
             box-shadow: 0 2px 10px rgba(39,174,96,0.2);
         }
 
-        .status-badge.upcoming {
-            background: linear-gradient(135deg, #d1f2eb 0%, #a3e4d7 100%);
-            color: #148f77;
-        }
-
-        .status-badge.completed {
-            background: linear-gradient(135deg, #e8f4f8 0%, #d5e8f0 100%);
-            color: #5d6d7e;
+        /* Badge especial para reservas agrupadas */
+        .grouped-badge {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            color: #856404;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: 0.5rem;
         }
 
         .reservation-details {
@@ -521,7 +507,6 @@
             color: #b7701a;
         }
 
-        /* ESTILOS PARA BOTÓN DE ELIMINAR */
         .btn-delete {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
@@ -588,7 +573,6 @@
             opacity: 0.5;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2rem;
@@ -629,7 +613,6 @@
             }
         }
 
-        /* Animaciones */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -707,7 +690,6 @@
                     <p id="reservations-subtitle">Administre y revise todas sus reservas programadas</p>
                 </div>
 
-                <!-- Filtros de Reservas -->
                 <div class="filters-container">
                     <div class="filter-group">
                         <label for="timeFilter">Período:</label>
@@ -750,8 +732,6 @@
 
                 <div class="reservations-grid">
                     {% if reservas %}
-
-                        <!-- Aquí irán tus reservas dinámicas -->
                         {% for reserva in reservas %}
                             <div class="reservation-card" data-date="{{ reserva.fecha|date:'Y-m-d' }}" data-status="{% if reserva.fecha == today %}today{% elif reserva.fecha > today %}upcoming{% else %}completed{% endif %}" data-space="{% if 'Sala' in reserva.espacio.nombre %}sala{% elif 'Directorio' in reserva.espacio.nombre %}directorio{% elif 'Terraza' in reserva.espacio.nombre %}terraza{% elif 'Comedor' in reserva.espacio.nombre %}comedor{% else %}estacionamiento{% endif %}">
                                 <div class="reservation-header">
@@ -759,6 +739,12 @@
                                         <h3>
                                             <i class="fas fa-{% if 'Sala' in reserva.espacio.nombre %}users{% elif 'Directorio' in reserva.espacio.nombre %}building{% elif 'Terraza' in reserva.espacio.nombre %}tree{% elif 'Comedor' in reserva.espacio.nombre %}utensils{% else %}car{% endif %}"></i>
                                             {{ reserva.espacio.nombre }}
+                                            {% if reserva.cantidad_bloques > 1 %}
+                                                <span class="grouped-badge">
+                                                    <i class="fas fa-layer-group"></i>
+                                                    {{ reserva.cantidad_bloques }} bloques
+                                                </span>
+                                            {% endif %}
                                         </h3>
                                         <span class="space-type">{{ reserva.espacio.get_tipo_display }}</span>
                                     </div>
@@ -837,13 +823,18 @@
                                     </div>
                                 {% endif %}
 
-                                <!-- BOTÓN DE ELIMINAR -->
+                                <!-- BOTÓN DE ELIMINAR MEJORADO -->
                                 <div class="reservation-actions">
-                                    <form method="POST" action="{% url 'eliminar_reserva' reserva.id %}" style="display: inline;">
+                                    <form method="POST" action="{% url 'eliminar_reserva' reserva.id %}" style="display: inline;" onsubmit="return confirm('¿Está seguro de cancelar esta reserva{% if reserva.cantidad_bloques > 1 %} ({{ reserva.cantidad_bloques }} bloques){% endif %}?');">
                                         {% csrf_token %}
+                                        {% if reserva.cantidad_bloques > 1 %}
+                                            {% for rid in reserva.reservas_ids %}
+                                                <input type="hidden" name="reservas_ids" value="{{ rid }}">
+                                            {% endfor %}
+                                        {% endif %}
                                         <button type="submit" class="btn-delete">
                                             <i class="fas fa-trash-alt"></i>
-                                            Cancelar Reserva
+                                            Cancelar {% if reserva.cantidad_bloques > 1 %}Reservas{% else %}Reserva{% endif %}
                                         </button>
                                     </form>
                                 </div>
@@ -863,7 +854,6 @@
                         </div>
                     {% endif %}
 
-                    <!-- Mensaje cuando no hay resultados -->
                     <div id="noResults" class="no-results" style="display: none;">
                         <i class="fas fa-search"></i>
                         <h3>No se encontraron reservas</h3>
@@ -875,7 +865,6 @@
     </div>
 
     <script>
-        // Animación de entrada suave
         document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.reservation-card:not(.no-results)');
             cards.forEach((card, index) => {
@@ -889,11 +878,9 @@
                 }, index * 100);
             });
 
-            // Inicializar filtros
             initializeFilters();
         });
 
-        // Sistema de filtros para reservas
         function initializeFilters() {
             const filterButtons = document.querySelectorAll('.filter-btn');
             const spaceSelect = document.getElementById('spaceFilter');
@@ -910,7 +897,6 @@
             spaceSelect.addEventListener('change', applyFilters);
             statusSelect.addEventListener('change', applyFilters);
             
-            // Aplicar filtros iniciales
             applyFilters();
         }
 
@@ -931,7 +917,6 @@
                 const cardStatus = card.getAttribute('data-status');
                 const cardSpace = card.getAttribute('data-space');
                 
-                // Filtro por período
                 if (activeFilter) {
                     const period = activeFilter.getAttribute('data-period');
                     const cardDateObj = new Date(cardDate);
@@ -987,17 +972,14 @@
                     }
                 }
                 
-                // Filtro por espacio
                 if (spaceFilter !== 'all' && showCard) {
                     showCard = cardSpace === spaceFilter;
                 }
                 
-                // Filtro por estado
                 if (statusFilter !== 'all' && showCard) {
                     showCard = cardStatus === statusFilter;
                 }
                 
-                // Mostrar/ocultar tarjeta
                 if (showCard) {
                     card.classList.remove('hidden');
                     visibleCount++;
@@ -1006,14 +988,12 @@
                 }
             });
             
-            // Mostrar mensaje de "no hay resultados"
             if (visibleCount === 0) {
                 noResults.style.display = 'block';
             } else {
                 noResults.style.display = 'none';
             }
             
-            // Actualizar contador
             updateResultsCounter(visibleCount);
         }
 
@@ -1042,7 +1022,6 @@
             }
         }
 
-        // Efecto hover mejorado
         document.querySelectorAll('.reservation-card').forEach(card => {
             card.addEventListener('mouseenter', function() {
                 if (!this.classList.contains('hidden')) {
@@ -1056,7 +1035,6 @@
                 }
             });
         });
-
     </script>
 </body>
 </html>
