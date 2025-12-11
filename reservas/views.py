@@ -530,7 +530,6 @@ def nueva_reserva(request):
         fecha = request.POST.get('fecha')
         bloques_horarios = request.POST.getlist('bloques_horarios')
         
-        # Campos para estacionamientos
         nombre_visitante = request.POST.get('nombre_visitante', '')
         placa_visitante = request.POST.get('placa_visitante', '')
         empresa_visitante = request.POST.get('empresa_visitante', '')
@@ -543,7 +542,6 @@ def nueva_reserva(request):
             espacio = Espacio.objects.get(id=espacio_id)
             fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
             
-            # Validar límites según tipo de espacio
             if espacio.tipo.lower() in ['sala','comedor'] and len(bloques_horarios) > 8:
                 messages.error(request, f'{espacio.tipo} permite máximo 8 bloques por día')
                 return redirect('nueva_reserva')
@@ -566,7 +564,6 @@ def nueva_reserva(request):
                     hora_inicio_obj = datetime.strptime(hora_inicio_str, '%H:%M').time()
                     hora_fin_obj = datetime.strptime(hora_fin_str, '%H:%M').time()
                     
-                    # Verificar conflictos (doble verificación en backend)
                     conflicto = Reserva.objects.filter(
                         espacio=espacio,
                         fecha=fecha_obj,
@@ -578,7 +575,6 @@ def nueva_reserva(request):
                         messages.error(request, f'Conflicto en horario {hora_inicio_str}-{hora_fin_str}')
                         return redirect('nueva_reserva')
                     
-                    # Crear reserva individual para este bloque
                     Reserva.objects.create(
                         oficina=oficina,
                         espacio=espacio,
@@ -606,43 +602,18 @@ def nueva_reserva(request):
             messages.error(request, f'Error al crear la reserva: {str(e)}')
             return redirect('nueva_reserva')
     
-    # ============================================
-    # GET REQUEST - FILTRADO CORRECTO DE ESPACIOS
-    # ============================================
-    
-    # PASO 1: Obtener todos los espacios NO estacionamiento
-    espacios_generales = Espacio.objects.filter(
-        activo=True,
-        tipo__in=['sala', 'directorio', 'terraza', 'comedor']
+    espacios = Espacio.objects.filter(
+        Q(activo=True) & (
+            Q(tipo__in=['sala', 'directorio', 'terraza', 'comedor']) |
+            Q(tipo='estacionamiento', es_estacionamiento_visita=True) |
+            Q(tipo='estacionamiento', oficina_propietaria=oficina)
+        )
     )
-    
-    # PASO 2: Obtener estacionamientos de VISITA (disponibles para todos)
-    estacionamientos_visita = Espacio.objects.filter(
-        activo=True,
-        tipo='estacionamiento',
-        es_estacionamiento_visita=True
-    )
-    
-    # PASO 3: Obtener estacionamientos PRIVADOS de esta oficina específica
-    estacionamientos_privados = Espacio.objects.filter(
-        activo=True,
-        tipo='estacionamiento',
-        oficina_propietaria=oficina  # ← FILTRO CRÍTICO
-    )
-    
-    # PASO 4: Combinar todos los espacios disponibles para esta oficina
-    from itertools import chain
-    espacios = list(chain(espacios_generales, estacionamientos_visita, estacionamientos_privados))
-    
-    # Ordenar por tipo para mejor visualización
-    espacios.sort(key=lambda x: (x.tipo, x.nombre))
     
     context = {
         'espacios': espacios,
         'fecha_minima': date.today().isoformat(),
-        'oficina': oficina,
     }
-    
     return render(request, 'reservas/nueva_reserva.html', context)
 
 @login_required
