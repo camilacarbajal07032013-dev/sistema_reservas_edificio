@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nueva Reserva | Sistema Corporativo</title>
+    <title>Nueva Reserva - Sistema Corporativo</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -12,517 +12,553 @@
             box-sizing: border-box;
         }
 
+        :root {
+            /* Paleta Corporativa */
+            --primary-blue: #1e3a8a;
+            --primary-dark: #1f2937;
+            --success-green: #047857;
+            --action-orange: #ea580c;
+            --light-gray: #f3f4f6;
+            --medium-gray: #6b7280;
+            --border-gray: #e5e7eb;
+            --white: #ffffff;
+            
+            /* Colores por tipo de espacio */
+            --sala-color: #1e40af;
+            --directorio-color: #7c3aed;
+            --terraza-color: #059669;
+            --comedor-color: #d97706;
+            --parking-visit-color: #0284c7;
+            --parking-private-color: #dc2626;
+        }
+
         body {
-            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            color: #2c3e50;
+            font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #e5e7eb 100%);
+            color: var(--primary-dark);
             line-height: 1.6;
+            min-height: 100vh;
         }
 
+        /* HEADER */
         .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 2rem 0;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100"><polygon fill="rgba(255,255,255,0.05)" points="0,0 1000,0 1000,60 0,100"/></svg>');
-            background-size: cover;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            position: relative;
-            z-index: 1;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
 
         .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
         }
 
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+        .header-title {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
 
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
         }
 
-        .nav-buttons {
+        .header-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            margin-top: 0.25rem;
+        }
+
+        .header-buttons {
             display: flex;
             gap: 1rem;
-            flex-wrap: wrap;
         }
 
         .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 10px;
+            padding: 0.65rem 1.25rem;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: none;
+            cursor: pointer;
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            background: rgba(255,255,255,0.15);
             color: white;
-            padding: 1rem 2.5rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(52,152,219,0.3);
-            position: relative;
-            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
         .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(52,152,219,0.4);
-        }
-
-        .btn-secondary:active {
-            transform: translateY(-1px);
+            background: rgba(255,255,255,0.25);
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            background: var(--action-orange);
             color: white;
         }
 
         .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(231,76,60,0.3);
+            background: #c2410c;
+            transform: translateY(-1px);
         }
 
-        .main-content {
-            padding: 3rem 0;
+        /* CONTAINER */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
         }
 
-        .reservation-card {
+        /* PROGRESS STEPS */
+        .progress-steps {
             background: white;
-            border-radius: 20px;
-            padding: 3rem;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border-gray);
+            z-index: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--border-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--medium-gray);
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: white;
+        }
+
+        .step.completed .step-circle {
+            background: var(--success-green);
+            border-color: var(--success-green);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--medium-gray);
+        }
+
+        .step.active .step-label {
+            color: var(--primary-blue);
+        }
+
+        /* MAIN SECTION */
+        .main-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-header p {
+            color: var(--medium-gray);
+            font-size: 1rem;
+        }
+
+        /* ALERT MESSAGES */
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            border-left-color: var(--success-green);
+            color: #065f46;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            border-left-color: #dc2626;
+            color: #991b1b;
+        }
+
+        /* CARDS GRID */
+        .spaces-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(520px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .space-card {
+            background: white;
+            border: 2px solid var(--border-gray);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            gap: 1.25rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
             position: relative;
             overflow: hidden;
         }
 
-        .reservation-card::before {
+        .space-card::before {
             content: '';
             position: absolute;
-            top: 0;
             left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #3498db, #2980b9, #8e44ad, #9b59b6);
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            transition: all 0.3s ease;
         }
 
-        .form-header {
-            text-align: center;
-            margin-bottom: 3rem;
+        .space-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+            border-color: var(--primary-blue);
         }
 
-        .form-header h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
+        .space-card.selected {
+            border-color: var(--primary-blue);
+            background: #eff6ff;
+            box-shadow: 0 8px 20px rgba(30, 58, 138, 0.15);
+        }
+
+        /* Colores por tipo */
+        .space-card.type-sala::before { background: var(--sala-color); }
+        .space-card.type-directorio::before { background: var(--directorio-color); }
+        .space-card.type-terraza::before { background: var(--terraza-color); }
+        .space-card.type-comedor::before { background: var(--comedor-color); }
+        .space-card.type-parking-visit::before { background: var(--parking-visit-color); }
+        .space-card.type-parking-private::before { background: var(--parking-private-color); }
+
+        .space-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
+            font-size: 2.2rem;
+            color: white;
+            flex-shrink: 0;
         }
 
-        .form-header p {
-            color: #7f8c8d;
-            font-size: 1.1rem;
+        .space-icon.type-sala { background: linear-gradient(135deg, #1e40af, #1e3a8a); }
+        .space-icon.type-directorio { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+        .space-icon.type-terraza { background: linear-gradient(135deg, #059669, #047857); }
+        .space-icon.type-comedor { background: linear-gradient(135deg, #d97706, #b45309); }
+        .space-icon.type-parking-visit { background: linear-gradient(135deg, #0284c7, #0369a1); }
+        .space-icon.type-parking-private { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+
+        .space-content {
+            flex: 1;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
+        .space-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .space-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .space-subtitle {
+            font-size: 0.85rem;
+            color: var(--medium-gray);
+            font-weight: 500;
+        }
+
+        .space-badge {
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-popular {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-visit {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-private {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-premium {
+            background: #ede9fe;
+            color: #6b21a8;
+        }
+
+        .space-specs {
+            display: flex;
+            gap: 1.25rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .space-spec {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--medium-gray);
+            font-size: 0.85rem;
+        }
+
+        .space-spec i {
+            color: var(--primary-blue);
+            width: 16px;
+        }
+
+        .space-spec strong {
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .space-features {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+
+        .space-feature {
+            background: #f3f4f6;
+            color: #4b5563;
+            padding: 0.3rem 0.65rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .parking-notice {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 0.65rem;
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+            color: #92400e;
+        }
+
+        .parking-notice strong {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        .space-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-info {
+            padding: 0.5rem 1rem;
+            background: var(--light-gray);
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-info:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-select {
+            flex: 1;
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-select:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
+        }
+
+        /* FORM SECTION */
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 2px solid var(--border-gray);
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
         }
 
         .form-group {
-            position: relative;
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 0.75rem;
             font-weight: 600;
-            color: #34495e;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 1rem 1.25rem;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            font-size: 1rem;
+            padding: 0.75rem;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
-            background: #f8f9fa;
-            color: #2c3e50;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #3498db;
-            background: white;
-            box-shadow: 0 0 0 4px rgba(52,152,219,0.1);
-            transform: translateY(-2px);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
         }
 
-        /* ESTILOS PARA ESTADO DE DISPONIBILIDAD */
-        .availability-status {
-            display: none;
+        .submit-button {
+            width: 100%;
             padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .availability-status.loading {
-            display: block;
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            background: linear-gradient(135deg, var(--success-green), #059669);
             color: white;
-        }
-
-        .availability-status.loaded {
-            display: block;
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white;
-        }
-
-        .time-blocks {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            max-height: 350px;
-            overflow-y: auto;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 12px;
-            border: 2px solid #e9ecef;
-        }
-
-        .time-block {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1rem;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            background: white;
-            position: relative;
-        }
-
-        /* ESTADOS DE DISPONIBILIDAD */
-        .time-block.disponible {
-            border-color: #27ae60;
-            background: linear-gradient(135deg, #d5f4e6 0%, #fafffe 100%);
-        }
-
-        .time-block.disponible:hover {
-            border-color: #27ae60;
-            background: linear-gradient(135deg, #a8e6cf 0%, #d5f4e6 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
-        }
-
-        .time-block.ocupado {
-            border-color: #e74c3c;
-            background: linear-gradient(135deg, #fadbd8 0%, #fdf2f2 100%);
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .time-block.ocupado:not(.pasado)::after {
-            content: "OCUPADO";
-            position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            background: #e74c3c;
-            color: white;
-            font-size: 0.7rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 5px;
-            font-weight: 700;
-        }
-
-        /* NUEVOS ESTILOS PARA HORARIOS PASADOS */
-        .time-block.pasado {
-            border-color: #f39c12 !important;
-            background: linear-gradient(135deg, #fef9e7 0%, #fcf3cf 100%) !important;
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-
-
-        .time-block.pasado .time-label {
-            color: #9a7c00 !important;
-            text-decoration: line-through;
-            font-style: italic;
-        }
-
-        .time-block.ocupado input[type="checkbox"] {
-            display: none;
-        }
-
-        .time-block.selected {
-            border-color: #3498db;
-            background: linear-gradient(135deg, #ebf3fd 0%, #f8fbff 100%);
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        }
-
-        .time-block input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #3498db;
-            cursor: pointer;
-        }
-
-        .time-block input[type="checkbox"]:checked + .time-label {
-            font-weight: 700;
-            color: #2980b9;
-        }
-
-        .time-label {
-            flex: 1;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            color: #2c3e50;
-        }
-
-        .time-block.ocupado .time-label {
-            color: #7f8c8d;
-            text-decoration: line-through;
-        }
-
-        .no-space {
-            text-align: center;
-            color: #6c757d;
-            font-style: italic;
-            padding: 2rem;
-        }
-
-        .loading-spinner {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .loading-spinner.active {
-            display: block;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            margin: 0 auto 1rem;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .selected-summary {
-            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-            border: 1px solid #bee5eb;
-            border-radius: 10px;
-            padding: 1rem;
-            margin-top: 1rem;
-            display: none;
-        }
-
-        .selected-summary.active {
-            display: block;
-        }
-
-        .selected-summary h4 {
-            color: #0c5460;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .selected-summary p {
-            color: #0c5460;
-            font-size: 0.9rem;
-        }
-
-        .visitor-info {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 15px;
-            padding: 2rem;
-            margin-top: 2rem;
-            border: 2px dashed #dee2e6;
-            transition: all 0.3s ease;
-            display: none;
-        }
-
-        .visitor-info.active {
-            display: block;
-            border-color: #3498db;
-            background: linear-gradient(135deg, #ebf3fd 0%, #f8fbff 100%);
-        }
-
-        .visitor-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            color: #2c3e50;
-        }
-
-        .visitor-header h3 {
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            margin-top: 3rem;
-            flex-wrap: wrap;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            padding: 1rem 2.5rem;
-            font-size: 1.1rem;
-            font-weight: 600;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(52,152,219,0.3);
-            position: relative;
-            overflow: hidden;
+            margin-top: 2rem;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(52,152,219,0.4);
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(4, 120, 87, 0.3);
         }
 
-        .btn-primary:active {
-            transform: translateY(-1px);
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
         }
 
-        .btn-primary:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .alert {
-            padding: 1.25rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            border-left: 4px solid;
+        .modal.active {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            font-weight: 500;
+            justify-content: center;
         }
 
-        .alert-danger {
-            background: linear-gradient(135deg, #fadbd8 0%, #f1948a 100%);
-            border-left-color: #e74c3c;
-            color: #c0392b;
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease;
         }
 
-        .icon {
-            font-size: 1.2rem;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .time-blocks {
-                grid-template-columns: 1fr;
-                max-height: 250px;
-            }
-            
-            .reservation-card {
-                padding: 2rem 1.5rem;
-                border-radius: 15px;
-            }
-            
-            .form-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-
-        @keyframes fadeInUp {
+        @keyframes modalSlideIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(-50px);
             }
             to {
                 opacity: 1;
@@ -530,672 +566,694 @@
             }
         }
 
-        .reservation-card {
-            animation: fadeInUp 0.6s ease;
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .form-group:hover input,
-        .form-group:hover select {
-            border-color: #bdc3c7;
+        .modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-section {
+            margin-bottom: 2rem;
+        }
+
+        .modal-section h4 {
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .modal-section li {
+            padding: 0.5rem 0;
+            color: var(--medium-gray);
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+        }
+
+        .modal-section li i {
+            color: var(--success-green);
+            margin-top: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .spaces-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .space-card {
+                flex-direction: column;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
 <body>
+    {% csrf_token %}
+    
+    <!-- HEADER -->
     <div class="header">
-        <div class="container">
-            <div class="header-content">
+        <div class="header-content">
+            <div class="header-title">
+                <i class="fas fa-calendar-plus" style="font-size: 2rem;"></i>
                 <div>
-                    <h1>
-                        <i class="fas fa-calendar-plus icon"></i>
-                        Nueva Reserva
-                    </h1>
-                    <p>Sistema de Gestión - Disponibilidad de Tiempo</p>
+                    <h1>Nueva Reserva</h1>
+                    <p class="header-subtitle">Sistema de Gestión - Disponibilidad de Tiempo</p>
                 </div>
-                <div class="nav-buttons">
-                    <a href="{% url 'mis_reservas' %}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i>
-                        Volver a Mis Reservas
-                    </a>
-                    <a href="{% url 'logout' %}" class="btn btn-danger">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Cerrar Sesión
-                    </a>
-                </div>
+            </div>
+            <div class="header-buttons">
+                <a href="{% url 'mis_reservas' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver a Mis Reservas
+                </a>
+                <a href="{% url 'logout' %}" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </a>
             </div>
         </div>
     </div>
 
     <div class="container">
-        <div class="main-content">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+        <!-- PROGRESS STEPS -->
+        <div class="progress-steps">
+            <div class="steps">
+                <div class="step active">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Seleccionar Espacio</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Elegir Fecha y Horario</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Confirmar Reserva</div>
+                </div>
+            </div>
+        </div>
 
-            <div class="alert alert-danger" id="error-messages" style="display: none;">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span id="error-text"></span>
+        <!-- ALERTS -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- MAIN SECTION -->
+        <div class="main-section">
+            <div class="section-header">
+                <h2>
+                    <i class="fas fa-building"></i>
+                    Espacios Disponibles
+                </h2>
+                <p>Seleccione el espacio que desea reservar para ver su disponibilidad</p>
             </div>
 
-            <div class="reservation-card">
-                <div class="form-header">
-                    <h2>
-                        <i class="fas fa-building"></i>
-                        Solicitud de Reserva
-                    </h2>
-                    <p>Complete los siguientes campos para procesar su reserva</p>
+            <!-- SPACES GRID -->
+            <div class="spaces-grid">
+                <!-- SALAS -->
+                <div class="space-card type-sala">
+                    <div class="space-icon type-sala">🏢</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Sala 1</h3>
+                                <p class="space-subtitle">Sala de reuniones</p>
+                            </div>
+                            <span class="space-badge badge-popular">🔥 Popular</span>
+                        </div>
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-users"></i>
+                                <span><strong>10</strong> personas</span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-clock"></i>
+                                <span>Min: <strong>1h</strong></span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span><strong>Gratuita</strong></span>
+                            </div>
+                        </div>
+                        <div class="space-features">
+                            <span class="space-feature">📺 TV 55"</span>
+                            <span class="space-feature">🎤 Audio</span>
+                            <span class="space-feature">❄️ A/C</span>
+                            <span class="space-feature">📶 WiFi</span>
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('sala1')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <form method="post" onsubmit="return validateForm(event)">
-                    {% csrf_token %}
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="espacio">
-                                <i class="fas fa-map-marker-alt icon"></i>
-                                Espacio a Reservar
-                            </label>
-                            <select name="espacio" id="espacio" required>
-                                <option value="">Seleccione un espacio...</option>
-                                {% for espacio in espacios %}
-                                    <option value="{{ espacio.id }}">{{ espacio.nombre }}</option>
-                                {% endfor %}
-                            </select>
+                <!-- SALA 2 -->
+                <div class="space-card type-sala">
+                    <div class="space-icon type-sala">🏢</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Sala 2</h3>
+                                <p class="space-subtitle">Sala de reuniones</p>
+                            </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="fecha">
-                                <i class="fas fa-calendar-alt icon"></i>
-                                Fecha de Reserva
-                            </label>
-                            <input type="date" name="fecha" id="fecha" min="{{ fecha_minima }}" required>
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-users"></i>
+                                <span><strong>15</strong> personas</span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-clock"></i>
+                                <span>Min: <strong>1h</strong></span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span><strong>Gratuita</strong></span>
+                            </div>
+                        </div>
+                        <div class="space-features">
+                            <span class="space-feature">📺 TV 65"</span>
+                            <span class="space-feature">🎤 Audio HD</span>
+                            <span class="space-feature">❄️ A/C</span>
+                            <span class="space-feature">📶 WiFi</span>
+                            <span class="space-feature">🪑 Mesa 15p</span>
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('sala2')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
                         </div>
                     </div>
+                </div>
 
+                <!-- DIRECTORIO -->
+                <div class="space-card type-directorio">
+                    <div class="space-icon type-directorio">🏛️</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Directorio</h3>
+                                <p class="space-subtitle">Sala ejecutiva principal</p>
+                            </div>
+                            <span class="space-badge badge-premium">⭐ Premium</span>
+                        </div>
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-users"></i>
+                                <span><strong>20</strong> personas</span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-clock"></i>
+                                <span>Min: <strong>2h</strong></span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span><strong>Gratuita</strong></span>
+                            </div>
+                        </div>
+                        <div class="space-features">
+                            <span class="space-feature">🎥 Videoconf</span>
+                            <span class="space-feature">📽️ Proyector 4K</span>
+                            <span class="space-feature">☕ Catering</span>
+                            <span class="space-feature">🪑 Mesa 20p</span>
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('directorio')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TERRAZA -->
+                <div class="space-card type-terraza">
+                    <div class="space-icon type-terraza">🌳</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Terraza</h3>
+                                <p class="space-subtitle">Espacio al aire libre</p>
+                            </div>
+                        </div>
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-users"></i>
+                                <span><strong>30</strong> personas</span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-clock"></i>
+                                <span><strong>Solo tardes</strong></span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span><strong>Gratuita</strong></span>
+                            </div>
+                        </div>
+                        <div class="space-features">
+                            <span class="space-feature">🪑 Mesas</span>
+                            <span class="space-feature">☂️ Toldos</span>
+                            <span class="space-feature">🌅 Vista</span>
+                            <span class="space-feature">☀️ Exterior</span>
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('terraza')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMEDOR -->
+                <div class="space-card type-comedor">
+                    <div class="space-icon type-comedor">🍽️</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Comedor</h3>
+                                <p class="space-subtitle">Área común</p>
+                            </div>
+                        </div>
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-users"></i>
+                                <span><strong>12</strong> personas</span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-clock"></i>
+                                <span><strong>Solo mañanas</strong></span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span><strong>Gratuito</strong></span>
+                            </div>
+                        </div>
+                        <div class="space-features">
+                            <span class="space-feature">☕ Café</span>
+                            <span class="space-feature">🍽️ Utensilios</span>
+                            <span class="space-feature">❄️ Nevera</span>
+                            <span class="space-feature">🔌 Enchufes</span>
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('comedor')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESTACIONAMIENTO DE VISITA -->
+                <div class="space-card type-parking-visit">
+                    <div class="space-icon type-parking-visit">🅿️</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Visita 02 (Estac. 41)</h3>
+                                <p class="space-subtitle">Estacionamiento para visitantes</p>
+                            </div>
+                            <span class="space-badge badge-visit">👥 Visita</span>
+                        </div>
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-car"></i>
+                                <span><strong>1</strong> vehículo</span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span><strong>Sótano 1</strong></span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span><strong>Gratuito</strong></span>
+                            </div>
+                        </div>
+                        <div class="space-features">
+                            <span class="space-feature">🛡️ Vigilancia</span>
+                            <span class="space-feature">💡 Iluminado</span>
+                            <span class="space-feature">📹 Cámaras</span>
+                        </div>
+                        <div class="parking-notice">
+                            <strong>⚠️ DATOS REQUERIDOS:</strong>
+                            Nombre, placa y empresa del visitante
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('parking-visit')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESTACIONAMIENTO PRIVADO -->
+                <div class="space-card type-parking-private">
+                    <div class="space-icon type-parking-private">🔒</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Estacionamiento #34</h3>
+                                <p class="space-subtitle">Asignado a tu oficina</p>
+                            </div>
+                            <span class="space-badge badge-private">🏢 Privado</span>
+                        </div>
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-car"></i>
+                                <span><strong>1</strong> vehículo</span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span><strong>Sótano 2</strong></span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-shield-alt"></i>
+                                <span><strong>Exclusivo</strong></span>
+                            </div>
+                        </div>
+                        <div class="space-features">
+                            <span class="space-feature">🛡️ Vigilancia</span>
+                            <span class="space-feature">💡 Iluminado</span>
+                            <span class="space-feature">🔐 Asignado</span>
+                        </div>
+                        <div class="parking-notice">
+                            <strong>⚠️ Si es para visita:</strong>
+                            Datos del visitante requeridos
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('parking-private')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORM SECTION (Hidden until space is selected) -->
+        <div class="form-section" id="formSection">
+            <div class="section-header">
+                <h2>
+                    <i class="fas fa-calendar-alt"></i>
+                    Completar Reserva
+                </h2>
+                <p>Seleccione fecha y horarios disponibles</p>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="fecha">Fecha de Reserva</label>
+                    <input type="date" id="fecha" name="fecha" min="{{ fecha_minima }}" required>
+                </div>
+
+                <div class="form-group" id="visitorFields" style="display:none;">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">
+                        <i class="fas fa-user-tie"></i>
+                        Información del Visitante
+                    </h3>
                     <div class="form-group">
-                        <label for="bloques_horarios">
-                            <i class="fas fa-clock icon"></i>
-                            Seleccionar Bloques de Horario (Múltiple)
-                        </label>
-                        
-                        <!-- Estado de disponibilidad -->
-                        <div id="availability-status" class="availability-status">
-                            <i class="fas fa-sync-alt fa-spin"></i>
-                            Verificando disponibilidad...
-                        </div>
-                        
-                        <!-- Spinner de carga -->
-                        <div class="loading-spinner" id="loading-spinner">
-                            <div class="spinner"></div>
-                            <p>Cargando horarios disponibles...</p>
-                        </div>
-                        
-                        <div class="time-blocks" id="time-blocks">
-                            <p class="no-space">Primero seleccione un espacio y fecha...</p>
-                        </div>
-                        
-                        <div id="hidden-horarios"></div>
-                        
-                        <div class="selected-summary" id="selected-summary">
-                            <h4><i class="fas fa-clock"></i> Horarios Seleccionados:</h4>
-                            <p id="summary-text">No hay horarios seleccionados</p>
-                        </div>
+                        <label for="nombre_visitante">Nombre Completo</label>
+                        <input type="text" id="nombre_visitante" name="nombre_visitante" placeholder="Juan Pérez García">
                     </div>
-
-                    <div id="visitor-info" class="visitor-info">
-                        <div class="visitor-header">
-                            <i class="fas fa-user-tie" style="font-size: 1.5rem; color: #3498db;"></i>
-                            <h3>Información del Visitante</h3>
-                        </div>
-                        
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="nombre_visitante">
-                                    <i class="fas fa-user icon"></i>
-                                    Nombre Completo
-                                </label>
-                                <input type="text" name="nombre_visitante" id="nombre_visitante" 
-                                       placeholder="Ej: Juan Carlos Pérez López">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="placa_visitante">
-                                    <i class="fas fa-car icon"></i>
-                                    Placa del Vehículo
-                                </label>
-                                <input type="text" name="placa_visitante" id="placa_visitante" 
-                                       placeholder="Ej: ABC-123" style="text-transform: uppercase;">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="empresa_visitante">
-                                    <i class="fas fa-briefcase icon"></i>
-                                    Empresa / Organización
-                                </label>
-                                <input type="text" name="empresa_visitante" id="empresa_visitante" 
-                                       placeholder="Ej: Corporación Internacional S.A.">
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="placa_visitante">Placa del Vehículo</label>
+                        <input type="text" id="placa_visitante" name="placa_visitante" placeholder="ABC-123">
                     </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary" id="submit-btn">
-                            <i class="fas fa-check-circle"></i>
-                            Confirmar Reserva
-                        </button>
-                        <a href="{% url 'mis_reservas' %}" class="btn btn-secondary">
-                            <i class="fas fa-times"></i>
-                            Cancelar
-                        </a>
+                    <div class="form-group">
+                        <label for="empresa_visitante">Empresa (Opcional)</label>
+                        <input type="text" id="empresa_visitante" name="empresa_visitante" placeholder="Tech Solutions SAC">
                     </div>
-                </form>
+                </div>
+
+                <button type="submit" class="submit-button">
+                    <i class="fas fa-check-circle"></i>
+                    Confirmar Reserva
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal" id="infoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Información del Espacio</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content will be injected by JavaScript -->
             </div>
         </div>
     </div>
 
-<script>
-        let selectedTimeSlots = [];
-        let currentSpaceType = '';
-        let currentSpaceId = null;
-        let currentDate = null;
-        let availabilityData = null;
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('fecha').min = today;
-            
-            const card = document.querySelector('.reservation-card');
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(30px)';
-            
-            setTimeout(() => {
-                card.style.transition = 'all 0.6s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, 100);
-        });
-
-        // ===== FUNCIÓN CORREGIDA PARA VERIFICAR SI EL HORARIO YA PASÓ =====
-        function isTimeSlotPassed(horaInicio, fecha) {
-            try {
-                const ahora = new Date();
-                const fechaSeleccionada = new Date(fecha + 'T00:00:00');
-                
-                const esMismaFecha = (
-                    fechaSeleccionada.getFullYear() === ahora.getFullYear() &&
-                    fechaSeleccionada.getMonth() === ahora.getMonth() &&
-                    fechaSeleccionada.getDate() === ahora.getDate()
-                );
-                
-                if (!esMismaFecha) {
-                    return false;
-                }
-                
-                // Obtener hora de INICIO del bloque
-                const [hora, minuto] = horaInicio.split(':').map(Number);
-                
-                // Crear hora de FIN del bloque (asumiendo bloques de 1 hora)
-                const horaFin = hora + 1;
-                const minutoFin = minuto;
-                
-                const horaActual = ahora.getHours();
-                const minutoActual = ahora.getMinutes();
-                
-                // Bloquear solo si la hora actual es DESPUÉS del fin del bloque
-                if (horaActual > horaFin) {
-                    return true;
-                } else if (horaActual === horaFin && minutoActual > minutoFin) {
-                    return true;
-                }
-                
-                return false;
-                
-            } catch (error) {
-                console.error('Error en isTimeSlotPassed:', error);
-                return false;
+    <script>
+        // Data de espacios (esto vendría del backend en producción)
+        const spacesInfo = {
+            'sala1': {
+                title: '🏢 Sala 1',
+                description: 'Sala de reuniones ejecutiva ideal para presentaciones y juntas',
+                capacity: '10 personas',
+                location: 'Piso 3, Ala Norte',
+                equipment: ['TV 55" 4K', 'Sistema de audio', 'WiFi premium', 'Aire acondicionado', 'Mesa para 10'],
+                conditions: ['Reserva mínima: 1 hora', 'Reserva máxima: 8 horas/día', 'Solicitar con 24h de anticipación', 'Dejar el espacio limpio y ordenado'],
+                restrictions: ['No se permite fumar', 'No alimentos con olor fuerte', 'Prohibido mover muebles'],
+                penalties: ['Cancelación con menos de 4h: 1 día sin reservar', 'No presentarse: 3 días sin reservar', 'Daños al equipamiento: Costo de reparación']
+            },
+            'sala2': {
+                title: '🏢 Sala 2',
+                description: 'Sala de reuniones amplia para equipos medianos',
+                capacity: '15 personas',
+                location: 'Piso 3, Ala Sur',
+                equipment: ['TV 65" 4K', 'Sistema de audio HD', 'WiFi premium', 'Aire acondicionado', 'Mesa para 15'],
+                conditions: ['Reserva mínima: 1 hora', 'Reserva máxima: 8 horas/día', 'Solicitar con 24h de anticipación'],
+                restrictions: ['No se permite fumar', 'No alimentos con olor fuerte'],
+                penalties: ['Cancelación con menos de 4h: 1 día sin reservar', 'No presentarse: 3 días sin reservar']
+            },
+            'directorio': {
+                title: '🏛️ Directorio',
+                description: 'Sala principal para juntas ejecutivas y presentaciones importantes',
+                capacity: '20 personas',
+                location: 'Piso 5, Sala Principal',
+                equipment: ['Videoconferencia HD', 'Proyector 4K', 'Sistema de audio premium', 'Servicio de catering', 'Mesa ejecutiva 20p'],
+                conditions: ['Reserva mínima: 2 horas', 'Reserva máxima: 8 horas/día', 'Solicitar con 48h de anticipación', 'Uso prioritario para dirección'],
+                restrictions: ['No se permite fumar', 'Uso exclusivo para reuniones ejecutivas', 'Requiere autorización especial'],
+                penalties: ['Cancelación con menos de 24h: 3 días sin reservar', 'No presentarse: 1 semana sin reservar', 'Daños: Costo completo de reparación']
+            },
+            'terraza': {
+                title: '🌳 Terraza',
+                description: 'Espacio al aire libre perfecto para eventos y reuniones informales',
+                capacity: '30 personas',
+                location: 'Piso 6, Azotea',
+                equipment: ['Mesas y sillas', 'Toldos', 'Vista panorámica', 'Iluminación nocturna'],
+                conditions: ['Solo disponible 3PM - 10PM', 'Sujeto a condiciones climáticas', 'Recoger al finalizar'],
+                restrictions: ['No música alta después de 9PM', 'Respetar a vecinos', 'No alteraciones permanentes'],
+                penalties: ['Dejar sucio: 2 días sin reservar', 'Quejas de vecinos: Suspensión temporal']
+            },
+            'comedor': {
+                title: '🍽️ Comedor',
+                description: 'Área común para desayunos y reuniones matutinas',
+                capacity: '12 personas',
+                location: 'Piso 1, Área Común',
+                equipment: ['Servicio de café', 'Utensilios', 'Nevera', 'Enchufes'],
+                conditions: ['Solo disponible 8AM - 11AM', 'Máximo 3 horas', 'Limpiar después de usar'],
+                restrictions: ['Solo horario de mañana', 'No monopolizar el espacio', 'Respetar turnos'],
+                penalties: ['No limpiar: 1 día sin reservar']
+            },
+            'parking-visit': {
+                title: '🅿️ Visita 02 (Estac. 41)',
+                description: 'Estacionamiento exclusivo para visitantes de las oficinas',
+                capacity: '1 vehículo',
+                location: 'Sótano 1, Zona Visitas',
+                equipment: ['Vigilancia 24/7', 'Iluminación LED', 'Cámaras de seguridad', 'Acceso directo'],
+                conditions: ['Horario: 7AM - 10PM', 'Registrar datos del visitante', 'Placa visible', 'Respetar espacio asignado'],
+                restrictions: ['Solo vehículos livianos', 'No estacionar vehículos de carga', 'No lavar vehículos'],
+                penalties: ['Datos incompletos: Reserva rechazada', 'Estacionar fuera del espacio: Sanción', 'No presentarse: 2 días sin reservar']
+            },
+            'parking-private': {
+                title: '🔒 Estacionamiento #34',
+                description: 'Estacionamiento privado asignado a tu oficina',
+                capacity: '1 vehículo',
+                location: 'Sótano 2, Zona Privada',
+                equipment: ['Vigilancia 24/7', 'Iluminación', 'Espacio asignado permanente'],
+                conditions: ['Uso exclusivo de tu oficina', 'Si es para visita: registrar datos', 'Mantener limpio'],
+                restrictions: ['Solo tu oficina puede usar', 'No subarrendar', 'No alterar señalización'],
+                penalties: ['Uso no autorizado: Reporte a administración', 'Daños: Reparación a cargo']
             }
+        };
+
+        function openModal(spaceId) {
+            const modal = document.getElementById('infoModal');
+            const info = spacesInfo[spaceId];
+            
+            document.getElementById('modalTitle').textContent = info.title;
+            
+            let html = `
+                <div class="modal-section">
+                    <p style="font-size: 1.1rem; color: var(--medium-gray); margin-bottom: 2rem;">
+                        ${info.description}
+                    </p>
+                </div>
+
+                <div class="modal-section">
+                    <h4><i class="fas fa-info-circle" style="color: var(--primary-blue);"></i> Información General</h4>
+                    <ul>
+                        <li><i class="fas fa-users"></i> <strong>Capacidad:</strong> ${info.capacity}</li>
+                        <li><i class="fas fa-map-marker-alt"></i> <strong>Ubicación:</strong> ${info.location}</li>
+                    </ul>
+                </div>
+
+                <div class="modal-section">
+                    <h4><i class="fas fa-toolbox" style="color: var(--primary-blue);"></i> Equipamiento Disponible</h4>
+                    <ul>
+                        ${info.equipment.map(item => `<li><i class="fas fa-check"></i> ${item}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="modal-section">
+                    <h4><i class="fas fa-clipboard-check" style="color: var(--primary-blue);"></i> Condiciones de Uso</h4>
+                    <ul>
+                        ${info.conditions.map(item => `<li><i class="fas fa-check-circle"></i> ${item}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="modal-section">
+                    <h4><i class="fas fa-ban" style="color: #dc2626;"></i> Restricciones</h4>
+                    <ul>
+                        ${info.restrictions.map(item => `<li><i class="fas fa-times-circle" style="color: #dc2626;"></i> ${item}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="modal-section">
+                    <h4><i class="fas fa-exclamation-triangle" style="color: #ea580c;"></i> Penalidades</h4>
+                    <ul>
+                        ${info.penalties.map(item => `<li><i class="fas fa-exclamation-circle" style="color: #ea580c;"></i> ${item}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('modalBody').innerHTML = html;
+            modal.classList.add('active');
         }
 
-        // ===== FUNCIÓN AJAX PARA VERIFICAR DISPONIBILIDAD =====
-        async function verificarDisponibilidad() {
-            const espacio = document.getElementById('espacio');
-            const fecha = document.getElementById('fecha');
-            
-            if (!espacio.value || !fecha.value) {
-                resetTimeBlocks();
-                return;
+        function closeModal() {
+            document.getElementById('infoModal').classList.remove('active');
+        }
+
+        // Close modal on background click
+        document.getElementById('infoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
             }
-            
-            currentSpaceId = espacio.value;
-            currentDate = fecha.value;
-            
-            console.log('DEBUG - Verificando disponibilidad para:', currentSpaceId, currentDate);
-            
-            // Mostrar estado de carga
-            showLoadingState();
-            
-            try {
-                const response = await fetch(`/ajax/verificar-disponibilidad/?espacio_id=${currentSpaceId}&fecha=${currentDate}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                    }
+        });
+
+        // Handle space selection
+        document.querySelectorAll('.btn-select').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove previous selections
+                document.querySelectorAll('.space-card').forEach(card => {
+                    card.classList.remove('selected');
                 });
                 
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status}: ${response.statusText}`);
-                }
+                // Add selection to clicked card
+                this.closest('.space-card').classList.add('selected');
                 
-                const data = await response.json();
-                console.log('DEBUG - Datos recibidos:', data);
-                availabilityData = data;
+                // Show form section
+                document.getElementById('formSection').classList.add('active');
                 
-                // Actualizar interfaz con los datos recibidos
-                updateHorariosConDisponibilidad(data);
-                showSuccessState();
+                // Scroll to form
+                document.getElementById('formSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
                 
-            } catch (error) {
-                console.error('Error al verificar disponibilidad:', error);
-                showErrorState(error.message);
-            }
-        }
-
-        function showLoadingState() {
-            const status = document.getElementById('availability-status');
-            const spinner = document.getElementById('loading-spinner');
-            const timeBlocks = document.getElementById('time-blocks');
-            
-            status.className = 'availability-status loading';
-            status.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Verificando disponibilidad...';
-            
-            spinner.classList.add('active');
-            timeBlocks.innerHTML = '';
-        }
-
-        function showSuccessState() {
-            const status = document.getElementById('availability-status');
-            const spinner = document.getElementById('loading-spinner');
-            
-            status.className = 'availability-status loaded';
-            status.innerHTML = '<i class="fas fa-check-circle"></i> Disponibilidad actualizada en tiempo real';
-            
-            spinner.classList.remove('active');
-            
-            // Ocultar después de 3 segundos
-            setTimeout(() => {
-                status.style.display = 'none';
-            }, 3000);
-        }
-
-        function showErrorState(message) {
-            const status = document.getElementById('availability-status');
-            const spinner = document.getElementById('loading-spinner');
-            const timeBlocks = document.getElementById('time-blocks');
-            
-            status.className = 'availability-status';
-            status.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
-            status.style.color = 'white';
-            status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error: ${message}`;
-            
-            spinner.classList.remove('active');
-            timeBlocks.innerHTML = '<p class="no-space">Error al cargar horarios. Intente nuevamente.</p>';
-        }
-
-        // ===== FUNCIÓN ACTUALIZADA PARA HORARIOS CON BLOQUEO DE PASADOS =====
-        function updateHorariosConDisponibilidad(data) {
-            console.log('DEBUG - Actualizando horarios con datos:', data);
-            
-            const timeBlocks = document.getElementById('time-blocks');
-            const espacioTexto = data.nombre_espacio.toLowerCase();
-            currentSpaceType = espacioTexto;
-            
-            // Limpiar selecciones previas
-            selectedTimeSlots = [];
-            updateHiddenInputs();
-            
-            timeBlocks.innerHTML = '';
-            
-            if (!data.horarios || data.horarios.length === 0) {
-                timeBlocks.innerHTML = '<p class="no-space">No hay horarios disponibles para este espacio.</p>';
-                toggleVisitorInfo();
-                return;
-            }
-            
-            data.horarios.forEach((bloque, index) => {
-                console.log('DEBUG - Procesando bloque:', bloque);
+                // Check if it's parking (show visitor fields)
+                const isParking = this.closest('.space-card').classList.contains('type-parking-visit') || 
+                                 this.closest('.space-card').classList.contains('type-parking-private');
                 
-                const timeBlock = document.createElement('div');
+                document.getElementById('visitorFields').style.display = isParking ? 'block' : 'none';
                 
-                // Aplicar clases según disponibilidad
-                let blockClass = 'time-block';
-                let disabledAttr = '';
-                let razonBloqueo = '';
-                
-                // VERIFICAR SI EL HORARIO YA PASÓ
-                const horarioPasado = isTimeSlotPassed(bloque.inicio, currentDate);
-                console.log('DEBUG - Horario pasado para', bloque.inicio, ':', horarioPasado);
-                
-                if (bloque.ocupado) {
-                    blockClass += ' ocupado';
-                    disabledAttr = 'disabled';
-                    razonBloqueo = 'OCUPADO';
-                } else if (horarioPasado) {
-                    // BLOQUEAR HORARIOS PASADOS
-                    blockClass += ' ocupado pasado';
-                    disabledAttr = 'disabled';
-                    razonBloqueo = 'PASADO';
-                } else {
-                    blockClass += ' disponible';
-                }
-                
-                console.log('DEBUG - Clase final del bloque:', blockClass);
-                console.log('DEBUG - Razón bloqueo:', razonBloqueo);
-                
-                timeBlock.className = blockClass;
-                timeBlock.innerHTML = `
-                    <input type="checkbox" id="time_${index}" 
-                           value="${bloque.inicio}-${bloque.fin}" 
-                           data-inicio="${bloque.inicio}"
-                           data-fin="${bloque.fin}"
-                           data-label="${bloque.label}"
-                           onchange="updateSelectedTimes()"
-                           ${disabledAttr}>
-                    <label for="time_${index}" class="time-label">
-                        ${bloque.label}
-                    </label>
-                `;
-                
-                // Agregar etiqueta específica para horarios ocupados/pasados
-                if (razonBloqueo) {
-                    const etiqueta = document.createElement('span');
-                    etiqueta.style.cssText = `
-                        position: absolute;
-                        top: 50%;
-                        right: 10px;
-                        transform: translateY(-50%);
-                        background: ${razonBloqueo === 'PASADO' ? '#f39c12' : '#e74c3c'};
-                        color: white;
-                        font-size: 0.7rem;
-                        padding: 0.2rem 0.5rem;
-                        border-radius: 5px;
-                        font-weight: 700;
-                        z-index: 10;
-                    `;
-                    etiqueta.textContent = razonBloqueo;
-                    timeBlock.appendChild(etiqueta);
-                    
-                    // Forzar el estilo del bloque
-                    if (razonBloqueo === 'PASADO') {
-                        timeBlock.style.borderColor = '#f39c12';
-                        timeBlock.style.background = 'linear-gradient(135deg, #fef9e7 0%, #fcf3cf 100%)';
-                        timeBlock.style.opacity = '0.8';
-                    }
-                }
-                
-                timeBlocks.appendChild(timeBlock);
+                // Update progress
+                document.querySelectorAll('.step')[0].classList.add('completed');
+                document.querySelectorAll('.step')[0].classList.remove('active');
+                document.querySelectorAll('.step')[1].classList.add('active');
             });
-            
-            toggleVisitorInfo();
-        }
-
-        function resetTimeBlocks() {
-            const timeBlocks = document.getElementById('time-blocks');
-            const status = document.getElementById('availability-status');
-            const spinner = document.getElementById('loading-spinner');
-            
-            timeBlocks.innerHTML = '<p class="no-space">Primero seleccione un espacio y fecha...</p>';
-            status.style.display = 'none';
-            spinner.classList.remove('active');
-            
-            selectedTimeSlots = [];
-            updateHiddenInputs();
-            updateSummary('', '');
-        }
-
-        function getMaxBlocks() {
-            if (currentSpaceType.includes('estacionamiento') || currentSpaceType.includes('terraza')) {
-                return 0; // Sin límite
-            } else if (currentSpaceType.includes('directorio')) {
-                return 8; // 8 bloques máximo
-            } else if (currentSpaceType.includes('sala')) {
-                return 8; // 8 bloques máximo para salas
-            } else if (currentSpaceType.includes('comedor')) {
-                return 8; // 5 bloques máximo para comedor
-            }
-            
-            return 10; // Por defecto
-        }
-
-        function getMinBlocks() {
-            if (currentSpaceType.includes('directorio')) {
-                return 2; // Mínimo 2 bloques para directorio
-            }
-            return 1; // Por defecto mínimo 1 bloque
-        }
-
-        function getLimitMessage() {
-            if (currentSpaceType.includes('estacionamiento') || currentSpaceType.includes('terraza')) {
-                return 'Sin límite de horarios';
-            } else if (currentSpaceType.includes('directorio')) {
-                return 'Máximo 8 bloques (8 horas)';
-            } else if (currentSpaceType.includes('sala')) {
-                return 'Máximo 8 bloques (8 horas)';
-            } else if (currentSpaceType.includes('comedor')) {
-                return 'Máximo 8 bloques (8 horas)';
-            }
-            return 'Máximo 10 bloques';
-        }
-
-        function getMinMessage() {
-            if (currentSpaceType.includes('directorio')) {
-                return 'Mínimo 2 bloques (2 horas) requeridos para directorio';
-            }
-            return '';
-        }
-
-        function updateSelectedTimes() {
-            const checkboxes = document.querySelectorAll('#time-blocks input[type="checkbox"]:checked');
-            
-            let maxBlocks = getMaxBlocks();
-            let minBlocks = getMinBlocks();
-            let limitMessage = getLimitMessage();
-            let minMessage = getMinMessage();
-            
-            // Validar máximo
-            if (checkboxes.length > maxBlocks && maxBlocks > 0) {
-                const lastChecked = Array.from(checkboxes).pop();
-                lastChecked.checked = false;
-                
-                showError(`Límite excedido. ${limitMessage} para ${currentSpaceType}.`);
-                
-                setTimeout(() => {
-                    updateSelectedTimes();
-                }, 50);
-                return;
-            }
-            
-            selectedTimeSlots = Array.from(checkboxes).map(cb => ({
-                inicio: cb.dataset.inicio,
-                fin: cb.dataset.fin,
-                label: cb.dataset.label,
-                value: cb.value
-            }));
-            
-            updateHiddenInputs();
-            updateSummary(limitMessage, minMessage);
-            updateVisualStyles();
-            
-            // Validar mínimo para mostrar advertencia
-            if (checkboxes.length > 0 && checkboxes.length < minBlocks) {
-                showError(`${minMessage}. Seleccionados: ${checkboxes.length}/${minBlocks}`);
-            } else {
-                hideError();
-            }
-        }
-
-        function updateHiddenInputs() {
-            const container = document.getElementById('hidden-horarios');
-            container.innerHTML = '';
-            
-            if (selectedTimeSlots.length > 0) {
-                selectedTimeSlots.forEach((slot, index) => {
-                    const inputBloqueHorario = document.createElement('input');
-                    inputBloqueHorario.type = 'hidden';
-                    inputBloqueHorario.name = 'bloques_horarios';
-                    inputBloqueHorario.value = `${slot.inicio}-${slot.fin}`;
-                    container.appendChild(inputBloqueHorario);
-                });
-                
-                const inputTotal = document.createElement('input');
-                inputTotal.type = 'hidden';
-                inputTotal.name = 'total_bloques';
-                inputTotal.value = selectedTimeSlots.length;
-                container.appendChild(inputTotal);
-            }
-        }
-        
-        function updateSummary(limitMessage, minMessage) {
-            const summary = document.getElementById('selected-summary');
-            const summaryText = document.getElementById('summary-text');
-            
-            if (selectedTimeSlots.length > 0) {
-                summary.classList.add('active');
-                const labels = selectedTimeSlots.map(slot => slot.label);
-                
-                let statusText = `${limitMessage} - Seleccionados: ${selectedTimeSlots.length}`;
-                if (minMessage) {
-                    statusText += ` (${minMessage})`;
-                }
-                
-                summaryText.innerHTML = `
-                    <strong>${labels.join(' | ')}</strong><br>
-                    <small style="color: #6c757d; font-style: italic;">${statusText}</small>
-                `;
-            } else {
-                summary.classList.remove('active');
-                summaryText.textContent = 'No hay horarios seleccionados';
-            }
-        }
-
-        function updateVisualStyles() {
-            const timeBlocks = document.querySelectorAll('.time-block');
-            timeBlocks.forEach(block => {
-                const checkbox = block.querySelector('input[type="checkbox"]');
-                if (checkbox && checkbox.checked) {
-                    block.classList.add('selected');
-                } else {
-                    block.classList.remove('selected');
-                }
-            });
-        }
-
-        function toggleVisitorInfo() {
-            const espacio = document.getElementById('espacio');
-            const visitorInfo = document.getElementById('visitor-info');
-            
-            if (!espacio.value) {
-                visitorInfo.classList.remove('active');
-                return;
-            }
-            
-            const espacioTexto = espacio.options[espacio.selectedIndex].text.toLowerCase();
-            
-            if (espacioTexto.includes('estacionamiento') || espacioTexto.includes('estac')) {
-                visitorInfo.classList.add('active');
-                document.getElementById('nombre_visitante').required = true;
-                document.getElementById('placa_visitante').required = true;
-                document.querySelector('.visitor-header h3').textContent = 'Información del Visitante (Obligatorio)';
-            } else {
-                visitorInfo.classList.remove('active');
-                document.getElementById('nombre_visitante').required = false;
-                document.getElementById('placa_visitante').required = false;
-                document.querySelector('.visitor-header h3').textContent = 'Información del Visitante';
-            }
-        }
-
-        function validateForm(event) {
-            const espacio = document.getElementById('espacio').value;
-            const fecha = document.getElementById('fecha').value;
-            const horariosSeleccionados = selectedTimeSlots.length;
-            const minBlocks = getMinBlocks();
-            
-            if (!espacio) {
-                showError('Debe seleccionar un espacio válido');
-                event.preventDefault();
-                return false;
-            }
-            
-            if (!fecha) {
-                showError('Debe seleccionar una fecha válida');
-                event.preventDefault();
-                return false;
-            }
-            
-            if (horariosSeleccionados === 0) {
-                showError('Debe seleccionar al menos un bloque de horario válido');
-                event.preventDefault();
-                return false;
-            }
-            
-            // Validar mínimo de bloques
-            if (horariosSeleccionados < minBlocks) {
-                const minMessage = getMinMessage();
-                showError(`${minMessage}. Actualmente seleccionados: ${horariosSeleccionados}/${minBlocks}`);
-                event.preventDefault();
-                return false;
-            }
-            
-            if (currentSpaceType.includes('estacionamiento')) {
-                const nombreVisitante = document.getElementById('nombre_visitante').value;
-                const placaVisitante = document.getElementById('placa_visitante').value;
-                
-                if (!nombreVisitante.trim()) {
-                    showError('El nombre del visitante es obligatorio para reservas de estacionamiento');
-                    event.preventDefault();
-                    return false;
-                }
-                
-                if (!placaVisitante.trim()) {
-                    showError('La placa del vehículo es obligatoria para reservas de estacionamiento');
-                    event.preventDefault();
-                    return false;
-                }
-            }
-            
-            hideError();
-            return true;
-        }
-
-        function showError(message) {
-            const errorDiv = document.getElementById('error-messages');
-            const errorText = document.getElementById('error-text');
-            errorText.textContent = message;
-            errorDiv.style.display = 'flex';
-            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-        function hideError() {
-            const errorDiv = document.getElementById('error-messages');
-            errorDiv.style.display = 'none';
-        }
-
-        // ===== EVENT LISTENERS =====
-        document.getElementById('espacio').addEventListener('change', function() {
-            console.log('DEBUG - Espacio cambiado:', this.value);
-            verificarDisponibilidad();
-        });
-
-        document.getElementById('fecha').addEventListener('change', function() {
-            console.log('DEBUG - Fecha cambiada:', this.value);
-            verificarDisponibilidad();
-        });
-
-        document.getElementById('placa_visitante').addEventListener('input', function() {
-            this.value = this.value.toUpperCase();
         });
     </script>
 </body>
