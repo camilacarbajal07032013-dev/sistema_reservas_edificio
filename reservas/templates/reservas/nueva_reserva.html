@@ -289,7 +289,8 @@
         .space-card.type-directorio::before { background: var(--directorio-color); }
         .space-card.type-terraza::before { background: var(--terraza-color); }
         .space-card.type-comedor::before { background: var(--comedor-color); }
-        .space-card.type-estacionamiento::before { background: var(--parking-visit-color); }
+        .space-card.type-parking-visit::before { background: var(--parking-visit-color); }
+        .space-card.type-parking-private::before { background: var(--parking-private-color); }
 
         .space-icon {
             width: 70px;
@@ -307,8 +308,8 @@
         .space-icon.type-directorio { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
         .space-icon.type-terraza { background: linear-gradient(135deg, #059669, #047857); }
         .space-icon.type-comedor { background: linear-gradient(135deg, #d97706, #b45309); }
-        .space-icon.type-estacionamiento { background: linear-gradient(135deg, #0284c7, #0369a1); }
-        .space-icon.parking-private { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+        .space-icon.type-parking-visit { background: linear-gradient(135deg, #0284c7, #0369a1); }
+        .space-icon.type-parking-private { background: linear-gradient(135deg, #dc2626, #b91c1c); }
 
         .space-content {
             flex: 1;
@@ -643,16 +644,6 @@
                 flex-direction: column;
                 gap: 1rem;
             }
-
-            .header-buttons {
-                width: 100%;
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
         }
     </style>
 </head>
@@ -666,13 +657,13 @@
                 <i class="fas fa-calendar-plus" style="font-size: 2rem;"></i>
                 <div>
                     <h1>Nueva Reserva</h1>
-                    <p class="header-subtitle">Sistema de Gestión - {{ oficina.nombre_empresa|default:"Disponibilidad de Tiempo" }}</p>
+                    <p class="header-subtitle">Sistema de Gestión - Disponibilidad de Tiempo</p>
                 </div>
             </div>
             <div class="header-buttons">
                 <a href="{% url 'mis_reservas' %}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i>
-                    Volver
+                    Volver a Mis Reservas
                 </a>
                 <a href="{% url 'logout' %}" class="btn btn-danger">
                     <i class="fas fa-sign-out-alt"></i>
@@ -718,124 +709,326 @@
                     <i class="fas fa-building"></i>
                     Espacios Disponibles
                 </h2>
-                <p>Seleccione el espacio que desea reservar - {{ espacios|length }} opciones disponibles</p>
+                <p>Seleccione el espacio que desea reservar para ver su disponibilidad</p>
             </div>
 
-            <!-- SPACES GRID - DINÁMICO -->
+            <!-- SPACES GRID -->
             <div class="spaces-grid">
-                {% for espacio in espacios %}
-                    <div class="space-card type-{{ espacio.tipo }}" data-espacio-id="{{ espacio.id }}" data-tipo="{{ espacio.tipo }}">
-                        <!-- ÍCONO DINÁMICO -->
-                        <div class="space-icon type-{{ espacio.tipo }} {% if espacio.tipo == 'estacionamiento' and not espacio.es_estacionamiento_visita %}parking-private{% endif %}">
-                            {% if espacio.tipo == 'sala' %}🏢
-                            {% elif espacio.tipo == 'directorio' %}🏛️
-                            {% elif espacio.tipo == 'terraza' %}🌳
-                            {% elif espacio.tipo == 'comedor' %}🍽️
-                            {% elif espacio.tipo == 'estacionamiento' %}
-                                {% if espacio.es_estacionamiento_visita %}🅿️{% else %}🔒{% endif %}
-                            {% endif %}
+                <!-- SALAS -->
+                <div class="space-card type-sala">
+                    <div class="space-icon type-sala">🏢</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Sala 1</h3>
+                                <p class="space-subtitle">Sala de reuniones</p>
+                            </div>
+                            <span class="space-badge badge-popular">🔥 Popular</span>
                         </div>
-
-                        <div class="space-content">
-                            <div class="space-header">
-                                <div>
-                                    <h3 class="space-title">{{ espacio.nombre }}</h3>
-                                    <p class="space-subtitle">
-                                        {% if espacio.tipo == 'sala' %}Sala de reuniones
-                                        {% elif espacio.tipo == 'directorio' %}Sala ejecutiva
-                                        {% elif espacio.tipo == 'terraza' %}Espacio al aire libre
-                                        {% elif espacio.tipo == 'comedor' %}Área común
-                                        {% elif espacio.es_estacionamiento_visita %}Estacionamiento para visitantes
-                                        {% else %}Asignado a Oficina {{ espacio.oficina_propietaria.numero }}
-                                        {% endif %}
-                                    </p>
-                                </div>
-                                
-                                <!-- BADGE DINÁMICO -->
-                                {% if espacio.tipo == 'estacionamiento' %}
-                                    {% if espacio.es_estacionamiento_visita %}
-                                        <span class="space-badge badge-visit">👥 Visita</span>
-                                    {% else %}
-                                        <span class="space-badge badge-private">🏢 Privado</span>
-                                    {% endif %}
-                                {% elif espacio.tipo == 'directorio' %}
-                                    <span class="space-badge badge-premium">⭐ Premium</span>
-                                {% endif %}
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-users"></i>
+                                <span><strong>10</strong> personas</span>
                             </div>
-
-                            <!-- ESPECIFICACIONES -->
-                            <div class="space-specs">
-                                {% if espacio.capacidad_personas %}
-                                <div class="space-spec">
-                                    <i class="fas fa-{% if espacio.tipo == 'estacionamiento' %}car{% else %}users{% endif %}"></i>
-                                    <span><strong>{{ espacio.capacidad_personas }}</strong> {% if espacio.tipo == 'estacionamiento' %}vehículo{% else %}personas{% endif %}</span>
-                                </div>
-                                {% endif %}
-                                
-                                <div class="space-spec">
-                                    <i class="fas fa-clock"></i>
-                                    <span>Min: <strong>{% if espacio.tiempo_minimo_reserva %}{{ espacio.tiempo_minimo_reserva }}h{% else %}1h{% endif %}</strong></span>
-                                </div>
-                                
-                                {% if espacio.ubicacion %}
-                                <div class="space-spec">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span><strong>{{ espacio.ubicacion }}</strong></span>
-                                </div>
-                                {% endif %}
-                                
-                                <div class="space-spec">
-                                    <i class="fas fa-dollar-sign"></i>
-                                    <span>
-                                        {% if espacio.precio_por_hora and espacio.precio_por_hora > 0 %}
-                                            <strong>S/ {{ espacio.precio_por_hora }}/h</strong>
-                                        {% else %}
-                                            <strong>Gratuito</strong>
-                                        {% endif %}
-                                    </span>
-                                </div>
+                            <div class="space-spec">
+                                <i class="fas fa-clock"></i>
+                                <span>Min: <strong>1h</strong></span>
                             </div>
-
-                            <!-- CARACTERÍSTICAS -->
-                            {% if espacio.equipamiento %}
-                            <div class="space-features">
-                                {% for item in espacio.get_equipamiento_list|slice:":4" %}
-                                    <span class="space-feature">{{ item }}</span>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-
-                            <!-- AVISO PARA ESTACIONAMIENTOS -->
-                            {% if espacio.tipo == 'estacionamiento' %}
-                            <div class="parking-notice">
-                                <strong>⚠️ DATOS REQUERIDOS:</strong>
-                                Nombre, placa y empresa del visitante
-                            </div>
-                            {% endif %}
-
-                            <!-- BOTONES -->
-                            <div class="space-actions">
-                                <button class="btn-info" onclick="openModal('{{ espacio.id }}')">
-                                    <i class="fas fa-info-circle"></i>
-                                    Ver condiciones
-                                </button>
-                                <button class="btn-select" data-espacio="{{ espacio.id }}" data-tipo="{{ espacio.tipo }}">
-                                    <i class="fas fa-check"></i>
-                                    Seleccionar
-                                </button>
+                            <div class="space-spec">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span><strong>Gratuita</strong></span>
                             </div>
                         </div>
+                        <div class="space-features">
+                            <span class="space-feature">📺 TV 55"</span>
+                            <span class="space-feature">🎤 Audio</span>
+                            <span class="space-feature">❄️ A/C</span>
+                            <span class="space-feature">📶 WiFi</span>
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('sala1')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
+                        </div>
                     </div>
-                {% empty %}
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        No hay espacios disponibles en este momento
+                </div>
+
+                <!-- SALA 2 -->
+                <div class="space-card type-sala">
+                    <div class="space-icon type-sala">🏢</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Sala 2</h3>
+                                <p class="space-subtitle">Sala de reuniones</p>
+                            </div>
+                        </div>
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-users"></i>
+                                <span><strong>15</strong> personas</span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-clock"></i>
+                                <span>Min: <strong>1h</strong></span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span><strong>Gratuita</strong></span>
+                            </div>
+                        </div>
+                        <div class="space-features">
+                            <span class="space-feature">📺 TV 65"</span>
+                            <span class="space-feature">🎤 Audio HD</span>
+                            <span class="space-feature">❄️ A/C</span>
+                            <span class="space-feature">📶 WiFi</span>
+                            <span class="space-feature">🪑 Mesa 15p</span>
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('sala2')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
+                        </div>
                     </div>
-                {% endfor %}
+                </div>
+
+                <!-- DIRECTORIO -->
+                <div class="space-card type-directorio">
+                    <div class="space-icon type-directorio">🏛️</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Directorio</h3>
+                                <p class="space-subtitle">Sala ejecutiva principal</p>
+                            </div>
+                            <span class="space-badge badge-premium">⭐ Premium</span>
+                        </div>
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-users"></i>
+                                <span><strong>20</strong> personas</span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-clock"></i>
+                                <span>Min: <strong>2h</strong></span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span><strong>Gratuita</strong></span>
+                            </div>
+                        </div>
+                        <div class="space-features">
+                            <span class="space-feature">🎥 Videoconf</span>
+                            <span class="space-feature">📽️ Proyector 4K</span>
+                            <span class="space-feature">☕ Catering</span>
+                            <span class="space-feature">🪑 Mesa 20p</span>
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('directorio')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TERRAZA -->
+                <div class="space-card type-terraza">
+                    <div class="space-icon type-terraza">🌳</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Terraza</h3>
+                                <p class="space-subtitle">Espacio al aire libre</p>
+                            </div>
+                        </div>
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-users"></i>
+                                <span><strong>30</strong> personas</span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-clock"></i>
+                                <span><strong>Solo tardes</strong></span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span><strong>Gratuita</strong></span>
+                            </div>
+                        </div>
+                        <div class="space-features">
+                            <span class="space-feature">🪑 Mesas</span>
+                            <span class="space-feature">☂️ Toldos</span>
+                            <span class="space-feature">🌅 Vista</span>
+                            <span class="space-feature">☀️ Exterior</span>
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('terraza')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMEDOR -->
+                <div class="space-card type-comedor">
+                    <div class="space-icon type-comedor">🍽️</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Comedor</h3>
+                                <p class="space-subtitle">Área común</p>
+                            </div>
+                        </div>
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-users"></i>
+                                <span><strong>12</strong> personas</span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-clock"></i>
+                                <span><strong>Solo mañanas</strong></span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span><strong>Gratuito</strong></span>
+                            </div>
+                        </div>
+                        <div class="space-features">
+                            <span class="space-feature">☕ Café</span>
+                            <span class="space-feature">🍽️ Utensilios</span>
+                            <span class="space-feature">❄️ Nevera</span>
+                            <span class="space-feature">🔌 Enchufes</span>
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('comedor')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESTACIONAMIENTO DE VISITA -->
+                <div class="space-card type-parking-visit">
+                    <div class="space-icon type-parking-visit">🅿️</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Visita 02 (Estac. 41)</h3>
+                                <p class="space-subtitle">Estacionamiento para visitantes</p>
+                            </div>
+                            <span class="space-badge badge-visit">👥 Visita</span>
+                        </div>
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-car"></i>
+                                <span><strong>1</strong> vehículo</span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span><strong>Sótano 1</strong></span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span><strong>Gratuito</strong></span>
+                            </div>
+                        </div>
+                        <div class="space-features">
+                            <span class="space-feature">🛡️ Vigilancia</span>
+                            <span class="space-feature">💡 Iluminado</span>
+                            <span class="space-feature">📹 Cámaras</span>
+                        </div>
+                        <div class="parking-notice">
+                            <strong>⚠️ DATOS REQUERIDOS:</strong>
+                            Nombre, placa y empresa del visitante
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('parking-visit')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESTACIONAMIENTO PRIVADO -->
+                <div class="space-card type-parking-private">
+                    <div class="space-icon type-parking-private">🔒</div>
+                    <div class="space-content">
+                        <div class="space-header">
+                            <div>
+                                <h3 class="space-title">Estacionamiento #34</h3>
+                                <p class="space-subtitle">Asignado a tu oficina</p>
+                            </div>
+                            <span class="space-badge badge-private">🏢 Privado</span>
+                        </div>
+                        <div class="space-specs">
+                            <div class="space-spec">
+                                <i class="fas fa-car"></i>
+                                <span><strong>1</strong> vehículo</span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span><strong>Sótano 2</strong></span>
+                            </div>
+                            <div class="space-spec">
+                                <i class="fas fa-shield-alt"></i>
+                                <span><strong>Exclusivo</strong></span>
+                            </div>
+                        </div>
+                        <div class="space-features">
+                            <span class="space-feature">🛡️ Vigilancia</span>
+                            <span class="space-feature">💡 Iluminado</span>
+                            <span class="space-feature">🔐 Asignado</span>
+                        </div>
+                        <div class="parking-notice">
+                            <strong>⚠️ Si es para visita:</strong>
+                            Datos del visitante requeridos
+                        </div>
+                        <div class="space-actions">
+                            <button class="btn-info" onclick="openModal('parking-private')">
+                                <i class="fas fa-info-circle"></i>
+                                Ver condiciones
+                            </button>
+                            <button class="btn-select">
+                                <i class="fas fa-check"></i>
+                                Seleccionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- FORM SECTION -->
+        <!-- FORM SECTION (Hidden until space is selected) -->
         <div class="form-section" id="formSection">
             <div class="section-header">
                 <h2>
@@ -845,34 +1038,26 @@
                 <p>Seleccione fecha y horarios disponibles</p>
             </div>
 
-            <form method="POST" id="reservaForm">
+            <form method="POST">
                 {% csrf_token %}
-                
-                <input type="hidden" name="espacio" id="espacioSeleccionado">
                 
                 <div class="form-group">
                     <label for="fecha">Fecha de Reserva</label>
                     <input type="date" id="fecha" name="fecha" min="{{ fecha_minima }}" required>
                 </div>
 
-                <!-- HORARIOS (Aquí cargarías dinámicamente via AJAX o tu sistema actual) -->
-                <div id="horariosContainer">
-                    <!-- Aquí va tu sistema de selección de horarios -->
-                </div>
-
-                <!-- CAMPOS DE VISITANTE (Solo para estacionamientos) -->
-                <div id="visitorFields" style="display:none;">
-                    <h3 style="margin: 2rem 0 1rem 0; color: var(--primary-dark); display: flex; align-items: center; gap: 0.5rem;">
+                <div class="form-group" id="visitorFields" style="display:none;">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">
                         <i class="fas fa-user-tie"></i>
                         Información del Visitante
                     </h3>
                     <div class="form-group">
-                        <label for="nombre_visitante">Nombre Completo *</label>
+                        <label for="nombre_visitante">Nombre Completo</label>
                         <input type="text" id="nombre_visitante" name="nombre_visitante" placeholder="Juan Pérez García">
                     </div>
                     <div class="form-group">
-                        <label for="placa_visitante">Placa del Vehículo *</label>
-                        <input type="text" id="placa_visitante" name="placa_visitante" placeholder="ABC-123" style="text-transform: uppercase;">
+                        <label for="placa_visitante">Placa del Vehículo</label>
+                        <input type="text" id="placa_visitante" name="placa_visitante" placeholder="ABC-123">
                     </div>
                     <div class="form-group">
                         <label for="empresa_visitante">Empresa (Opcional)</label>
@@ -888,7 +1073,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE INFORMACIÓN -->
+    <!-- MODAL -->
     <div class="modal" id="infoModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -896,114 +1081,134 @@
                 <button class="modal-close" onclick="closeModal()">×</button>
             </div>
             <div class="modal-body" id="modalBody">
-                <!-- Content will be loaded dynamically -->
+                <!-- Content will be injected by JavaScript -->
             </div>
         </div>
     </div>
 
     <script>
-        // DATA DE ESPACIOS DESDE DJANGO
-        const espaciosData = {
-            {% for espacio in espacios %}
-            '{{ espacio.id }}': {
-                nombre: '{{ espacio.nombre|escapejs }}',
-                tipo: '{{ espacio.tipo }}',
-                descripcion: '{{ espacio.descripcion|default:""|escapejs }}',
-                capacidad: '{% if espacio.capacidad_personas %}{{ espacio.capacidad_personas }} {% if espacio.tipo == "estacionamiento" %}vehículo{% else %}personas{% endif %}{% else %}No especificada{% endif %}',
-                ubicacion: '{{ espacio.ubicacion|default:"No especificada" }}',
-                equipamiento: [
-                    {% if espacio.equipamiento %}
-                        {% for item in espacio.get_equipamiento_list %}
-                            '{{ item|escapejs }}',
-                        {% endfor %}
-                    {% endif %}
-                ],
-                condiciones: [
-                    {% if espacio.condiciones_uso %}
-                        {% for item in espacio.get_condiciones_list %}
-                            '{{ item|escapejs }}',
-                        {% endfor %}
-                    {% endif %}
-                ],
-                restricciones: [
-                    {% if espacio.restricciones %}
-                        {% for item in espacio.get_restricciones_list %}
-                            '{{ item|escapejs }}',
-                        {% endfor %}
-                    {% endif %}
-                ],
-                penalidades: [
-                    {% if espacio.penalidades %}
-                        {% for item in espacio.get_penalidades_list %}
-                            '{{ item|escapejs }}',
-                        {% endfor %}
-                    {% endif %}
-                ]
+        // Data de espacios (esto vendría del backend en producción)
+        const spacesInfo = {
+            'sala1': {
+                title: '🏢 Sala 1',
+                description: 'Sala de reuniones ejecutiva ideal para presentaciones y juntas',
+                capacity: '10 personas',
+                location: 'Piso 3, Ala Norte',
+                equipment: ['TV 55" 4K', 'Sistema de audio', 'WiFi premium', 'Aire acondicionado', 'Mesa para 10'],
+                conditions: ['Reserva mínima: 1 hora', 'Reserva máxima: 8 horas/día', 'Solicitar con 24h de anticipación', 'Dejar el espacio limpio y ordenado'],
+                restrictions: ['No se permite fumar', 'No alimentos con olor fuerte', 'Prohibido mover muebles'],
+                penalties: ['Cancelación con menos de 4h: 1 día sin reservar', 'No presentarse: 3 días sin reservar', 'Daños al equipamiento: Costo de reparación']
             },
-            {% endfor %}
+            'sala2': {
+                title: '🏢 Sala 2',
+                description: 'Sala de reuniones amplia para equipos medianos',
+                capacity: '15 personas',
+                location: 'Piso 3, Ala Sur',
+                equipment: ['TV 65" 4K', 'Sistema de audio HD', 'WiFi premium', 'Aire acondicionado', 'Mesa para 15'],
+                conditions: ['Reserva mínima: 1 hora', 'Reserva máxima: 8 horas/día', 'Solicitar con 24h de anticipación'],
+                restrictions: ['No se permite fumar', 'No alimentos con olor fuerte'],
+                penalties: ['Cancelación con menos de 4h: 1 día sin reservar', 'No presentarse: 3 días sin reservar']
+            },
+            'directorio': {
+                title: '🏛️ Directorio',
+                description: 'Sala principal para juntas ejecutivas y presentaciones importantes',
+                capacity: '20 personas',
+                location: 'Piso 5, Sala Principal',
+                equipment: ['Videoconferencia HD', 'Proyector 4K', 'Sistema de audio premium', 'Servicio de catering', 'Mesa ejecutiva 20p'],
+                conditions: ['Reserva mínima: 2 horas', 'Reserva máxima: 8 horas/día', 'Solicitar con 48h de anticipación', 'Uso prioritario para dirección'],
+                restrictions: ['No se permite fumar', 'Uso exclusivo para reuniones ejecutivas', 'Requiere autorización especial'],
+                penalties: ['Cancelación con menos de 24h: 3 días sin reservar', 'No presentarse: 1 semana sin reservar', 'Daños: Costo completo de reparación']
+            },
+            'terraza': {
+                title: '🌳 Terraza',
+                description: 'Espacio al aire libre perfecto para eventos y reuniones informales',
+                capacity: '30 personas',
+                location: 'Piso 6, Azotea',
+                equipment: ['Mesas y sillas', 'Toldos', 'Vista panorámica', 'Iluminación nocturna'],
+                conditions: ['Solo disponible 3PM - 10PM', 'Sujeto a condiciones climáticas', 'Recoger al finalizar'],
+                restrictions: ['No música alta después de 9PM', 'Respetar a vecinos', 'No alteraciones permanentes'],
+                penalties: ['Dejar sucio: 2 días sin reservar', 'Quejas de vecinos: Suspensión temporal']
+            },
+            'comedor': {
+                title: '🍽️ Comedor',
+                description: 'Área común para desayunos y reuniones matutinas',
+                capacity: '12 personas',
+                location: 'Piso 1, Área Común',
+                equipment: ['Servicio de café', 'Utensilios', 'Nevera', 'Enchufes'],
+                conditions: ['Solo disponible 8AM - 11AM', 'Máximo 3 horas', 'Limpiar después de usar'],
+                restrictions: ['Solo horario de mañana', 'No monopolizar el espacio', 'Respetar turnos'],
+                penalties: ['No limpiar: 1 día sin reservar']
+            },
+            'parking-visit': {
+                title: '🅿️ Visita 02 (Estac. 41)',
+                description: 'Estacionamiento exclusivo para visitantes de las oficinas',
+                capacity: '1 vehículo',
+                location: 'Sótano 1, Zona Visitas',
+                equipment: ['Vigilancia 24/7', 'Iluminación LED', 'Cámaras de seguridad', 'Acceso directo'],
+                conditions: ['Horario: 7AM - 10PM', 'Registrar datos del visitante', 'Placa visible', 'Respetar espacio asignado'],
+                restrictions: ['Solo vehículos livianos', 'No estacionar vehículos de carga', 'No lavar vehículos'],
+                penalties: ['Datos incompletos: Reserva rechazada', 'Estacionar fuera del espacio: Sanción', 'No presentarse: 2 días sin reservar']
+            },
+            'parking-private': {
+                title: '🔒 Estacionamiento #34',
+                description: 'Estacionamiento privado asignado a tu oficina',
+                capacity: '1 vehículo',
+                location: 'Sótano 2, Zona Privada',
+                equipment: ['Vigilancia 24/7', 'Iluminación', 'Espacio asignado permanente'],
+                conditions: ['Uso exclusivo de tu oficina', 'Si es para visita: registrar datos', 'Mantener limpio'],
+                restrictions: ['Solo tu oficina puede usar', 'No subarrendar', 'No alterar señalización'],
+                penalties: ['Uso no autorizado: Reporte a administración', 'Daños: Reparación a cargo']
+            }
         };
 
-        // FUNCIÓN PARA ABRIR MODAL
-        function openModal(espacioId) {
+        function openModal(spaceId) {
             const modal = document.getElementById('infoModal');
-            const data = espaciosData[espacioId];
+            const info = spacesInfo[spaceId];
             
-            if (!data) return;
-            
-            document.getElementById('modalTitle').textContent = data.nombre;
+            document.getElementById('modalTitle').textContent = info.title;
             
             let html = `
-                ${data.descripcion ? `
                 <div class="modal-section">
                     <p style="font-size: 1.1rem; color: var(--medium-gray); margin-bottom: 2rem;">
-                        ${data.descripcion}
+                        ${info.description}
                     </p>
                 </div>
-                ` : ''}
 
                 <div class="modal-section">
                     <h4><i class="fas fa-info-circle" style="color: var(--primary-blue);"></i> Información General</h4>
                     <ul>
-                        <li><i class="fas fa-users"></i> <strong>Capacidad:</strong> ${data.capacidad}</li>
-                        <li><i class="fas fa-map-marker-alt"></i> <strong>Ubicación:</strong> ${data.ubicacion}</li>
+                        <li><i class="fas fa-users"></i> <strong>Capacidad:</strong> ${info.capacity}</li>
+                        <li><i class="fas fa-map-marker-alt"></i> <strong>Ubicación:</strong> ${info.location}</li>
                     </ul>
                 </div>
 
-                ${data.equipamiento.length > 0 ? `
                 <div class="modal-section">
                     <h4><i class="fas fa-toolbox" style="color: var(--primary-blue);"></i> Equipamiento Disponible</h4>
                     <ul>
-                        ${data.equipamiento.map(item => `<li><i class="fas fa-check"></i> ${item}</li>`).join('')}
+                        ${info.equipment.map(item => `<li><i class="fas fa-check"></i> ${item}</li>`).join('')}
                     </ul>
                 </div>
-                ` : ''}
 
-                ${data.condiciones.length > 0 ? `
                 <div class="modal-section">
                     <h4><i class="fas fa-clipboard-check" style="color: var(--primary-blue);"></i> Condiciones de Uso</h4>
                     <ul>
-                        ${data.condiciones.map(item => `<li><i class="fas fa-check-circle"></i> ${item}</li>`).join('')}
+                        ${info.conditions.map(item => `<li><i class="fas fa-check-circle"></i> ${item}</li>`).join('')}
                     </ul>
                 </div>
-                ` : ''}
 
-                ${data.restricciones.length > 0 ? `
                 <div class="modal-section">
                     <h4><i class="fas fa-ban" style="color: #dc2626;"></i> Restricciones</h4>
                     <ul>
-                        ${data.restricciones.map(item => `<li><i class="fas fa-times-circle" style="color: #dc2626;"></i> ${item}</li>`).join('')}
+                        ${info.restrictions.map(item => `<li><i class="fas fa-times-circle" style="color: #dc2626;"></i> ${item}</li>`).join('')}
                     </ul>
                 </div>
-                ` : ''}
 
-                ${data.penalidades.length > 0 ? `
                 <div class="modal-section">
                     <h4><i class="fas fa-exclamation-triangle" style="color: #ea580c;"></i> Penalidades</h4>
                     <ul>
-                        ${data.penalidades.map(item => `<li><i class="fas fa-exclamation-circle" style="color: #ea580c;"></i> ${item}</li>`).join('')}
+                        ${info.penalties.map(item => `<li><i class="fas fa-exclamation-circle" style="color: #ea580c;"></i> ${item}</li>`).join('')}
                     </ul>
                 </div>
-                ` : ''}
             `;
             
             document.getElementById('modalBody').innerHTML = html;
@@ -1021,68 +1226,34 @@
             }
         });
 
-        // MANEJO DE SELECCIÓN DE ESPACIO
+        // Handle space selection
         document.querySelectorAll('.btn-select').forEach(btn => {
             btn.addEventListener('click', function() {
-                const espacioId = this.getAttribute('data-espacio');
-                const tipo = this.getAttribute('data-tipo');
-                
-                // Remover selección previa
+                // Remove previous selections
                 document.querySelectorAll('.space-card').forEach(card => {
                     card.classList.remove('selected');
                 });
                 
-                // Marcar como seleccionado
+                // Add selection to clicked card
                 this.closest('.space-card').classList.add('selected');
                 
-                // Guardar ID del espacio
-                document.getElementById('espacioSeleccionado').value = espacioId;
-                
-                // Mostrar formulario
+                // Show form section
                 document.getElementById('formSection').classList.add('active');
+                
+                // Scroll to form
                 document.getElementById('formSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
                 
-                // Mostrar campos de visitante si es estacionamiento
-                const isParking = tipo === 'estacionamiento';
-                const visitorFields = document.getElementById('visitorFields');
-                visitorFields.style.display = isParking ? 'block' : 'none';
+                // Check if it's parking (show visitor fields)
+                const isParking = this.closest('.space-card').classList.contains('type-parking-visit') || 
+                                 this.closest('.space-card').classList.contains('type-parking-private');
                 
-                // Hacer requeridos los campos si es estacionamiento
-                document.getElementById('nombre_visitante').required = isParking;
-                document.getElementById('placa_visitante').required = isParking;
+                document.getElementById('visitorFields').style.display = isParking ? 'block' : 'none';
                 
-                // Actualizar progress
+                // Update progress
                 document.querySelectorAll('.step')[0].classList.add('completed');
                 document.querySelectorAll('.step')[0].classList.remove('active');
                 document.querySelectorAll('.step')[1].classList.add('active');
             });
-        });
-
-        // VALIDACIÓN DE ESTACIONAMIENTO
-        document.getElementById('reservaForm').addEventListener('submit', function(e) {
-            const espacioCard = document.querySelector('.space-card.selected');
-            if (!espacioCard) {
-                e.preventDefault();
-                alert('Por favor seleccione un espacio primero');
-                return;
-            }
-            
-            const tipo = espacioCard.getAttribute('data-tipo');
-            if (tipo === 'estacionamiento') {
-                const nombre = document.getElementById('nombre_visitante').value.trim();
-                const placa = document.getElementById('placa_visitante').value.trim();
-                
-                if (!nombre || !placa) {
-                    e.preventDefault();
-                    alert('Para estacionamientos debe completar el nombre y placa del visitante');
-                    return;
-                }
-            }
-        });
-
-        // Auto-uppercase para placas
-        document.getElementById('placa_visitante').addEventListener('input', function() {
-            this.value = this.value.toUpperCase();
         });
     </script>
 </body>
