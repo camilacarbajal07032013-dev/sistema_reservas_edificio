@@ -12,6 +12,8 @@ urlpatterns = [
         # NUEVAS URLs AJAX
     path('ajax/verificar-disponibilidad/', views.verificar_disponibilidad_ajax, name='verificar_disponibilidad_ajax'),
     path('ajax/calendario-ocupacion/', views.obtener_calendario_ocupacion_ajax, name='calendario_ocupacion_ajax'),
+
+    path('obtener-horarios/', views.obtener_horarios, name='obtener_horarios'),
     
     path('importar-usuarios/', views.importar_usuarios, name='importar_usuarios'),
     path('ver-usuarios/', views.ver_usuarios, name='ver_usuarios'),
