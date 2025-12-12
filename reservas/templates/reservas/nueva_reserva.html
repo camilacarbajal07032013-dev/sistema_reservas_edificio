@@ -94,11 +94,25 @@
         .btn-secondary {
             background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             color: white;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(52,152,219,0.3);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(52,152,219,0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(52,152,219,0.4);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(-1px);
         }
 
         .btn-danger {
@@ -124,18 +138,6 @@
             border: 1px solid rgba(255,255,255,0.2);
             position: relative;
             overflow: hidden;
-            animation: fadeInUp 0.6s ease;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .reservation-card::before {
@@ -212,7 +214,7 @@
             transform: translateY(-2px);
         }
 
-        /* ESTADOS DE DISPONIBILIDAD */
+        /* ESTILOS PARA ESTADO DE DISPONIBILIDAD */
         .availability-status {
             display: none;
             padding: 1rem;
@@ -234,10 +236,120 @@
             color: white;
         }
 
-        .availability-status.error {
-            display: block;
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        .time-blocks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+        }
+
+        .time-block {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: white;
+            position: relative;
+        }
+
+        /* ESTADOS DE DISPONIBILIDAD */
+        .time-block.disponible {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #d5f4e6 0%, #fafffe 100%);
+        }
+
+        .time-block.disponible:hover {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #a8e6cf 0%, #d5f4e6 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .time-block.ocupado {
+            border-color: #e74c3c;
+            background: linear-gradient(135deg, #fadbd8 0%, #fdf2f2 100%);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .time-block.ocupado:not(.pasado)::after {
+            content: "OCUPADO";
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            background: #e74c3c;
             color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 5px;
+            font-weight: 700;
+        }
+
+        /* NUEVOS ESTILOS PARA HORARIOS PASADOS */
+        .time-block.pasado {
+            border-color: #f39c12 !important;
+            background: linear-gradient(135deg, #fef9e7 0%, #fcf3cf 100%) !important;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+
+        .time-block.pasado .time-label {
+            color: #9a7c00 !important;
+            text-decoration: line-through;
+            font-style: italic;
+        }
+
+        .time-block.ocupado input[type="checkbox"] {
+            display: none;
+        }
+
+        .time-block.selected {
+            border-color: #3498db;
+            background: linear-gradient(135deg, #ebf3fd 0%, #f8fbff 100%);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .time-block input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #3498db;
+            cursor: pointer;
+        }
+
+        .time-block input[type="checkbox"]:checked + .time-label {
+            font-weight: 700;
+            color: #2980b9;
+        }
+
+        .time-label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            color: #2c3e50;
+        }
+
+        .time-block.ocupado .time-label {
+            color: #7f8c8d;
+            text-decoration: line-through;
+        }
+
+        .no-space {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 2rem;
         }
 
         .loading-spinner {
@@ -265,110 +377,12 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* BLOQUES DE HORARIOS */
-        .time-blocks {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 1rem;
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 12px;
-            border: 2px solid #e9ecef;
-        }
-
-        .time-block {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1rem;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            background: white;
-            position: relative;
-        }
-
-        .time-block.disponible {
-            border-color: #27ae60;
-            background: linear-gradient(135deg, #d5f4e6 0%, #fafffe 100%);
-        }
-
-        .time-block.disponible:hover {
-            border-color: #27ae60;
-            background: linear-gradient(135deg, #a8e6cf 0%, #d5f4e6 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
-        }
-
-        .time-block.ocupado {
-            border-color: #e74c3c;
-            background: linear-gradient(135deg, #fadbd8 0%, #fdf2f2 100%);
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .time-block.ocupado::after {
-            content: "OCUPADO";
-            position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            background: #e74c3c;
-            color: white;
-            font-size: 0.7rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 5px;
-            font-weight: 700;
-        }
-
-        .time-block.selected {
-            border-color: #3498db;
-            background: linear-gradient(135deg, #ebf3fd 0%, #f8fbff 100%);
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        }
-
-        .time-block input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #3498db;
-            cursor: pointer;
-        }
-
-        .time-block.ocupado input[type="checkbox"] {
-            display: none;
-        }
-
-        .time-label {
-            flex: 1;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            color: #2c3e50;
-            font-weight: 600;
-        }
-
-        .time-block.ocupado .time-label {
-            color: #7f8c8d;
-            text-decoration: line-through;
-        }
-
-        .no-space {
-            text-align: center;
-            color: #6c757d;
-            font-style: italic;
-            padding: 2rem;
-        }
-
-        /* RESUMEN DE SELECCIÓN */
         .selected-summary {
             background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
             border: 1px solid #bee5eb;
             border-radius: 10px;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
             display: none;
         }
 
@@ -379,7 +393,7 @@
         .selected-summary h4 {
             color: #0c5460;
             font-weight: 600;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -387,11 +401,9 @@
 
         .selected-summary p {
             color: #0c5460;
-            font-size: 0.95rem;
-            line-height: 1.6;
+            font-size: 0.9rem;
         }
 
-        /* INFORMACIÓN DE VISITANTE */
         .visitor-info {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: 15px;
@@ -421,7 +433,6 @@
             font-weight: 600;
         }
 
-        /* ACCIONES DEL FORMULARIO */
         .form-actions {
             display: flex;
             gap: 1.5rem;
@@ -441,11 +452,17 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 8px 25px rgba(52,152,219,0.3);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-primary:hover {
             transform: translateY(-3px);
             box-shadow: 0 12px 35px rgba(52,152,219,0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
         }
 
         .btn-primary:disabled {
@@ -455,7 +472,6 @@
             box-shadow: none;
         }
 
-        /* ALERTAS */
         .alert {
             padding: 1.25rem;
             border-radius: 12px;
@@ -484,15 +500,43 @@
             
             .form-grid {
                 grid-template-columns: 1fr;
+                gap: 1.5rem;
             }
             
             .time-blocks {
                 grid-template-columns: 1fr;
+                max-height: 250px;
             }
             
             .reservation-card {
                 padding: 2rem 1.5rem;
+                border-radius: 15px;
             }
+            
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reservation-card {
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .form-group:hover input,
+        .form-group:hover select {
+            border-color: #bdc3c7;
         }
     </style>
 </head>
@@ -573,15 +617,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label>
+                        <label for="bloques_horarios">
                             <i class="fas fa-clock icon"></i>
-                            Seleccionar Bloques de Horario
+                            Seleccionar Bloques de Horario (Múltiple)
                         </label>
                         
                         <!-- Estado de disponibilidad -->
                         <div id="availability-status" class="availability-status">
                             <i class="fas fa-sync-alt fa-spin"></i>
-                            Cargando horarios...
+                            Verificando disponibilidad...
                         </div>
                         
                         <!-- Spinner de carga -->
@@ -590,22 +634,18 @@
                             <p>Cargando horarios disponibles...</p>
                         </div>
                         
-                        <!-- Bloques de horarios -->
                         <div class="time-blocks" id="time-blocks">
                             <p class="no-space">Primero seleccione un espacio y fecha...</p>
                         </div>
                         
-                        <!-- Campos ocultos para enviar -->
                         <div id="hidden-horarios"></div>
                         
-                        <!-- Resumen de selección -->
                         <div class="selected-summary" id="selected-summary">
-                            <h4><i class="fas fa-check-circle"></i> Horarios Seleccionados:</h4>
+                            <h4><i class="fas fa-clock"></i> Horarios Seleccionados:</h4>
                             <p id="summary-text">No hay horarios seleccionados</p>
                         </div>
                     </div>
 
-                    <!-- Información del visitante -->
                     <div id="visitor-info" class="visitor-info">
                         <div class="visitor-header">
                             <i class="fas fa-user-tie" style="font-size: 1.5rem; color: #3498db;"></i>
@@ -657,14 +697,71 @@
         </div>
     </div>
 
-    <script>
+<script>
         let selectedTimeSlots = [];
         let currentSpaceType = '';
         let currentSpaceId = null;
         let currentDate = null;
+        let availabilityData = null;
         
-        // ===== FUNCIÓN PARA CARGAR HORARIOS VIA AJAX =====
-        async function cargarHorarios() {
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').min = today;
+            
+            const card = document.querySelector('.reservation-card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        });
+
+        // ===== FUNCIÓN CORREGIDA PARA VERIFICAR SI EL HORARIO YA PASÓ =====
+        function isTimeSlotPassed(horaInicio, fecha) {
+            try {
+                const ahora = new Date();
+                const fechaSeleccionada = new Date(fecha + 'T00:00:00');
+                
+                const esMismaFecha = (
+                    fechaSeleccionada.getFullYear() === ahora.getFullYear() &&
+                    fechaSeleccionada.getMonth() === ahora.getMonth() &&
+                    fechaSeleccionada.getDate() === ahora.getDate()
+                );
+                
+                if (!esMismaFecha) {
+                    return false;
+                }
+                
+                // Obtener hora de INICIO del bloque
+                const [hora, minuto] = horaInicio.split(':').map(Number);
+                
+                // Crear hora de FIN del bloque (asumiendo bloques de 1 hora)
+                const horaFin = hora + 1;
+                const minutoFin = minuto;
+                
+                const horaActual = ahora.getHours();
+                const minutoActual = ahora.getMinutes();
+                
+                // Bloquear solo si la hora actual es DESPUÉS del fin del bloque
+                if (horaActual > horaFin) {
+                    return true;
+                } else if (horaActual === horaFin && minutoActual > minutoFin) {
+                    return true;
+                }
+                
+                return false;
+                
+            } catch (error) {
+                console.error('Error en isTimeSlotPassed:', error);
+                return false;
+            }
+        }
+
+        // ===== FUNCIÓN AJAX PARA VERIFICAR DISPONIBILIDAD =====
+        async function verificarDisponibilidad() {
             const espacio = document.getElementById('espacio');
             const fecha = document.getElementById('fecha');
             
@@ -675,27 +772,34 @@
             
             currentSpaceId = espacio.value;
             currentDate = fecha.value;
-            currentSpaceType = espacio.options[espacio.selectedIndex].text.toLowerCase();
             
-            console.log('Cargando horarios para:', currentSpaceId, currentDate);
+            console.log('DEBUG - Verificando disponibilidad para:', currentSpaceId, currentDate);
             
+            // Mostrar estado de carga
             showLoadingState();
             
             try {
-                const response = await fetch(`/reservas/obtener-horarios/?espacio=${currentSpaceId}&fecha=${currentDate}`);
+                const response = await fetch(`/ajax/verificar-disponibilidad/?espacio_id=${currentSpaceId}&fecha=${currentDate}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    }
+                });
                 
                 if (!response.ok) {
                     throw new Error(`Error ${response.status}: ${response.statusText}`);
                 }
                 
                 const data = await response.json();
-                console.log('Horarios recibidos:', data);
+                console.log('DEBUG - Datos recibidos:', data);
+                availabilityData = data;
                 
-                renderizarHorarios(data);
+                // Actualizar interfaz con los datos recibidos
+                updateHorariosConDisponibilidad(data);
                 showSuccessState();
                 
             } catch (error) {
-                console.error('Error al cargar horarios:', error);
+                console.error('Error al verificar disponibilidad:', error);
                 showErrorState(error.message);
             }
         }
@@ -706,7 +810,7 @@
             const timeBlocks = document.getElementById('time-blocks');
             
             status.className = 'availability-status loading';
-            status.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Cargando horarios...';
+            status.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Verificando disponibilidad...';
             
             spinner.classList.add('active');
             timeBlocks.innerHTML = '';
@@ -717,10 +821,11 @@
             const spinner = document.getElementById('loading-spinner');
             
             status.className = 'availability-status loaded';
-            status.innerHTML = '<i class="fas fa-check-circle"></i> Horarios cargados correctamente';
+            status.innerHTML = '<i class="fas fa-check-circle"></i> Disponibilidad actualizada en tiempo real';
             
             spinner.classList.remove('active');
             
+            // Ocultar después de 3 segundos
             setTimeout(() => {
                 status.style.display = 'none';
             }, 3000);
@@ -731,16 +836,24 @@
             const spinner = document.getElementById('loading-spinner');
             const timeBlocks = document.getElementById('time-blocks');
             
-            status.className = 'availability-status error';
+            status.className = 'availability-status';
+            status.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
+            status.style.color = 'white';
             status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error: ${message}`;
             
             spinner.classList.remove('active');
-            timeBlocks.innerHTML = '<p class="no-space">Error al cargar horarios. Por favor intente nuevamente.</p>';
+            timeBlocks.innerHTML = '<p class="no-space">Error al cargar horarios. Intente nuevamente.</p>';
         }
 
-        function renderizarHorarios(data) {
-            const timeBlocks = document.getElementById('time-blocks');
+        // ===== FUNCIÓN ACTUALIZADA PARA HORARIOS CON BLOQUEO DE PASADOS =====
+        function updateHorariosConDisponibilidad(data) {
+            console.log('DEBUG - Actualizando horarios con datos:', data);
             
+            const timeBlocks = document.getElementById('time-blocks');
+            const espacioTexto = data.nombre_espacio.toLowerCase();
+            currentSpaceType = espacioTexto;
+            
+            // Limpiar selecciones previas
             selectedTimeSlots = [];
             updateHiddenInputs();
             
@@ -753,24 +866,41 @@
             }
             
             data.horarios.forEach((bloque, index) => {
+                console.log('DEBUG - Procesando bloque:', bloque);
+                
                 const timeBlock = document.createElement('div');
                 
+                // Aplicar clases según disponibilidad
                 let blockClass = 'time-block';
                 let disabledAttr = '';
+                let razonBloqueo = '';
                 
-                if (bloque.disponible) {
-                    blockClass += ' disponible';
-                } else {
+                // VERIFICAR SI EL HORARIO YA PASÓ
+                const horarioPasado = isTimeSlotPassed(bloque.inicio, currentDate);
+                console.log('DEBUG - Horario pasado para', bloque.inicio, ':', horarioPasado);
+                
+                if (bloque.ocupado) {
                     blockClass += ' ocupado';
                     disabledAttr = 'disabled';
+                    razonBloqueo = 'OCUPADO';
+                } else if (horarioPasado) {
+                    // BLOQUEAR HORARIOS PASADOS
+                    blockClass += ' ocupado pasado';
+                    disabledAttr = 'disabled';
+                    razonBloqueo = 'PASADO';
+                } else {
+                    blockClass += ' disponible';
                 }
+                
+                console.log('DEBUG - Clase final del bloque:', blockClass);
+                console.log('DEBUG - Razón bloqueo:', razonBloqueo);
                 
                 timeBlock.className = blockClass;
                 timeBlock.innerHTML = `
                     <input type="checkbox" id="time_${index}" 
-                           value="${bloque.hora_inicio}-${bloque.hora_fin}" 
-                           data-inicio="${bloque.hora_inicio}"
-                           data-fin="${bloque.hora_fin}"
+                           value="${bloque.inicio}-${bloque.fin}" 
+                           data-inicio="${bloque.inicio}"
+                           data-fin="${bloque.fin}"
                            data-label="${bloque.label}"
                            onchange="updateSelectedTimes()"
                            ${disabledAttr}>
@@ -778,6 +908,33 @@
                         ${bloque.label}
                     </label>
                 `;
+                
+                // Agregar etiqueta específica para horarios ocupados/pasados
+                if (razonBloqueo) {
+                    const etiqueta = document.createElement('span');
+                    etiqueta.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        right: 10px;
+                        transform: translateY(-50%);
+                        background: ${razonBloqueo === 'PASADO' ? '#f39c12' : '#e74c3c'};
+                        color: white;
+                        font-size: 0.7rem;
+                        padding: 0.2rem 0.5rem;
+                        border-radius: 5px;
+                        font-weight: 700;
+                        z-index: 10;
+                    `;
+                    etiqueta.textContent = razonBloqueo;
+                    timeBlock.appendChild(etiqueta);
+                    
+                    // Forzar el estilo del bloque
+                    if (razonBloqueo === 'PASADO') {
+                        timeBlock.style.borderColor = '#f39c12';
+                        timeBlock.style.background = 'linear-gradient(135deg, #fef9e7 0%, #fcf3cf 100%)';
+                        timeBlock.style.opacity = '0.8';
+                    }
+                }
                 
                 timeBlocks.appendChild(timeBlock);
             });
@@ -796,63 +953,38 @@
             
             selectedTimeSlots = [];
             updateHiddenInputs();
-            updateSummary();
-        }
-
-        function updateSelectedTimes() {
-            const checkboxes = document.querySelectorAll('#time-blocks input[type="checkbox"]:checked');
-            
-            const maxBlocks = getMaxBlocks();
-            const minBlocks = getMinBlocks();
-            
-            if (checkboxes.length > maxBlocks && maxBlocks > 0) {
-                const lastChecked = Array.from(checkboxes).pop();
-                lastChecked.checked = false;
-                
-                showError(`Límite excedido. ${getLimitMessage()} para ${currentSpaceType}.`);
-                
-                setTimeout(() => updateSelectedTimes(), 50);
-                return;
-            }
-            
-            selectedTimeSlots = Array.from(checkboxes).map(cb => ({
-                inicio: cb.dataset.inicio,
-                fin: cb.dataset.fin,
-                label: cb.dataset.label,
-                value: cb.value
-            }));
-            
-            updateHiddenInputs();
-            updateSummary();
-            updateVisualStyles();
-            
-            if (checkboxes.length > 0 && checkboxes.length < minBlocks) {
-                showError(`${getMinMessage()}. Seleccionados: ${checkboxes.length}/${minBlocks}`);
-            } else {
-                hideError();
-            }
+            updateSummary('', '');
         }
 
         function getMaxBlocks() {
             if (currentSpaceType.includes('estacionamiento') || currentSpaceType.includes('terraza')) {
                 return 0; // Sin límite
-            } else if (currentSpaceType.includes('directorio') || currentSpaceType.includes('sala') || currentSpaceType.includes('comedor')) {
-                return 8;
+            } else if (currentSpaceType.includes('directorio')) {
+                return 8; // 8 bloques máximo
+            } else if (currentSpaceType.includes('sala')) {
+                return 8; // 8 bloques máximo para salas
+            } else if (currentSpaceType.includes('comedor')) {
+                return 8; // 5 bloques máximo para comedor
             }
-            return 10;
+            
+            return 10; // Por defecto
         }
 
         function getMinBlocks() {
             if (currentSpaceType.includes('directorio')) {
-                return 2;
+                return 2; // Mínimo 2 bloques para directorio
             }
-            return 1;
+            return 1; // Por defecto mínimo 1 bloque
         }
 
         function getLimitMessage() {
             if (currentSpaceType.includes('estacionamiento') || currentSpaceType.includes('terraza')) {
                 return 'Sin límite de horarios';
-            } else if (currentSpaceType.includes('directorio') || currentSpaceType.includes('sala') || currentSpaceType.includes('comedor')) {
+            } else if (currentSpaceType.includes('directorio')) {
+                return 'Máximo 8 bloques (8 horas)';
+            } else if (currentSpaceType.includes('sala')) {
+                return 'Máximo 8 bloques (8 horas)';
+            } else if (currentSpaceType.includes('comedor')) {
                 return 'Máximo 8 bloques (8 horas)';
             }
             return 'Máximo 10 bloques';
@@ -865,20 +997,68 @@
             return '';
         }
 
+        function updateSelectedTimes() {
+            const checkboxes = document.querySelectorAll('#time-blocks input[type="checkbox"]:checked');
+            
+            let maxBlocks = getMaxBlocks();
+            let minBlocks = getMinBlocks();
+            let limitMessage = getLimitMessage();
+            let minMessage = getMinMessage();
+            
+            // Validar máximo
+            if (checkboxes.length > maxBlocks && maxBlocks > 0) {
+                const lastChecked = Array.from(checkboxes).pop();
+                lastChecked.checked = false;
+                
+                showError(`Límite excedido. ${limitMessage} para ${currentSpaceType}.`);
+                
+                setTimeout(() => {
+                    updateSelectedTimes();
+                }, 50);
+                return;
+            }
+            
+            selectedTimeSlots = Array.from(checkboxes).map(cb => ({
+                inicio: cb.dataset.inicio,
+                fin: cb.dataset.fin,
+                label: cb.dataset.label,
+                value: cb.value
+            }));
+            
+            updateHiddenInputs();
+            updateSummary(limitMessage, minMessage);
+            updateVisualStyles();
+            
+            // Validar mínimo para mostrar advertencia
+            if (checkboxes.length > 0 && checkboxes.length < minBlocks) {
+                showError(`${minMessage}. Seleccionados: ${checkboxes.length}/${minBlocks}`);
+            } else {
+                hideError();
+            }
+        }
+
         function updateHiddenInputs() {
             const container = document.getElementById('hidden-horarios');
             container.innerHTML = '';
             
-            selectedTimeSlots.forEach(slot => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'bloques_horarios';
-                input.value = `${slot.inicio}-${slot.fin}`;
-                container.appendChild(input);
-            });
+            if (selectedTimeSlots.length > 0) {
+                selectedTimeSlots.forEach((slot, index) => {
+                    const inputBloqueHorario = document.createElement('input');
+                    inputBloqueHorario.type = 'hidden';
+                    inputBloqueHorario.name = 'bloques_horarios';
+                    inputBloqueHorario.value = `${slot.inicio}-${slot.fin}`;
+                    container.appendChild(inputBloqueHorario);
+                });
+                
+                const inputTotal = document.createElement('input');
+                inputTotal.type = 'hidden';
+                inputTotal.name = 'total_bloques';
+                inputTotal.value = selectedTimeSlots.length;
+                container.appendChild(inputTotal);
+            }
         }
-
-        function updateSummary() {
+        
+        function updateSummary(limitMessage, minMessage) {
             const summary = document.getElementById('selected-summary');
             const summaryText = document.getElementById('summary-text');
             
@@ -886,9 +1066,10 @@
                 summary.classList.add('active');
                 const labels = selectedTimeSlots.map(slot => slot.label);
                 
-                let statusText = `${getLimitMessage()} - Seleccionados: ${selectedTimeSlots.length}`;
-                const minMsg = getMinMessage();
-                if (minMsg) statusText += ` (${minMsg})`;
+                let statusText = `${limitMessage} - Seleccionados: ${selectedTimeSlots.length}`;
+                if (minMessage) {
+                    statusText += ` (${minMessage})`;
+                }
                 
                 summaryText.innerHTML = `
                     <strong>${labels.join(' | ')}</strong><br>
@@ -913,16 +1094,26 @@
         }
 
         function toggleVisitorInfo() {
+            const espacio = document.getElementById('espacio');
             const visitorInfo = document.getElementById('visitor-info');
             
-            if (currentSpaceType.includes('estacionamiento')) {
+            if (!espacio.value) {
+                visitorInfo.classList.remove('active');
+                return;
+            }
+            
+            const espacioTexto = espacio.options[espacio.selectedIndex].text.toLowerCase();
+            
+            if (espacioTexto.includes('estacionamiento') || espacioTexto.includes('estac')) {
                 visitorInfo.classList.add('active');
                 document.getElementById('nombre_visitante').required = true;
                 document.getElementById('placa_visitante').required = true;
+                document.querySelector('.visitor-header h3').textContent = 'Información del Visitante (Obligatorio)';
             } else {
                 visitorInfo.classList.remove('active');
                 document.getElementById('nombre_visitante').required = false;
                 document.getElementById('placa_visitante').required = false;
+                document.querySelector('.visitor-header h3').textContent = 'Información del Visitante';
             }
         }
 
@@ -932,30 +1123,44 @@
             const horariosSeleccionados = selectedTimeSlots.length;
             const minBlocks = getMinBlocks();
             
-            if (!espacio || !fecha) {
-                showError('Debe completar todos los campos obligatorios');
+            if (!espacio) {
+                showError('Debe seleccionar un espacio válido');
+                event.preventDefault();
+                return false;
+            }
+            
+            if (!fecha) {
+                showError('Debe seleccionar una fecha válida');
                 event.preventDefault();
                 return false;
             }
             
             if (horariosSeleccionados === 0) {
-                showError('Debe seleccionar al menos un bloque de horario');
+                showError('Debe seleccionar al menos un bloque de horario válido');
                 event.preventDefault();
                 return false;
             }
             
+            // Validar mínimo de bloques
             if (horariosSeleccionados < minBlocks) {
-                showError(`${getMinMessage()}. Actualmente: ${horariosSeleccionados}/${minBlocks}`);
+                const minMessage = getMinMessage();
+                showError(`${minMessage}. Actualmente seleccionados: ${horariosSeleccionados}/${minBlocks}`);
                 event.preventDefault();
                 return false;
             }
             
             if (currentSpaceType.includes('estacionamiento')) {
-                const nombre = document.getElementById('nombre_visitante').value;
-                const placa = document.getElementById('placa_visitante').value;
+                const nombreVisitante = document.getElementById('nombre_visitante').value;
+                const placaVisitante = document.getElementById('placa_visitante').value;
                 
-                if (!nombre.trim() || !placa.trim()) {
-                    showError('El nombre y placa del visitante son obligatorios para estacionamiento');
+                if (!nombreVisitante.trim()) {
+                    showError('El nombre del visitante es obligatorio para reservas de estacionamiento');
+                    event.preventDefault();
+                    return false;
+                }
+                
+                if (!placaVisitante.trim()) {
+                    showError('La placa del vehículo es obligatoria para reservas de estacionamiento');
                     event.preventDefault();
                     return false;
                 }
@@ -974,21 +1179,23 @@
         }
 
         function hideError() {
-            document.getElementById('error-messages').style.display = 'none';
+            const errorDiv = document.getElementById('error-messages');
+            errorDiv.style.display = 'none';
         }
 
         // ===== EVENT LISTENERS =====
-        document.getElementById('espacio').addEventListener('change', cargarHorarios);
-        document.getElementById('fecha').addEventListener('change', cargarHorarios);
-        
-        document.getElementById('placa_visitante').addEventListener('input', function() {
-            this.value = this.value.toUpperCase();
+        document.getElementById('espacio').addEventListener('change', function() {
+            console.log('DEBUG - Espacio cambiado:', this.value);
+            verificarDisponibilidad();
         });
 
-        // Set minimum date
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('fecha').min = today;
+        document.getElementById('fecha').addEventListener('change', function() {
+            console.log('DEBUG - Fecha cambiada:', this.value);
+            verificarDisponibilidad();
+        });
+
+        document.getElementById('placa_visitante').addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
         });
     </script>
 </body>
