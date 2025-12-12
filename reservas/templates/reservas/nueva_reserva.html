@@ -232,7 +232,7 @@
            ================================================================= */
         .spaces-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
             gap: 2rem;
         }
 
@@ -267,6 +267,12 @@
 
         .space-card:hover::before {
             opacity: 1;
+        }
+
+        .space-card.selected {
+            border-color: var(--primary-blue);
+            background: linear-gradient(135deg, #eff6ff 0%, white 100%);
+            box-shadow: 0 15px 40px rgba(30, 58, 138, 0.2);
         }
 
         .space-icon-wrapper {
@@ -324,23 +330,132 @@
         .space-subtitle {
             font-size: 0.9rem;
             color: var(--medium-gray);
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 600;
         }
 
-        .space-badge {
-            display: inline-block;
-            padding: 0.35rem 0.85rem;
-            background: linear-gradient(135deg, #eff6ff, #dbeafe);
-            color: var(--primary-blue);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
+        /* =================================================================
+           BADGES
+           ================================================================= */
+        .space-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
             margin-bottom: 1rem;
         }
 
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .badge-public {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .badge-private {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+        }
+
+        .badge-location {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        .badge-type {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: var(--primary-blue);
+        }
+
+        /* =================================================================
+           CONDICIONES
+           ================================================================= */
+        .conditions-section {
+            margin: 1rem 0;
+        }
+
+        .btn-conditions {
+            width: 100%;
+            padding: 0.7rem;
+            background: transparent;
+            border: 2px dashed var(--border-gray);
+            border-radius: 8px;
+            color: var(--medium-gray);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-conditions:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            background: #eff6ff;
+        }
+
+        .btn-conditions .fa-chevron-down {
+            transition: transform 0.3s ease;
+        }
+
+        .conditions-content {
+            margin-top: 0.75rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-blue);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 300px;
+            }
+        }
+
+        .conditions-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .conditions-content li {
+            padding: 0.5rem 0;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .conditions-content li i {
+            color: var(--success-green);
+        }
+
+        /* =================================================================
+           BOTÓN SELECCIONAR
+           ================================================================= */
         .btn-select-space {
             width: 100%;
             padding: 0.9rem;
@@ -354,6 +469,10 @@
             transition: all 0.3s ease;
             margin-top: 1rem;
             box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         .btn-select-space:hover {
@@ -442,6 +561,7 @@
         .time-blocks-info {
             font-size: 0.9rem;
             color: var(--medium-gray);
+            font-weight: 600;
         }
 
         .time-blocks-grid {
@@ -710,12 +830,65 @@
                                     🏢
                                 {% endif %}
                             </div>
+                            
                             <div class="space-content">
-                                <div class="space-badge">{{ espacio.tipo|title }}</div>
                                 <h3 class="space-title">{{ espacio.nombre }}</h3>
-                                {% if espacio.ubicacion %}
-                                    <p class="space-subtitle">📍 {{ espacio.ubicacion }}</p>
-                                {% endif %}
+                                <p class="space-subtitle">{{ espacio.tipo|title }}</p>
+                                
+                                <!-- BADGES -->
+                                <div class="space-badges">
+                                    {% if espacio.tipo == 'estacionamiento' %}
+                                        {% if espacio.es_estacionamiento_visita %}
+                                            <span class="badge badge-public">
+                                                <i class="fas fa-globe"></i> PÚBLICO
+                                            </span>
+                                        {% elif espacio.oficina_propietaria %}
+                                            <span class="badge badge-private">
+                                                <i class="fas fa-lock"></i> PRIVADO
+                                            </span>
+                                        {% endif %}
+                                    {% endif %}
+                                    
+                                    {% if espacio.ubicacion %}
+                                        <span class="badge badge-location">
+                                            <i class="fas fa-map-marker-alt"></i> {{ espacio.ubicacion }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- CONDICIONES -->
+                                <div class="conditions-section">
+                                    <button type="button" class="btn-conditions" onclick="toggleConditions(event, '{{ espacio.id }}')">
+                                        <i class="fas fa-info-circle"></i>
+                                        Ver condiciones
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                    
+                                    <div class="conditions-content" id="conditions_{{ espacio.id }}" style="display: none;">
+                                        <ul>
+                                            {% if 'directorio' in espacio.tipo.lower %}
+                                                <li><i class="fas fa-check"></i> Mínimo 2 bloques de horario</li>
+                                                <li><i class="fas fa-check"></i> Máximo 8 bloques por día</li>
+                                                <li><i class="fas fa-clock"></i> Horario: 8:00 AM - 7:00 PM</li>
+                                            {% elif 'sala' in espacio.tipo.lower %}
+                                                <li><i class="fas fa-check"></i> Máximo 8 bloques por día</li>
+                                                <li><i class="fas fa-clock"></i> Horario: 8:00 AM - 6:00 PM</li>
+                                            {% elif 'comedor' in espacio.tipo.lower %}
+                                                <li><i class="fas fa-check"></i> Máximo 8 bloques por día</li>
+                                                <li><i class="fas fa-clock"></i> Solo mañanas: 8:00 AM - 11:00 AM</li>
+                                            {% elif 'terraza' in espacio.tipo.lower %}
+                                                <li><i class="fas fa-clock"></i> Solo tardes: 3:00 PM - 10:00 PM</li>
+                                                <li><i class="fas fa-moon"></i> Ideal para eventos nocturnos</li>
+                                            {% elif 'estacionamiento' in espacio.tipo.lower %}
+                                                <li><i class="fas fa-user"></i> Requiere datos del visitante</li>
+                                                <li><i class="fas fa-car"></i> Requiere placa del vehículo</li>
+                                                <li><i class="fas fa-clock"></i> Disponible 7:00 AM - 10:00 PM</li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- BOTÓN SELECCIONAR -->
                                 <button class="btn-select-space" onclick="selectSpace('{{ espacio.id }}', '{{ espacio.tipo }}', '{{ espacio.nombre }}')">
                                     <i class="fas fa-check-circle"></i>
                                     Seleccionar Espacio
@@ -822,21 +995,36 @@
         let currentSpaceType = '';
         let selectedDate = null;
 
+        function toggleConditions(event, espacioId) {
+            event.stopPropagation();
+            const content = document.getElementById(`conditions_${espacioId}`);
+            const btn = event.currentTarget;
+            const icon = btn.querySelector('.fa-chevron-down');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.style.display = 'none';
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
         function selectSpace(espacioId, tipo, nombre) {
             currentSpaceId = espacioId;
             currentSpaceType = tipo.toLowerCase();
             
             // Marcar tarjeta como seleccionada
             document.querySelectorAll('.space-card').forEach(card => {
-                card.style.border = '3px solid var(--border-gray)';
+                card.classList.remove('selected');
             });
-            event.target.closest('.space-card').style.border = '3px solid var(--primary-blue)';
+            event.target.closest('.space-card').classList.add('selected');
             
             // Actualizar campo oculto
             document.getElementById('espacioInput').value = espacioId;
             
             // Actualizar título
-            document.getElementById('selectedSpaceName').textContent = nombre;
+            document.getElementById('selectedSpaceName').textContent = `📍 ${nombre}`;
             
             // Mostrar formulario
             document.getElementById('formSection').classList.add('active');
@@ -864,7 +1052,7 @@
 
             let horarios = [];
 
-            // TU LÓGICA ORIGINAL DE HORARIOS
+            // TU LÓGICA ORIGINAL DE HORARIOS (editable aquí)
             if (currentSpaceType.includes('sala')) {
                 horarios = [
                     '08:00-09:00', '09:00-10:00', '10:00-11:00', '11:00-12:00',
@@ -925,8 +1113,10 @@
             
             if (checkboxes.length === 0) {
                 info.textContent = 'Seleccione uno o más bloques';
+                info.style.color = 'var(--medium-gray)';
             } else {
-                info.textContent = `${checkboxes.length} bloque(s) seleccionado(s)`;
+                info.textContent = `✓ ${checkboxes.length} bloque(s) seleccionado(s)`;
+                info.style.color = 'var(--success-green)';
             }
         }
 
