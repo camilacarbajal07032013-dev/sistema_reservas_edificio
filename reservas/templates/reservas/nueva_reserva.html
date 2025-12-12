@@ -7,7 +7,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         /* =================================================================
-           RESET Y VARIABLES GLOBALES
+           RESET Y VARIABLES
            ================================================================= */
         * {
             margin: 0;
@@ -16,7 +16,6 @@
         }
 
         :root {
-            /* Paleta Corporativa */
             --primary-blue: #1e3a8a;
             --primary-dark: #1f2937;
             --success-green: #047857;
@@ -24,22 +23,16 @@
             --light-gray: #f3f4f6;
             --medium-gray: #6b7280;
             --border-gray: #e5e7eb;
-            --white: #ffffff;
             
-            /* Colores por tipo de espacio */
             --sala-color: #1e40af;
             --directorio-color: #7c3aed;
             --terraza-color: #059669;
             --comedor-color: #d97706;
-            --parking-visit-color: #0284c7;
-            --parking-private-color: #dc2626;
+            --parking-color: #0284c7;
         }
 
-        /* =================================================================
-           ESTILOS BASE
-           ================================================================= */
         body {
-            font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, var(--light-gray) 0%, #e5e7eb 100%);
             color: var(--primary-dark);
             line-height: 1.6;
@@ -52,17 +45,38 @@
         .header {
             background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 1.5rem 0;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 2.5rem 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
         }
 
-        .header-content {
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path fill="rgba(255,255,255,0.05)" d="M0,0 L1200,0 L1200,80 Q600,120 0,80 Z"/></svg>');
+            background-size: cover;
+            opacity: 0.3;
+        }
+
+        .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
         }
 
         .header-title {
@@ -71,47 +85,55 @@
             gap: 1rem;
         }
 
-        .header-title h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
         .header-subtitle {
-            font-size: 0.9rem;
-            opacity: 0.85;
-            margin-top: 0.25rem;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            opacity: 0.9;
         }
 
         .header-buttons {
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
         }
 
-        /* =================================================================
-           BOTONES
-           ================================================================= */
         .btn {
-            padding: 0.65rem 1.25rem;
-            border-radius: 8px;
+            padding: 0.85rem 1.5rem;
+            border-radius: 10px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.65rem;
             border: none;
             cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .btn-secondary {
             background: rgba(255,255,255,0.15);
             color: white;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
         }
 
         .btn-secondary:hover {
             background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,255,255,0.2);
         }
 
         .btn-danger {
@@ -121,219 +143,105 @@
 
         .btn-danger:hover {
             background: #c2410c;
-            transform: translateY(-1px);
-        }
-
-        .btn-info {
-            padding: 0.5rem 1rem;
-            background: var(--light-gray);
-            border: 1px solid var(--border-gray);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: var(--primary-dark);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-info:hover {
-            background: #e5e7eb;
-        }
-
-        .btn-select {
-            flex: 1;
-            padding: 0.5rem 1.5rem;
-            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-select:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
-        }
-
-        .submit-button {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, var(--success-green), #059669);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 2rem;
-        }
-
-        .submit-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(4, 120, 87, 0.3);
-        }
-
-        /* =================================================================
-           CONTAINER
-           ================================================================= */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* =================================================================
-           PROGRESS STEPS
-           ================================================================= */
-        .progress-steps {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .steps {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-        }
-
-        .steps::before {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--border-gray);
-            z-index: 0;
-        }
-
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .step-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: white;
-            border: 3px solid var(--border-gray);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: var(--medium-gray);
-            transition: all 0.3s ease;
-        }
-
-        .step.active .step-circle {
-            background: var(--primary-blue);
-            border-color: var(--primary-blue);
-            color: white;
-        }
-
-        .step.completed .step-circle {
-            background: var(--success-green);
-            border-color: var(--success-green);
-            color: white;
-        }
-
-        .step-label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--medium-gray);
-        }
-
-        .step.active .step-label {
-            color: var(--primary-blue);
+            box-shadow: 0 6px 25px rgba(234, 88, 12, 0.4);
         }
 
         /* =================================================================
            MAIN SECTION
            ================================================================= */
         .main-section {
+            padding: 3rem 0;
+        }
+
+        .section-card {
             background: white;
-            border-radius: 16px;
-            padding: 2.5rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--directorio-color), var(--terraza-color));
         }
 
         .section-header {
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
         }
 
         .section-header h2 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: var(--primary-dark);
-            margin-bottom: 0.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            justify-content: center;
+            gap: 1rem;
         }
 
         .section-header p {
             color: var(--medium-gray);
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
 
         /* =================================================================
-           ALERTAS
+           ALERTS
            ================================================================= */
         .alert {
-            padding: 1rem 1.25rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            border-left: 4px solid;
+            gap: 1rem;
+            border-left: 5px solid;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .alert i {
+            font-size: 1.5rem;
         }
 
         .alert-success {
-            background: #d1fae5;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
             border-left-color: var(--success-green);
             color: #065f46;
         }
 
         .alert-error {
-            background: #fee2e2;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
             border-left-color: #dc2626;
             color: #991b1b;
         }
 
         /* =================================================================
-           TARJETAS DE ESPACIOS
+           SPACE CARDS
            ================================================================= */
         .spaces-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(520px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2rem;
         }
 
         .space-card {
             background: white;
-            border: 2px solid var(--border-gray);
-            border-radius: 12px;
-            padding: 1.5rem;
-            display: flex;
-            gap: 1.25rem;
-            transition: all 0.3s ease;
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             position: relative;
             overflow: hidden;
@@ -342,386 +250,134 @@
         .space-card::before {
             content: '';
             position: absolute;
-            left: 0;
             top: 0;
-            bottom: 0;
-            width: 4px;
-            transition: all 0.3s ease;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, var(--primary-blue), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .space-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(30, 58, 138, 0.15);
             border-color: var(--primary-blue);
         }
 
-        .space-card.selected {
-            border-color: var(--primary-blue);
-            background: #eff6ff;
-            box-shadow: 0 8px 20px rgba(30, 58, 138, 0.15);
+        .space-card:hover::before {
+            opacity: 1;
         }
 
-        /* Colores del borde izquierdo por tipo */
-        .space-card.type-sala::before {
-            background: var(--sala-color);
-        }
-
-        .space-card.type-directorio::before {
-            background: var(--directorio-color);
-        }
-
-        .space-card.type-terraza::before {
-            background: var(--terraza-color);
-        }
-
-        .space-card.type-comedor::before {
-            background: var(--comedor-color);
-        }
-
-        .space-card.type-estacionamiento::before {
-            background: var(--parking-visit-color);
-        }
-
-        /* Ícono del espacio */
-        .space-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 12px;
+        .space-icon-wrapper {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.2rem;
+            width: 90px;
+            height: 90px;
+            border-radius: 18px;
+            margin: 0 auto 1.5rem;
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
             color: white;
-            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.3);
+            transition: all 0.3s ease;
         }
 
-        .space-icon.type-sala {
-            background: linear-gradient(135deg, #1e40af, #1e3a8a);
+        .space-card:hover .space-icon-wrapper {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 15px 40px rgba(30, 58, 138, 0.4);
         }
 
-        .space-icon.type-directorio {
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        /* Colores por tipo */
+        .space-card[data-tipo="sala"] .space-icon-wrapper {
+            background: linear-gradient(135deg, var(--sala-color), #2563eb);
         }
 
-        .space-icon.type-terraza {
-            background: linear-gradient(135deg, #059669, #047857);
+        .space-card[data-tipo="directorio"] .space-icon-wrapper {
+            background: linear-gradient(135deg, var(--directorio-color), #9333ea);
         }
 
-        .space-icon.type-comedor {
-            background: linear-gradient(135deg, #d97706, #b45309);
+        .space-card[data-tipo="terraza"] .space-icon-wrapper {
+            background: linear-gradient(135deg, var(--terraza-color), #10b981);
         }
 
-        .space-icon.type-estacionamiento {
-            background: linear-gradient(135deg, #0284c7, #0369a1);
+        .space-card[data-tipo="comedor"] .space-icon-wrapper {
+            background: linear-gradient(135deg, var(--comedor-color), #f59e0b);
         }
 
-        .space-icon.parking-private {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        .space-card[data-tipo="estacionamiento"] .space-icon-wrapper {
+            background: linear-gradient(135deg, var(--parking-color), #0ea5e9);
         }
 
-        /* Contenido de la tarjeta */
         .space-content {
-            flex: 1;
-        }
-
-        .space-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 0.75rem;
+            text-align: center;
         }
 
         .space-title {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: var(--primary-dark);
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
         }
 
         .space-subtitle {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: var(--medium-gray);
-            font-weight: 500;
-        }
-
-        /* Badges */
-        .space-badge {
-            padding: 0.3rem 0.7rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 700;
+            margin-bottom: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-        }
-
-        .badge-popular {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .badge-visit {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .badge-private {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .badge-premium {
-            background: #ede9fe;
-            color: #6b21a8;
-        }
-
-        /* Especificaciones */
-        .space-specs {
-            display: flex;
-            gap: 1.25rem;
-            margin-bottom: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        .space-spec {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            color: var(--medium-gray);
-            font-size: 0.85rem;
-        }
-
-        .space-spec i {
-            color: var(--primary-blue);
-            width: 16px;
-        }
-
-        .space-spec strong {
-            color: var(--primary-dark);
             font-weight: 600;
         }
 
-        /* Características */
-        .space-features {
-            display: flex;
-            gap: 0.4rem;
-            flex-wrap: wrap;
-            margin-bottom: 0.75rem;
-        }
-
-        .space-feature {
-            background: #f3f4f6;
-            color: #4b5563;
-            padding: 0.3rem 0.65rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        /* Aviso de estacionamiento */
-        .parking-notice {
-            background: #fef3c7;
-            border: 1px solid #fbbf24;
-            border-radius: 8px;
-            padding: 0.65rem;
-            margin-top: 0.75rem;
+        .space-badge {
+            display: inline-block;
+            padding: 0.35rem 0.85rem;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            color: var(--primary-blue);
+            border-radius: 20px;
             font-size: 0.8rem;
-            color: #92400e;
+            font-weight: 600;
+            margin-bottom: 1rem;
         }
 
-        .parking-notice strong {
-            display: block;
-            margin-bottom: 0.25rem;
-            font-size: 0.75rem;
-        }
-
-        /* Acciones de la tarjeta */
-        .space-actions {
-            display: flex;
-            gap: 0.5rem;
+        .btn-select-space {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
             margin-top: 1rem;
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
+        }
+
+        .btn-select-space:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.4);
+            background: linear-gradient(135deg, #1e40af, var(--primary-blue));
         }
 
         /* =================================================================
-           FORMULARIO
+           FORM SECTION
            ================================================================= */
         .form-section {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            margin-top: 2rem;
-            border: 2px solid var(--border-gray);
             display: none;
+            animation: fadeInUp 0.6s ease;
         }
 
         .form-section.active {
             display: block;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: var(--primary-dark);
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid var(--border-gray);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
-        }
-
-        /* =================================================================
-           SISTEMA DE HORARIOS
-           ================================================================= */
-        #horariosGrid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 0.75rem;
-            margin-top: 1rem;
-        }
-
-        .horario-slot {
-            padding: 0.75rem;
-            border: 2px solid var(--border-gray);
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: white;
-            font-weight: 600;
-            font-size: 0.85rem;
-            position: relative;
-        }
-
-        .horario-slot:hover:not(.horario-ocupado) {
-            border-color: var(--primary-blue);
-            background: #eff6ff;
-            transform: translateY(-2px);
-        }
-
-        .horario-slot.horario-selected {
-            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-
-        .horario-slot.horario-ocupado {
-            background: #f3f4f6;
-            color: #9ca3af;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .horario-slot input[type="checkbox"] {
-            display: none;
-        }
-
-        /* Resumen de horarios seleccionados */
-        .horarios-resumen {
-            background: #eff6ff;
-            border: 2px solid var(--primary-blue);
-            border-radius: 10px;
-            padding: 1.25rem;
-            margin-top: 1.5rem;
-        }
-
-        .horarios-resumen h4 {
-            color: var(--primary-dark);
-            font-size: 1rem;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .horarios-resumen-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .horario-tag {
-            background: var(--primary-blue);
-            color: white;
-            padding: 0.4rem 0.85rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-        }
-
-        .horario-tag button {
-            background: rgba(255,255,255,0.25);
-            border: none;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            transition: all 0.2s ease;
-        }
-
-        .horario-tag button:hover {
-            background: rgba(255,255,255,0.4);
-        }
-
-        /* =================================================================
-           MODAL
-           ================================================================= */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            max-width: 700px;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            animation: modalSlideIn 0.3s ease;
-        }
-
-        @keyframes modalSlideIn {
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(-50px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
@@ -729,94 +385,260 @@
             }
         }
 
-        .modal-header {
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
-            color: white;
-            padding: 1.5rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .modal-close {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .modal-close:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .modal-body {
-            padding: 2rem;
-        }
-
-        .modal-section {
+        .form-group {
             margin-bottom: 2rem;
         }
 
-        .modal-section h4 {
+        .form-group label {
+            display: block;
+            font-weight: 600;
             color: var(--primary-dark);
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .modal-section ul {
-            list-style: none;
-            padding: 0;
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--border-gray);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
         }
 
-        .modal-section li {
-            padding: 0.5rem 0;
-            color: var(--medium-gray);
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* =================================================================
+           TIME BLOCKS
+           ================================================================= */
+        .time-blocks-header {
             display: flex;
-            align-items: start;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 12px;
+        }
+
+        .time-blocks-header h3 {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+
+        .time-blocks-info {
+            font-size: 0.9rem;
+            color: var(--medium-gray);
+        }
+
+        .time-blocks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 12px;
+            border: 2px solid var(--border-gray);
+        }
+
+        .time-block {
+            position: relative;
+            border: 2px solid var(--border-gray);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: white;
+        }
+
+        .time-block input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .time-block-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--primary-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        /* Estados */
+        .time-block:hover:not(.disabled) {
+            transform: translateY(-4px);
+            border-color: var(--primary-blue);
+            background: linear-gradient(135deg, #eff6ff, white);
+            box-shadow: 0 8px 20px rgba(30, 58, 138, 0.15);
+        }
+
+        .time-block input[type="checkbox"]:checked + .time-block-label {
+            color: white;
+        }
+
+        .time-block input[type="checkbox"]:checked ~ * {
+            color: white;
+        }
+
+        .time-block:has(input[type="checkbox"]:checked) {
+            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
+            border-color: var(--primary-blue);
+            box-shadow: 0 8px 25px rgba(30, 58, 138, 0.3);
+            transform: translateY(-4px) scale(1.05);
+        }
+
+        .time-block:has(input[type="checkbox"]:checked) .time-block-label {
+            color: white;
+        }
+
+        .time-block.disabled {
+            background: #f3f4f6;
+            border-color: #e5e7eb;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .time-block.disabled .time-block-label {
+            color: #9ca3af;
+        }
+
+        /* =================================================================
+           VISITOR INFO
+           ================================================================= */
+        .visitor-section {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-top: 2.5rem;
+            border: 3px solid #fbbf24;
+            display: none;
+        }
+
+        .visitor-section.active {
+            display: block;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .visitor-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .visitor-icon {
+            font-size: 2rem;
+            color: #d97706;
+        }
+
+        .visitor-header h3 {
+            font-size: 1.5rem;
+            color: #92400e;
+            font-weight: 700;
+        }
+
+        .visitor-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* =================================================================
+           SUBMIT BUTTON
+           ================================================================= */
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-submit {
+            padding: 1.25rem 3rem;
+            background: linear-gradient(135deg, var(--success-green), #059669);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(4, 120, 87, 0.3);
+            display: flex;
+            align-items: center;
             gap: 0.75rem;
         }
 
-        .modal-section li i {
-            color: var(--success-green);
-            margin-top: 0.25rem;
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(4, 120, 87, 0.4);
+            background: linear-gradient(135deg, #059669, var(--success-green));
+        }
+
+        .btn-cancel {
+            padding: 1.25rem 3rem;
+            background: var(--medium-gray);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-cancel:hover {
+            background: #4b5563;
+            transform: translateY(-3px);
         }
 
         /* =================================================================
            RESPONSIVE
            ================================================================= */
         @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
             .spaces-grid {
                 grid-template-columns: 1fr;
             }
 
-            .space-card {
+            .time-blocks-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+
+            .section-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .form-actions {
                 flex-direction: column;
             }
 
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .header-buttons {
-                width: 100%;
-                flex-direction: column;
-            }
-
-            .btn {
+            .btn-submit,
+            .btn-cancel {
                 width: 100%;
                 justify-content: center;
             }
@@ -824,598 +646,311 @@
     </style>
 </head>
 <body>
-    <!-- HEADER -->
     <div class="header">
-        <div class="header-content">
-            <div class="header-title">
-                <i class="fas fa-calendar-plus" style="font-size: 2rem;"></i>
-                <div>
-                    <h1>Nueva Reserva</h1>
-                    <p class="header-subtitle">Sistema de Gestión{% if oficina %} - {{ oficina.nombre_empresa }}{% endif %}</p>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-title">
+                    <i class="fas fa-calendar-plus header-icon"></i>
+                    <div>
+                        <h1>Nueva Reserva</h1>
+                        <p class="header-subtitle">Sistema de Gestión de Espacios Corporativos</p>
+                    </div>
                 </div>
-            </div>
-            <div class="header-buttons">
-                <a href="{% url 'mis_reservas' %}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i>
-                    Volver
-                </a>
-                <a href="{% url 'logout' %}" class="btn btn-danger">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Cerrar Sesión
-                </a>
+                <div class="header-buttons">
+                    <a href="{% url 'mis_reservas' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Volver a Mis Reservas
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Cerrar Sesión
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="container">
-        <!-- PROGRESS STEPS -->
-        <div class="progress-steps">
-            <div class="steps">
-                <div class="step active">
-                    <div class="step-circle">1</div>
-                    <div class="step-label">Seleccionar Espacio</div>
-                </div>
-                <div class="step">
-                    <div class="step-circle">2</div>
-                    <div class="step-label">Elegir Fecha y Horario</div>
-                </div>
-                <div class="step">
-                    <div class="step-circle">3</div>
-                    <div class="step-label">Confirmar Reserva</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ALERTS -->
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %}"></i>
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        <!-- MAIN SECTION -->
         <div class="main-section">
-            <div class="section-header">
-                <h2>
-                    <i class="fas fa-building"></i>
-                    Espacios Disponibles
-                </h2>
-                <p>Seleccione el espacio que desea reservar{% if espacios %} - {{ espacios|length }} opciones disponibles{% endif %}</p>
-            </div>
-
-            <!-- SPACES GRID -->
-            <div class="spaces-grid">
-                {% for espacio in espacios %}
-                    <div class="space-card type-{{ espacio.tipo }}" data-espacio-id="{{ espacio.id }}" data-tipo="{{ espacio.tipo }}">
-                        <!-- ÍCONO -->
-                        <div class="space-icon type-{{ espacio.tipo }}{% if espacio.tipo == 'estacionamiento' and not espacio.es_estacionamiento_visita %} parking-private{% endif %}">
-                            {% if espacio.tipo == 'sala' %}🏢
-                            {% elif espacio.tipo == 'directorio' %}🏛️
-                            {% elif espacio.tipo == 'terraza' %}🌳
-                            {% elif espacio.tipo == 'comedor' %}🍽️
-                            {% elif espacio.tipo == 'estacionamiento' %}
-                                {% if espacio.es_estacionamiento_visita %}🅿️{% else %}🔒{% endif %}
-                            {% endif %}
-                        </div>
-
-                        <div class="space-content">
-                            <div class="space-header">
-                                <div>
-                                    <h3 class="space-title">{{ espacio.nombre }}</h3>
-                                    <p class="space-subtitle">
-                                        {% if espacio.tipo == 'sala' %}Sala de reuniones
-                                        {% elif espacio.tipo == 'directorio' %}Sala ejecutiva
-                                        {% elif espacio.tipo == 'terraza' %}Espacio al aire libre
-                                        {% elif espacio.tipo == 'comedor' %}Área común
-                                        {% elif espacio.es_estacionamiento_visita %}Estacionamiento para visitantes
-                                        {% elif espacio.oficina_propietaria %}Asignado a Oficina {{ espacio.oficina_propietaria.numero }}
-                                        {% else %}Estacionamiento
-                                        {% endif %}
-                                    </p>
-                                </div>
-                                
-                                <!-- BADGE -->
-                                {% if espacio.tipo == 'estacionamiento' %}
-                                    {% if espacio.es_estacionamiento_visita %}
-                                        <span class="space-badge badge-visit">👥 Visita</span>
-                                    {% else %}
-                                        <span class="space-badge badge-private">🏢 Privado</span>
-                                    {% endif %}
-                                {% elif espacio.tipo == 'directorio' %}
-                                    <span class="space-badge badge-premium">⭐ Premium</span>
-                                {% endif %}
-                            </div>
-
-                            <!-- ESPECIFICACIONES -->
-                            <div class="space-specs">
-                                {% if espacio.capacidad_personas %}
-                                <div class="space-spec">
-                                    <i class="fas fa-{% if espacio.tipo == 'estacionamiento' %}car{% else %}users{% endif %}"></i>
-                                    <span><strong>{{ espacio.capacidad_personas }}</strong> {% if espacio.tipo == 'estacionamiento' %}vehículo{% else %}personas{% endif %}</span>
-                                </div>
-                                {% endif %}
-                                
-                                <div class="space-spec">
-                                    <i class="fas fa-clock"></i>
-                                    <span>Min: <strong>{% if espacio.tiempo_minimo_reserva %}{{ espacio.tiempo_minimo_reserva }}h{% else %}1h{% endif %}</strong></span>
-                                </div>
-                                
-                                {% if espacio.ubicacion %}
-                                <div class="space-spec">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span><strong>{{ espacio.ubicacion }}</strong></span>
-                                </div>
-                                {% endif %}
-                                
-                                <div class="space-spec">
-                                    <i class="fas fa-dollar-sign"></i>
-                                    <span>
-                                        {% if espacio.precio_por_hora and espacio.precio_por_hora > 0 %}
-                                            <strong>S/ {{ espacio.precio_por_hora }}/h</strong>
-                                        {% else %}
-                                            <strong>Gratuito</strong>
-                                        {% endif %}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- CARACTERÍSTICAS -->
-                            {% if espacio.equipamiento %}
-                            <div class="space-features">
-                                {% for item in espacio.get_equipamiento_list|slice:":4" %}
-                                    <span class="space-feature">{{ item }}</span>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-
-                            <!-- AVISO PARA ESTACIONAMIENTOS -->
-                            {% if espacio.tipo == 'estacionamiento' %}
-                            <div class="parking-notice">
-                                <strong>⚠️ DATOS REQUERIDOS:</strong>
-                                Nombre, placa y empresa del visitante
-                            </div>
-                            {% endif %}
-
-                            <!-- BOTONES -->
-                            <div class="space-actions">
-                                <button class="btn-info" onclick="openModal({{ espacio.id }})">
-                                    <i class="fas fa-info-circle"></i>
-                                    Ver condiciones
-                                </button>
-                                <button class="btn-select" data-espacio="{{ espacio.id }}" data-tipo="{{ espacio.tipo }}">
-                                    <i class="fas fa-check"></i>
-                                    Seleccionar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                {% empty %}
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        No hay espacios disponibles en este momento
+            <!-- ALERTS -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %}"></i>
+                        <span>{{ message }}</span>
                     </div>
                 {% endfor %}
-            </div>
-        </div>
+            {% endif %}
 
-        <!-- FORM SECTION -->
-        <div class="form-section" id="formSection">
-            <div class="section-header">
-                <h2>
-                    <i class="fas fa-calendar-alt"></i>
-                    Completar Reserva
-                </h2>
-                <p>Seleccione fecha y horarios disponibles</p>
-            </div>
-
-            <form method="POST" id="reservaForm">
-                {% csrf_token %}
-                
-                <input type="hidden" name="espacio" id="espacioSeleccionado">
-                
-                <div class="form-group">
-                    <label for="fecha">Fecha de Reserva</label>
-                    <input type="date" id="fecha" name="fecha" min="{{ fecha_minima }}" required>
+            <!-- STEP 1: SELECT SPACE -->
+            <div class="section-card" id="spacesSection">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-building"></i>
+                        Espacios Disponibles
+                    </h2>
+                    <p>Seleccione el espacio que desea reservar</p>
                 </div>
 
-                <!-- HORARIOS CONTAINER -->
-                <div id="horariosContainer">
-                    <div class="form-group">
-                        <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-                            <i class="fas fa-clock" style="color: var(--primary-blue);"></i>
-                            <span style="font-size: 1rem; font-weight: 600; color: var(--primary-dark);">Horarios Disponibles</span>
-                        </label>
-                        <p style="color: var(--medium-gray); font-size: 0.9rem; margin-bottom: 1rem;">
-                            Seleccione los bloques de horario que desea reservar
+                <div class="spaces-grid">
+                    {% for espacio in espacios %}
+                        <div class="space-card" data-espacio-id="{{ espacio.id }}" data-tipo="{{ espacio.tipo }}">
+                            <div class="space-icon-wrapper">
+                                {% if 'sala' in espacio.tipo.lower %}
+                                    🏢
+                                {% elif 'directorio' in espacio.tipo.lower %}
+                                    🏛️
+                                {% elif 'terraza' in espacio.tipo.lower %}
+                                    🌳
+                                {% elif 'comedor' in espacio.tipo.lower %}
+                                    🍽️
+                                {% elif 'estacionamiento' in espacio.tipo.lower %}
+                                    🅿️
+                                {% else %}
+                                    🏢
+                                {% endif %}
+                            </div>
+                            <div class="space-content">
+                                <div class="space-badge">{{ espacio.tipo|title }}</div>
+                                <h3 class="space-title">{{ espacio.nombre }}</h3>
+                                {% if espacio.ubicacion %}
+                                    <p class="space-subtitle">📍 {{ espacio.ubicacion }}</p>
+                                {% endif %}
+                                <button class="btn-select-space" onclick="selectSpace('{{ espacio.id }}', '{{ espacio.tipo }}', '{{ espacio.nombre }}')">
+                                    <i class="fas fa-check-circle"></i>
+                                    Seleccionar Espacio
+                                </button>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p style="grid-column: 1/-1; text-align: center; color: var(--medium-gray); padding: 3rem;">
+                            No hay espacios disponibles en este momento.
                         </p>
-                        
-                        <!-- LOADING STATE -->
-                        <div id="horariosLoading" style="display: none; text-align: center; padding: 2rem; background: #f3f4f6; border-radius: 10px;">
-                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-blue);"></i>
-                            <p style="margin-top: 1rem; color: var(--medium-gray);">Cargando horarios disponibles...</p>
-                        </div>
-                        
-                        <!-- HORARIOS GRID -->
-                        <div id="horariosGrid" style="display: none;"></div>
-                        
-                        <!-- ERROR STATE -->
-                        <div id="horariosError" style="display: none; background: #fee2e2; border-left: 4px solid #dc2626; padding: 1rem; border-radius: 8px; color: #991b1b;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <span id="horariosErrorMsg">Error al cargar horarios</span>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
-
-                <!-- CAMPOS DE VISITANTE -->
-                <div id="visitorFields" style="display:none;">
-                    <h3 style="margin: 2rem 0 1rem 0; color: var(--primary-dark); display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-user-tie"></i>
-                        Información del Visitante
-                    </h3>
-                    <div class="form-group">
-                        <label for="nombre_visitante">Nombre Completo *</label>
-                        <input type="text" id="nombre_visitante" name="nombre_visitante" placeholder="Juan Pérez García">
-                    </div>
-                    <div class="form-group">
-                        <label for="placa_visitante">Placa del Vehículo *</label>
-                        <input type="text" id="placa_visitante" name="placa_visitante" placeholder="ABC-123" style="text-transform: uppercase;">
-                    </div>
-                    <div class="form-group">
-                        <label for="empresa_visitante">Empresa (Opcional)</label>
-                        <input type="text" id="empresa_visitante" name="empresa_visitante" placeholder="Tech Solutions SAC">
-                    </div>
-                </div>
-
-                <button type="submit" class="submit-button">
-                    <i class="fas fa-check-circle"></i>
-                    Confirmar Reserva
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL DE INFORMACIÓN -->
-    <div class="modal" id="infoModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Información del Espacio</h3>
-                <button class="modal-close" onclick="closeModal()">×</button>
             </div>
-            <div class="modal-body" id="modalBody"></div>
+
+            <!-- STEP 2: COMPLETE RESERVATION -->
+            <div class="section-card form-section" id="formSection">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-calendar-check"></i>
+                        Completar Reserva
+                    </h2>
+                    <p id="selectedSpaceName">Espacio seleccionado</p>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <input type="hidden" name="espacio" id="espacioInput">
+
+                    <div class="form-group">
+                        <label for="fecha">
+                            <i class="fas fa-calendar-alt"></i>
+                            Fecha de Reserva
+                        </label>
+                        <input type="date" id="fecha" name="fecha" min="{{ fecha_minima }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="time-blocks-header">
+                            <h3>
+                                <i class="fas fa-clock"></i>
+                                Horarios Disponibles
+                            </h3>
+                            <span class="time-blocks-info" id="blocksInfo">Seleccione uno o más bloques</span>
+                        </div>
+                        <div class="time-blocks-grid" id="timeBlocksContainer">
+                            <p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--medium-gray);">
+                                Seleccione un espacio y fecha para ver los horarios
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- VISITOR INFO (solo para estacionamientos) -->
+                    <div class="visitor-section" id="visitorSection">
+                        <div class="visitor-header">
+                            <i class="fas fa-user-tie visitor-icon"></i>
+                            <h3>Información del Visitante</h3>
+                        </div>
+                        <div class="visitor-form-grid">
+                            <div class="form-group">
+                                <label for="nombre_visitante">
+                                    <i class="fas fa-user"></i>
+                                    Nombre Completo *
+                                </label>
+                                <input type="text" id="nombre_visitante" name="nombre_visitante" 
+                                       placeholder="Ej: Juan Carlos Pérez López">
+                            </div>
+                            <div class="form-group">
+                                <label for="placa_visitante">
+                                    <i class="fas fa-car"></i>
+                                    Placa del Vehículo *
+                                </label>
+                                <input type="text" id="placa_visitante" name="placa_visitante" 
+                                       placeholder="Ej: ABC-123" style="text-transform: uppercase;">
+                            </div>
+                            <div class="form-group">
+                                <label for="empresa_visitante">
+                                    <i class="fas fa-briefcase"></i>
+                                    Empresa / Organización
+                                </label>
+                                <input type="text" id="empresa_visitante" name="empresa_visitante" 
+                                       placeholder="Ej: Corporación Internacional S.A.">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-check-circle"></i>
+                            Confirmar Reserva
+                        </button>
+                        <a href="{% url 'mis_reservas' %}" class="btn-cancel">
+                            <i class="fas fa-times-circle"></i>
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <script>
-        // =================================================================
-        // DATA DE ESPACIOS DESDE DJANGO
-        // =================================================================
-        var espaciosDataJSON = '{{ espacios_json|safe }}';
-        var espaciosData = {};
-        
-        try {
-            var espaciosArray = JSON.parse(espaciosDataJSON || '[]');
-            espaciosArray.forEach(function(espacio) {
-                espaciosData[espacio.id] = espacio;
+        let currentSpaceId = null;
+        let currentSpaceType = '';
+        let selectedDate = null;
+
+        function selectSpace(espacioId, tipo, nombre) {
+            currentSpaceId = espacioId;
+            currentSpaceType = tipo.toLowerCase();
+            
+            // Marcar tarjeta como seleccionada
+            document.querySelectorAll('.space-card').forEach(card => {
+                card.style.border = '3px solid var(--border-gray)';
             });
-        } catch(e) {
-            console.error('Error parsing espacios data:', e);
+            event.target.closest('.space-card').style.border = '3px solid var(--primary-blue)';
+            
+            // Actualizar campo oculto
+            document.getElementById('espacioInput').value = espacioId;
+            
+            // Actualizar título
+            document.getElementById('selectedSpaceName').textContent = nombre;
+            
+            // Mostrar formulario
+            document.getElementById('formSection').classList.add('active');
+            document.getElementById('formSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Mostrar campos de visitante si es estacionamiento
+            const isParking = tipo.toLowerCase().includes('estacionamiento');
+            const visitorSection = document.getElementById('visitorSection');
+            visitorSection.classList.toggle('active', isParking);
+            document.getElementById('nombre_visitante').required = isParking;
+            document.getElementById('placa_visitante').required = isParking;
+            
+            // Generar horarios
+            generarHorarios();
         }
 
-        // =================================================================
-        // FUNCIÓN PARA ABRIR MODAL
-        // =================================================================
-        function openModal(espacioId) {
-            var modal = document.getElementById('infoModal');
-            var data = espaciosData[espacioId];
+        function generarHorarios() {
+            const container = document.getElementById('timeBlocksContainer');
+            const fecha = document.getElementById('fecha').value;
             
-            if (!data) {
-                console.error('No data for espacio:', espacioId);
+            if (!currentSpaceType) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--medium-gray);">Seleccione un espacio primero</p>';
                 return;
             }
-            
-            document.getElementById('modalTitle').textContent = data.nombre || 'Información del Espacio';
-            
-            var html = '';
-            
-            if (data.descripcion) {
-                html += '<div class="modal-section">';
-                html += '<p style="font-size: 1.1rem; color: var(--medium-gray); margin-bottom: 2rem;">';
-                html += data.descripcion;
-                html += '</p></div>';
-            }
 
-            html += '<div class="modal-section">';
-            html += '<h4><i class="fas fa-info-circle" style="color: var(--primary-blue);"></i> Información General</h4>';
-            html += '<ul>';
-            html += '<li><i class="fas fa-users"></i> <strong>Capacidad:</strong> ' + (data.capacidad || 'No especificada') + '</li>';
-            html += '<li><i class="fas fa-map-marker-alt"></i> <strong>Ubicación:</strong> ' + (data.ubicacion || 'No especificada') + '</li>';
-            html += '</ul></div>';
+            let horarios = [];
 
-            if (data.equipamiento && data.equipamiento.length > 0) {
-                html += '<div class="modal-section">';
-                html += '<h4><i class="fas fa-toolbox" style="color: var(--primary-blue);"></i> Equipamiento Disponible</h4>';
-                html += '<ul>';
-                data.equipamiento.forEach(function(item) {
-                    html += '<li><i class="fas fa-check"></i> ' + item + '</li>';
-                });
-                html += '</ul></div>';
-            }
-
-            if (data.condiciones && data.condiciones.length > 0) {
-                html += '<div class="modal-section">';
-                html += '<h4><i class="fas fa-clipboard-check" style="color: var(--primary-blue);"></i> Condiciones de Uso</h4>';
-                html += '<ul>';
-                data.condiciones.forEach(function(item) {
-                    html += '<li><i class="fas fa-check-circle"></i> ' + item + '</li>';
-                });
-                html += '</ul></div>';
-            }
-
-            if (data.restricciones && data.restricciones.length > 0) {
-                html += '<div class="modal-section">';
-                html += '<h4><i class="fas fa-ban" style="color: #dc2626;"></i> Restricciones</h4>';
-                html += '<ul>';
-                data.restricciones.forEach(function(item) {
-                    html += '<li><i class="fas fa-times-circle" style="color: #dc2626;"></i> ' + item + '</li>';
-                });
-                html += '</ul></div>';
-            }
-
-            if (data.penalidades && data.penalidades.length > 0) {
-                html += '<div class="modal-section">';
-                html += '<h4><i class="fas fa-exclamation-triangle" style="color: #ea580c;"></i> Penalidades</h4>';
-                html += '<ul>';
-                data.penalidades.forEach(function(item) {
-                    html += '<li><i class="fas fa-exclamation-circle" style="color: #ea580c;"></i> ' + item + '</li>';
-                });
-                html += '</ul></div>';
-            }
-            
-            document.getElementById('modalBody').innerHTML = html;
-            modal.classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('infoModal').classList.remove('active');
-        }
-
-        // Close modal on background click
-        document.getElementById('infoModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-
-        // =================================================================
-        // MANEJO DE SELECCIÓN DE ESPACIO
-        // =================================================================
-        document.querySelectorAll('.btn-select').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                var espacioId = this.getAttribute('data-espacio');
-                var tipo = this.getAttribute('data-tipo');
-                
-                // Remover selección previa
-                document.querySelectorAll('.space-card').forEach(function(card) {
-                    card.classList.remove('selected');
-                });
-                
-                // Marcar como seleccionado
-                this.closest('.space-card').classList.add('selected');
-                
-                // Guardar ID del espacio
-                document.getElementById('espacioSeleccionado').value = espacioId;
-                
-                // Mostrar formulario
-                var formSection = document.getElementById('formSection');
-                formSection.classList.add('active');
-                formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                
-                // Mostrar campos de visitante si es estacionamiento
-                var isParking = tipo === 'estacionamiento';
-                var visitorFields = document.getElementById('visitorFields');
-                visitorFields.style.display = isParking ? 'block' : 'none';
-                
-                // Hacer requeridos los campos si es estacionamiento
-                document.getElementById('nombre_visitante').required = isParking;
-                document.getElementById('placa_visitante').required = isParking;
-                
-                // Actualizar progress
-                document.querySelectorAll('.step')[0].classList.add('completed');
-                document.querySelectorAll('.step')[0].classList.remove('active');
-                document.querySelectorAll('.step')[1].classList.add('active');
-            });
-        });
-
-        // =================================================================
-        // SISTEMA DE CARGA DE HORARIOS
-        // =================================================================
-        document.getElementById('fecha').addEventListener('change', function() {
-            var fecha = this.value;
-            var espacioId = document.getElementById('espacioSeleccionado').value;
-            
-            if (!fecha) {
-                alert('Por favor seleccione una fecha');
-                return;
-            }
-            
-            if (!espacioId) {
-                alert('Por favor seleccione un espacio primero');
-                return;
-            }
-            
-            cargarHorarios(espacioId, fecha);
-        });
-
-        function cargarHorarios(espacioId, fecha) {
-            var loading = document.getElementById('horariosLoading');
-            var grid = document.getElementById('horariosGrid');
-            var error = document.getElementById('horariosError');
-            
-            // Mostrar loading
-            loading.style.display = 'block';
-            grid.style.display = 'none';
-            error.style.display = 'none';
-            
-            // AJAX para cargar horarios
-            fetch('/reservas/obtener-horarios/?espacio=' + espacioId + '&fecha=' + fecha)
-                .then(function(response) {
-                    if (!response.ok) throw new Error('Error al cargar horarios');
-                    return response.json();
-                })
-                .then(function(data) {
-                    loading.style.display = 'none';
-                    
-                    if (data.horarios && data.horarios.length > 0) {
-                        renderizarHorarios(data.horarios);
-                        grid.style.display = 'grid';
-                        
-                        // Actualizar progress step
-                        document.querySelectorAll('.step')[1].classList.add('completed');
-                        document.querySelectorAll('.step')[1].classList.remove('active');
-                        document.querySelectorAll('.step')[2].classList.add('active');
-                    } else {
-                        mostrarError('No hay horarios disponibles para esta fecha');
-                    }
-                })
-                .catch(function(err) {
-                    console.error('Error:', err);
-                    loading.style.display = 'none';
-                    mostrarError('Error al cargar horarios. Por favor intente nuevamente.');
-                });
-        }
-
-        function renderizarHorarios(horarios) {
-            var grid = document.getElementById('horariosGrid');
-            grid.innerHTML = '';
-            
-            horarios.forEach(function(horario) {
-                var label = document.createElement('label');
-                label.className = 'horario-slot' + (horario.disponible ? '' : ' horario-ocupado');
-                
-                if (horario.disponible) {
-                    var checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.name = 'bloques_horarios';
-                    checkbox.value = horario.hora_inicio + '-' + horario.hora_fin;
-                    label.appendChild(checkbox);
-                    
-                    label.addEventListener('click', function(e) {
-                        if (e.target.tagName !== 'INPUT') {
-                            var cb = this.querySelector('input[type="checkbox"]');
-                            if (cb) {
-                                cb.checked = !cb.checked;
-                            }
-                        }
-                        this.classList.toggle('horario-selected');
-                        actualizarResumen();
-                    });
-                }
-                
-                var timeDiv = document.createElement('div');
-                timeDiv.textContent = horario.hora_inicio + ' - ' + horario.hora_fin;
-                label.appendChild(timeDiv);
-                
-                if (!horario.disponible) {
-                    var ocupadoSpan = document.createElement('div');
-                    ocupadoSpan.style.fontSize = '0.7rem';
-                    ocupadoSpan.style.color = '#ef4444';
-                    ocupadoSpan.style.marginTop = '0.25rem';
-                    ocupadoSpan.textContent = 'Ocupado';
-                    label.appendChild(ocupadoSpan);
-                }
-                
-                grid.appendChild(label);
-            });
-            
-            crearResumen();
-        }
-
-        function crearResumen() {
-            var resumenExistente = document.getElementById('horariosResumen');
-            if (resumenExistente) {
-                resumenExistente.remove();
-            }
-            
-            var resumen = document.createElement('div');
-            resumen.id = 'horariosResumen';
-            resumen.className = 'horarios-resumen';
-            resumen.style.display = 'none';
-            resumen.innerHTML = '<h4><i class="fas fa-check-circle"></i> Horarios Seleccionados:</h4><div class="horarios-resumen-list" id="horariosResumenList"></div>';
-            
-            document.getElementById('horariosContainer').appendChild(resumen);
-        }
-
-        function actualizarResumen() {
-            var checkboxes = document.querySelectorAll('input[name="bloques_horarios"]:checked');
-            var resumen = document.getElementById('horariosResumen');
-            var lista = document.getElementById('horariosResumenList');
-            
-            if (!resumen || !lista) return;
-            
-            if (checkboxes.length > 0) {
-                resumen.style.display = 'block';
-                lista.innerHTML = '';
-                
-                checkboxes.forEach(function(cb) {
-                    var tag = document.createElement('div');
-                    tag.className = 'horario-tag';
-                    tag.innerHTML = '<span>' + cb.value + '</span><button type="button" onclick="removerHorario(\'' + cb.value + '\')">×</button>';
-                    lista.appendChild(tag);
-                });
+            // TU LÓGICA ORIGINAL DE HORARIOS
+            if (currentSpaceType.includes('sala')) {
+                horarios = [
+                    '08:00-09:00', '09:00-10:00', '10:00-11:00', '11:00-12:00',
+                    '12:00-13:00', '13:00-14:00', '14:00-15:00', '15:00-16:00',
+                    '16:00-17:00', '17:00-18:00'
+                ];
+            } else if (currentSpaceType.includes('directorio')) {
+                horarios = [
+                    '08:00-09:00', '09:00-10:00', '10:00-11:00', '11:00-12:00',
+                    '12:00-13:00', '13:00-14:00', '14:00-15:00', '15:00-16:00',
+                    '16:00-17:00', '17:00-18:00', '18:00-19:00'
+                ];
+            } else if (currentSpaceType.includes('terraza')) {
+                horarios = [
+                    '15:00-16:00', '16:00-17:00', '17:00-18:00', '18:00-19:00',
+                    '19:00-20:00', '20:00-21:00', '21:00-22:00'
+                ];
+            } else if (currentSpaceType.includes('comedor')) {
+                horarios = [
+                    '08:00-09:00', '09:00-10:00', '10:00-11:00'
+                ];
+            } else if (currentSpaceType.includes('estacionamiento')) {
+                horarios = [
+                    '07:00-08:00', '08:00-09:00', '09:00-10:00', '10:00-11:00',
+                    '11:00-12:00', '12:00-13:00', '13:00-14:00', '14:00-15:00',
+                    '15:00-16:00', '16:00-17:00', '17:00-18:00', '18:00-19:00',
+                    '19:00-20:00', '20:00-21:00', '21:00-22:00'
+                ];
             } else {
-                resumen.style.display = 'none';
+                horarios = [
+                    '08:00-09:00', '09:00-10:00', '10:00-11:00', '11:00-12:00',
+                    '12:00-13:00', '14:00-15:00', '15:00-16:00', '16:00-17:00'
+                ];
             }
-        }
 
-        function removerHorario(horario) {
-            var checkbox = document.querySelector('input[name="bloques_horarios"][value="' + horario + '"]');
-            if (checkbox) {
-                checkbox.checked = false;
-                var label = checkbox.closest('.horario-slot');
-                if (label) {
-                    label.classList.remove('horario-selected');
-                }
-                actualizarResumen();
-            }
-        }
-
-        function mostrarError(mensaje) {
-            var error = document.getElementById('horariosError');
-            var msg = document.getElementById('horariosErrorMsg');
-            if (msg) msg.textContent = mensaje;
-            if (error) error.style.display = 'block';
-        }
-
-        // =================================================================
-        // VALIDACIÓN DE FORMULARIO
-        // =================================================================
-        document.getElementById('reservaForm').addEventListener('submit', function(e) {
-            var espacioCard = document.querySelector('.space-card.selected');
-            if (!espacioCard) {
-                e.preventDefault();
-                alert('Por favor seleccione un espacio primero');
-                return;
-            }
-            
-            var tipo = espacioCard.getAttribute('data-tipo');
-            if (tipo === 'estacionamiento') {
-                var nombre = document.getElementById('nombre_visitante').value.trim();
-                var placa = document.getElementById('placa_visitante').value.trim();
+            // Renderizar horarios
+            container.innerHTML = '';
+            horarios.forEach((horario, index) => {
+                const [inicio, fin] = horario.split('-');
+                const label = `${inicio} - ${fin}`;
                 
-                if (!nombre || !placa) {
-                    e.preventDefault();
-                    alert('Para estacionamientos debe completar el nombre y placa del visitante');
-                    return;
-                }
+                const block = document.createElement('label');
+                block.className = 'time-block';
+                block.innerHTML = `
+                    <input type="checkbox" name="bloques_horarios" value="${horario}" id="bloque_${index}">
+                    <span class="time-block-label">${label}</span>
+                `;
+                container.appendChild(block);
+            });
+
+            // Actualizar info
+            actualizarInfoBloques();
+        }
+
+        function actualizarInfoBloques() {
+            const checkboxes = document.querySelectorAll('input[name="bloques_horarios"]:checked');
+            const info = document.getElementById('blocksInfo');
+            
+            if (checkboxes.length === 0) {
+                info.textContent = 'Seleccione uno o más bloques';
+            } else {
+                info.textContent = `${checkboxes.length} bloque(s) seleccionado(s)`;
             }
+        }
+
+        // Event listeners
+        document.getElementById('fecha').addEventListener('change', function() {
+            selectedDate = this.value;
+            generarHorarios();
         });
 
-        // Auto-uppercase para placas
         document.getElementById('placa_visitante').addEventListener('input', function() {
             this.value = this.value.toUpperCase();
+        });
+
+        // Detectar cambios en checkboxes
+        document.addEventListener('change', function(e) {
+            if (e.target.name === 'bloques_horarios') {
+                actualizarInfoBloques();
+            }
+        });
+
+        // Establecer fecha mínima
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').min = today;
         });
     </script>
 </body>
