@@ -466,6 +466,105 @@ def generar_horarios_por_tipo(tipo_espacio):
             {'inicio': '17:00', 'fin': '18:00', 'label': '5:00 PM - 6:00 PM'}
         ]
 
+# =====================================================
+# AGREGAR ESTA FUNCIÓN A TU views.py
+# Ubicación: Después de la función generar_horarios_por_tipo()
+# (Aproximadamente después de la línea 490)
+# =====================================================
+
+@require_GET
+@login_required
+def obtener_horarios(request):
+    """
+    Vista AJAX que devuelve horarios disponibles para un espacio y fecha
+    USA tu función generar_horarios_por_tipo() existente
+    """
+    espacio_id = request.GET.get('espacio')
+    fecha_str = request.GET.get('fecha')
+    
+    # Validar parámetros
+    if not espacio_id or not fecha_str:
+        return JsonResponse({
+            'error': 'Faltan parámetros requeridos (espacio y fecha)'
+        }, status=400)
+    
+    try:
+        # Obtener espacio
+        espacio = Espacio.objects.get(id=espacio_id)
+        
+        # Convertir fecha
+        fecha = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+        
+    except Espacio.DoesNotExist:
+        return JsonResponse({
+            'error': 'Espacio no encontrado'
+        }, status=404)
+        
+    except ValueError:
+        return JsonResponse({
+            'error': 'Formato de fecha inválido. Use YYYY-MM-DD'
+        }, status=400)
+    
+    # ⭐ USA TU FUNCIÓN EXISTENTE generar_horarios_por_tipo() ⭐
+    horarios_base = generar_horarios_por_tipo(espacio.tipo)
+    
+    # Verificar disponibilidad de cada horario
+    horarios_disponibles = []
+    
+    for horario in horarios_base:
+        hora_inicio_str = horario['inicio']
+        hora_fin_str = horario['fin']
+        
+        # Convertir strings a time objects
+        try:
+            # Manejar formato con o sin cero inicial (8:00 o 08:00)
+            if ':' in hora_inicio_str:
+                if len(hora_inicio_str.split(':')[0]) == 1:
+                    hora_inicio_str = '0' + hora_inicio_str
+                hora_inicio_obj = datetime.strptime(hora_inicio_str, '%H:%M').time()
+            else:
+                hora_inicio_obj = datetime.strptime(f"{hora_inicio_str}:00", '%H:%M').time()
+            
+            if ':' in hora_fin_str:
+                if len(hora_fin_str.split(':')[0]) == 1:
+                    hora_fin_str = '0' + hora_fin_str
+                hora_fin_obj = datetime.strptime(hora_fin_str, '%H:%M').time()
+            else:
+                hora_fin_obj = datetime.strptime(f"{hora_fin_str}:00", '%H:%M').time()
+                
+        except ValueError as e:
+            print(f"Error parseando horario {hora_inicio_str}-{hora_fin_str}: {e}")
+            continue  # Skip si hay error de formato
+        
+        # Verificar si existe una reserva que se solape con este horario
+        ocupado = Reserva.objects.filter(
+            espacio=espacio,
+            fecha=fecha,
+            hora_inicio__lt=hora_fin_obj,
+            hora_fin__gt=hora_inicio_obj
+        ).exists()
+        
+        # Agregar a lista de horarios disponibles
+        horarios_disponibles.append({
+            'hora_inicio': horario['inicio'],  # Mantener formato original
+            'hora_fin': horario['fin'],        # Mantener formato original
+            'disponible': not ocupado,
+            'label': horario.get('label', f"{horario['inicio']} - {horario['fin']}")
+        })
+    
+    # Retornar JSON
+    return JsonResponse({
+        'horarios': horarios_disponibles,
+        'tipo_espacio': espacio.tipo,
+        'nombre_espacio': espacio.nombre,
+        'fecha': fecha_str
+    })
+
+
+# =====================================================
+# FIN DE LA FUNCIÓN - No copiar nada más después de esto
+# =====================================================
+
 @require_GET
 @login_required
 def obtener_calendario_ocupacion_ajax(request):
