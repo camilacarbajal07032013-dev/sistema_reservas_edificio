@@ -1229,9 +1229,9 @@
                     <p id="selectedSpaceName">Espacio seleccionado</p>
                 </div>
 
-                <form method="POST" action="{% url 'nueva_reserva' %}" onsubmit="return validateForm(event)">
+                <form method="POST" onsubmit="return validateForm(event)">
                     {% csrf_token %}
-
+                    
                     <input type="hidden" name="espacio" id="espacioInput">
 
                     <div class="form-group">
@@ -1732,47 +1732,6 @@
                 console.error('Error al verificar disponibilidad:', error);
                 showErrorState(error.message);
             }
-        }
-
-        // ===== GENERAR HORARIOS DE EJEMPLO (YA NO SE USA - SOLO BACKUP) =====
-        function generateSampleSchedule(tipo) {
-            // Esta función ya NO se usa porque ahora viene del servidor
-            // La dejo solo como backup por si falla la conexión
-            console.warn('Usando horarios de respaldo - debería venir del servidor');
-            
-            const horarios = [];
-            let horaInicio, horaFin;
-            
-            if (tipo === 'comedor') {
-                horaInicio = 8;
-                horaFin = 11;
-            } else if (tipo === 'terraza') {
-                horaInicio = 15;
-                horaFin = 22;
-            } else if (tipo === 'estacionamiento') {
-                horaInicio = 7;
-                horaFin = 22;
-            } else {
-                horaInicio = 8;
-                horaFin = 18;
-            }
-            
-            for (let hora = horaInicio; hora < horaFin; hora++) {
-                const inicio = `${hora.toString().padStart(2, '0')}:00`;
-                const fin = `${(hora + 1).toString().padStart(2, '0')}:00`;
-                
-                horarios.push({
-                    inicio: inicio,
-                    fin: fin,
-                    label: `${inicio} - ${fin}`,
-                    ocupado: false
-                });
-            }
-            
-            return {
-                nombre_espacio: tipo,
-                horarios: horarios
-            };
         }
 
         // ===== ESTADOS DE CARGA =====
