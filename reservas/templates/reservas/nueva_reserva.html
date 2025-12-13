@@ -2025,11 +2025,6 @@
                 return false;
             }
             
-            if (!proposito.trim()) {
-                showError('Debe especificar el propósito de la reserva');
-                event.preventDefault();
-                return false;
-            }
             
             if (horariosSeleccionados === 0) {
                 showError('Debe seleccionar al menos un bloque de horario válido');
