@@ -925,35 +925,9 @@
                         case 'upcoming':
                             if (cardDate > today) {
                                 showCard = true;
-                            } else if (cardDate === today) {
-                                const timeElements = card.querySelectorAll('.detail-content p');
-                                let endTime = null;
-                                
-                                timeElements.forEach(element => {
-                                    const timeText = element.textContent;
-                                    const endTimeMatch = timeText.match(/- (\d{1,2}):(\d{2}) (AM|PM)/);
-                                    
-                                    if (endTimeMatch) {
-                                        let endHour = parseInt(endTimeMatch[1]);
-                                        const endMinute = parseInt(endTimeMatch[2]);
-                                        const ampm = endTimeMatch[3];
-                                        
-                                        if (ampm === 'PM' && endHour !== 12) {
-                                            endHour += 12;
-                                        } else if (ampm === 'AM' && endHour === 12) {
-                                            endHour = 0;
-                                        }
-                                        
-                                        endTime = new Date();
-                                        endTime.setHours(endHour, endMinute, 0, 0);
-                                    }
-                                });
-                                
-                                if (endTime) {
-                                    showCard = now < endTime;
-                                } else {
-                                    showCard = true;
-                                }
+                            } else if (cardDate === today) {  // ← PROBLEMA
+                                // ... código complejo que verifica la hora ...
+                                showCard = now < endTime;  // Muestra HOY si no pasó
                             } else {
                                 showCard = false;
                             }
