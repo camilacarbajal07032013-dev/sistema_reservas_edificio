@@ -12,19 +12,38 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            color: #2c3e50;
-            line-height: 1.6;
+        :root {
+            --primary-blue: #1e3a8a;
+            --primary-dark: #1f2937;
+            --success-green: #047857;
+            --action-orange: #ea580c;
+            --light-gray: #f3f4f6;
+            --medium-gray: #6b7280;
+            --border-gray: #e5e7eb;
+            
+            --sala-color: #1e40af;
+            --directorio-color: #7c3aed;
+            --terraza-color: #059669;
+            --comedor-color: #d97706;
+            --parking-color: #0284c7;
         }
 
+        body {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #e5e7eb 100%);
+            color: var(--primary-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* =================================================================
+           HEADER
+           ================================================================= */
         .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 2rem 0;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 2.5rem 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
             position: relative;
             overflow: hidden;
         }
@@ -36,12 +55,13 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100"><polygon fill="rgba(255,255,255,0.05)" points="0,0 1000,0 1000,60 0,100"/></svg>');
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path fill="rgba(255,255,255,0.05)" d="M0,0 L1200,0 L1200,80 Q600,120 0,80 Z"/></svg>');
             background-size: cover;
+            opacity: 0.3;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 0 2rem;
             position: relative;
@@ -53,140 +73,495 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
             gap: 1rem;
         }
 
         .header h1 {
             font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+            letter-spacing: -0.5px;
         }
 
-        .header p {
+        .header-subtitle {
             font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
             opacity: 0.9;
         }
 
-        .nav-buttons {
+        .header-buttons {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
         }
 
         .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
+            padding: 0.85rem 1.5rem;
             border-radius: 10px;
             text-decoration: none;
             font-weight: 600;
             font-size: 0.95rem;
-            cursor: pointer;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.65rem;
+            border: none;
+            cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            background: rgba(255,255,255,0.15);
             color: white;
-            padding: 1rem 2.5rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(52,152,219,0.3);
-            position: relative;
-            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
         }
 
         .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(52,152,219,0.4);
-        }
-
-        .btn-secondary:active {
-            transform: translateY(-1px);
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,255,255,0.2);
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            background: var(--action-orange);
             color: white;
         }
 
         .btn-danger:hover {
+            background: #c2410c;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(231,76,60,0.3);
+            box-shadow: 0 6px 25px rgba(234, 88, 12, 0.4);
         }
 
-        .main-content {
+        .btn-primary {
+            background: white;
+            color: var(--primary-blue);
+        }
+
+        .btn-primary:hover {
+            background: #f0f9ff;
+            transform: translateY(-2px);
+        }
+
+        /* =================================================================
+           BANNER DE POLÍTICAS
+           ================================================================= */
+        .policies-banner {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 5px solid #f59e0b;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .policies-banner i {
+            font-size: 2.5rem;
+            color: #d97706;
+        }
+
+        .policies-content {
+            flex: 1;
+        }
+
+        .policies-content h3 {
+            color: #92400e;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .policies-content p {
+            color: #78350f;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .btn-policies {
+            background: white;
+            color: #d97706;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            border: 2px solid #f59e0b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-policies:hover {
+            background: #d97706;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+        }
+
+        /* =================================================================
+           MAIN SECTION
+           ================================================================= */
+        .main-section {
             padding: 3rem 0;
         }
 
-        .reservation-card {
+        .section-card {
             background: white;
             border-radius: 20px;
             padding: 3rem;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.05);
             position: relative;
             overflow: hidden;
+            animation: fadeInUp 0.6s ease;
         }
 
-        .reservation-card::before {
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #3498db, #2980b9, #8e44ad, #9b59b6);
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--directorio-color), var(--terraza-color));
         }
 
-        .form-header {
+        .section-header {
+            margin-bottom: 2.5rem;
             text-align: center;
-            margin-bottom: 3rem;
         }
 
-        .form-header h2 {
+        .section-header h2 {
             font-size: 2rem;
+            color: var(--primary-dark);
             font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 1rem;
         }
 
-        .form-header p {
-            color: #7f8c8d;
+        .section-header p {
+            color: var(--medium-gray);
             font-size: 1.1rem;
         }
 
-        .form-grid {
+        /* =================================================================
+           SPACE CARDS
+           ================================================================= */
+        .spaces-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
             gap: 2rem;
-            margin-bottom: 2rem;
+        }
+
+        .space-card {
+            background: white;
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .space-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, var(--primary-blue), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .space-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(30, 58, 138, 0.15);
+            border-color: var(--primary-blue);
+        }
+
+        .space-card:hover::before {
+            opacity: 1;
+        }
+
+        .space-card.selected {
+            border-color: var(--primary-blue);
+            background: linear-gradient(135deg, #eff6ff 0%, white 100%);
+            box-shadow: 0 15px 40px rgba(30, 58, 138, 0.2);
+        }
+
+        .space-icon-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 90px;
+            height: 90px;
+            border-radius: 18px;
+            margin: 0 auto 1.5rem;
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
+            color: white;
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .space-card:hover .space-icon-wrapper {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 15px 40px rgba(30, 58, 138, 0.4);
+        }
+
+        .space-card[data-tipo="sala"] .space-icon-wrapper {
+            background: linear-gradient(135deg, var(--sala-color), #2563eb);
+        }
+
+        .space-card[data-tipo="directorio"] .space-icon-wrapper {
+            background: linear-gradient(135deg, var(--directorio-color), #9333ea);
+        }
+
+        .space-card[data-tipo="terraza"] .space-icon-wrapper {
+            background: linear-gradient(135deg, var(--terraza-color), #10b981);
+        }
+
+        .space-card[data-tipo="comedor"] .space-icon-wrapper {
+            background: linear-gradient(135deg, var(--comedor-color), #f59e0b);
+        }
+
+        .space-card[data-tipo="estacionamiento"] .space-icon-wrapper {
+            background: linear-gradient(135deg, var(--parking-color), #0ea5e9);
+        }
+
+        .space-content {
+            text-align: center;
+        }
+
+        .space-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .space-subtitle {
+            font-size: 0.9rem;
+            color: var(--medium-gray);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .space-capacity {
+            display: inline-block;
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            color: #0369a1;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* =================================================================
+           BADGES
+           ================================================================= */
+        .space-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .badge-public {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .badge-private {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+        }
+
+        .badge-location {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        /* =================================================================
+           CONDICIONES
+           ================================================================= */
+        .conditions-section {
+            margin: 1rem 0;
+        }
+
+        .btn-conditions {
+            width: 100%;
+            padding: 0.7rem;
+            background: transparent;
+            border: 2px dashed var(--border-gray);
+            border-radius: 8px;
+            color: var(--medium-gray);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-conditions:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            background: #eff6ff;
+        }
+
+        .btn-conditions .fa-chevron-down {
+            transition: transform 0.3s ease;
+        }
+
+        .btn-conditions.active .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .conditions-content {
+            margin-top: 0.75rem;
+            padding: 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-blue);
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .conditions-content.show {
+            max-height: 1000px;
+            padding: 1.5rem;
+        }
+
+        .conditions-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .conditions-content li {
+            padding: 0.6rem 0;
+            font-size: 0.88rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            line-height: 1.5;
+        }
+
+        .conditions-content li i {
+            color: var(--success-green);
+            margin-top: 0.2rem;
+            font-size: 0.9rem;
+            min-width: 16px;
+        }
+
+        .conditions-content li.warning i {
+            color: #f59e0b;
+        }
+
+        .conditions-content li.danger i {
+            color: #dc2626;
+        }
+
+        /* =================================================================
+           BOTÓN SELECCIONAR
+           ================================================================= */
+        .btn-select-space {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-select-space:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.4);
+            background: linear-gradient(135deg, #1e40af, var(--primary-blue));
+        }
+
+        /* =================================================================
+           FORM SECTION
+           ================================================================= */
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
         }
 
         .form-group {
-            position: relative;
+            margin-bottom: 2rem;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 0.75rem;
             font-weight: 600;
-            color: #34495e;
+            color: var(--primary-dark);
+            margin-bottom: 0.75rem;
             font-size: 1rem;
             display: flex;
             align-items: center;
@@ -194,27 +569,36 @@
         }
 
         .form-group input,
-        .form-group select {
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 1rem 1.25rem;
-            border: 2px solid #e9ecef;
+            border: 2px solid var(--border-gray);
             border-radius: 12px;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background: #f8f9fa;
-            color: #2c3e50;
+            background: #fafafa;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
         }
 
         .form-group input:focus,
-        .form-group select:focus {
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
-            border-color: #3498db;
+            border-color: var(--primary-blue);
             background: white;
-            box-shadow: 0 0 0 4px rgba(52,152,219,0.1);
+            box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1);
             transform: translateY(-2px);
         }
 
-        /* ESTILOS PARA ESTADO DE DISPONIBILIDAD */
+        /* =================================================================
+           AVAILABILITY STATUS
+           ================================================================= */
         .availability-status {
             display: none;
             padding: 1rem;
@@ -236,32 +620,69 @@
             color: white;
         }
 
-        .time-blocks {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            max-height: 350px;
-            overflow-y: auto;
+        /* =================================================================
+           TIME BLOCKS
+           ================================================================= */
+        .time-blocks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
             padding: 1rem;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
             border-radius: 12px;
-            border: 2px solid #e9ecef;
+        }
+
+        .time-blocks-header h3 {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+
+        .time-blocks-info {
+            font-size: 0.9rem;
+            color: var(--medium-gray);
+            font-weight: 600;
+        }
+
+        .time-blocks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 12px;
+            border: 2px solid var(--border-gray);
         }
 
         .time-block {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1rem;
-            border: 2px solid #e9ecef;
+            position: relative;
+            border: 2px solid var(--border-gray);
             border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
             background: white;
-            position: relative;
         }
 
-        /* ESTADOS DE DISPONIBILIDAD */
+        .time-block input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .time-block-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--primary-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
         .time-block.disponible {
             border-color: #27ae60;
             background: linear-gradient(135deg, #d5f4e6 0%, #fafffe 100%);
@@ -274,6 +695,17 @@
             box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
         }
 
+        .time-block:has(input[type="checkbox"]:checked) {
+            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
+            border-color: var(--primary-blue);
+            box-shadow: 0 8px 25px rgba(30, 58, 138, 0.3);
+            transform: translateY(-4px) scale(1.05);
+        }
+
+        .time-block:has(input[type="checkbox"]:checked) .time-block-label {
+            color: white;
+        }
+
         .time-block.ocupado {
             border-color: #e74c3c;
             background: linear-gradient(135deg, #fadbd8 0%, #fdf2f2 100%);
@@ -281,7 +713,7 @@
             opacity: 0.7;
         }
 
-        .time-block.ocupado:not(.pasado)::after {
+        .time-block.ocupado::after {
             content: "OCUPADO";
             position: absolute;
             top: 50%;
@@ -295,86 +727,38 @@
             font-weight: 700;
         }
 
-        /* NUEVOS ESTILOS PARA HORARIOS PASADOS */
         .time-block.pasado {
-            border-color: #f39c12 !important;
-            background: linear-gradient(135deg, #fef9e7 0%, #fcf3cf 100%) !important;
+            border-color: #f39c12;
+            background: linear-gradient(135deg, #fef9e7 0%, #fcf3cf 100%);
             cursor: not-allowed;
             opacity: 0.8;
         }
 
-
-        .time-block.pasado .time-label {
-            color: #9a7c00 !important;
+        .time-block.pasado .time-block-label {
+            color: #9a7c00;
             text-decoration: line-through;
             font-style: italic;
         }
 
-        .time-block.ocupado input[type="checkbox"] {
-            display: none;
-        }
-
-        .time-block.selected {
-            border-color: #3498db;
-            background: linear-gradient(135deg, #ebf3fd 0%, #f8fbff 100%);
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        }
-
-        .time-block input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #3498db;
-            cursor: pointer;
-        }
-
-        .time-block input[type="checkbox"]:checked + .time-label {
+        .time-block.pasado::after {
+            content: "PASADO";
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            background: #f39c12;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 5px;
             font-weight: 700;
-            color: #2980b9;
         }
 
-        .time-label {
-            flex: 1;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            color: #2c3e50;
-        }
-
-        .time-block.ocupado .time-label {
-            color: #7f8c8d;
-            text-decoration: line-through;
-        }
-
-        .no-space {
-            text-align: center;
-            color: #6c757d;
-            font-style: italic;
-            padding: 2rem;
-        }
-
-        .loading-spinner {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .loading-spinner.active {
-            display: block;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            margin: 0 auto 1rem;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .time-block.disabled {
+            background: #f3f4f6;
+            border-color: #e5e7eb;
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .selected-summary {
@@ -404,74 +788,137 @@
             font-size: 0.9rem;
         }
 
-        .visitor-info {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 15px;
-            padding: 2rem;
-            margin-top: 2rem;
-            border: 2px dashed #dee2e6;
-            transition: all 0.3s ease;
+        /* =================================================================
+           VISITOR SECTION
+           ================================================================= */
+        .visitor-section {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-top: 2.5rem;
+            border: 3px solid #fbbf24;
             display: none;
         }
 
-        .visitor-info.active {
+        .visitor-section.active {
             display: block;
-            border-color: #3498db;
-            background: linear-gradient(135deg, #ebf3fd 0%, #f8fbff 100%);
+            animation: fadeInUp 0.6s ease;
         }
 
         .visitor-header {
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 1.5rem;
-            color: #2c3e50;
+            margin-bottom: 2rem;
+        }
+
+        .visitor-icon {
+            font-size: 2rem;
+            color: #d97706;
         }
 
         .visitor-header h3 {
-            font-size: 1.3rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            color: #92400e;
+            font-weight: 700;
         }
 
+        .visitor-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* =================================================================
+           LOADING SPINNER
+           ================================================================= */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading-spinner.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 1rem;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* =================================================================
+           SUBMIT BUTTON
+           ================================================================= */
         .form-actions {
             display: flex;
-            gap: 1.5rem;
             justify-content: center;
+            gap: 1.5rem;
             margin-top: 3rem;
             flex-wrap: wrap;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        .btn-submit {
+            padding: 1.25rem 3rem;
+            background: linear-gradient(135deg, var(--success-green), #059669);
             color: white;
-            padding: 1rem 2.5rem;
-            font-size: 1.1rem;
-            font-weight: 600;
             border: none;
             border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(52,152,219,0.3);
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(4, 120, 87, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        .btn-primary:hover {
+        .btn-submit:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(52,152,219,0.4);
+            box-shadow: 0 15px 40px rgba(4, 120, 87, 0.4);
+            background: linear-gradient(135deg, #059669, var(--success-green));
         }
 
-        .btn-primary:active {
-            transform: translateY(-1px);
-        }
-
-        .btn-primary:disabled {
+        .btn-submit:disabled {
             background: #bdc3c7;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
 
+        .btn-cancel {
+            padding: 1.25rem 3rem;
+            background: var(--medium-gray);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-cancel:hover {
+            background: #4b5563;
+            transform: translateY(-3px);
+        }
+
+        /* =================================================================
+           ALERT
+           ================================================================= */
         .alert {
             padding: 1.25rem;
             border-radius: 12px;
@@ -489,40 +936,49 @@
             color: #c0392b;
         }
 
-        .icon {
-            font-size: 1.2rem;
+        /* =================================================================
+           MODAL
+           ================================================================= */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
         }
 
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .time-blocks {
-                grid-template-columns: 1fr;
-                max-height: 250px;
-            }
-            
-            .reservation-card {
-                padding: 2rem 1.5rem;
-                border-radius: 15px;
-            }
-            
-            .form-actions {
-                flex-direction: column;
-                align-items: center;
-            }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
         }
 
-        @keyframes fadeInUp {
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(50px);
             }
             to {
                 opacity: 1;
@@ -530,28 +986,184 @@
             }
         }
 
-        .reservation-card {
-            animation: fadeInUp 0.6s ease;
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+            color: white;
+            padding: 2rem;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .form-group:hover input,
-        .form-group:hover select {
-            border-color: #bdc3c7;
+        .modal-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 2.5rem;
+        }
+
+        .policy-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .policy-section h3 {
+            font-size: 1.3rem;
+            color: var(--primary-blue);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .policy-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .policy-list li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            line-height: 1.6;
+            color: var(--primary-dark);
+        }
+
+        .policy-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success-green);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .policy-warning {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+
+        .policy-warning h4 {
+            color: #92400e;
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .policy-warning ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .policy-warning li {
+            padding: 0.4rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #78350f;
+        }
+
+        .policy-warning li::before {
+            content: '⚠';
+            position: absolute;
+            left: 0;
+        }
+
+        /* =================================================================
+           RESPONSIVE
+           ================================================================= */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .spaces-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .time-blocks-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+
+            .section-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn-submit,
+            .btn-cancel {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .policies-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-height: 90vh;
+            }
+
+            .modal-body {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- =================================================================
+         HEADER
+         ================================================================= -->
     <div class="header">
         <div class="container">
             <div class="header-content">
-                <div>
-                    <h1>
-                        <i class="fas fa-calendar-plus icon"></i>
-                        Nueva Reserva
-                    </h1>
-                    <p>Sistema de Gestión - Disponibilidad de Tiempo</p>
+                <div class="header-title">
+                    <i class="fas fa-calendar-plus header-icon"></i>
+                    <div>
+                        <h1>Nueva Reserva</h1>
+                        <p class="header-subtitle">Sistema de Gestión de Espacios Corporativos</p>
+                    </div>
                 </div>
-                <div class="nav-buttons">
+                <div class="header-buttons">
+                    <button onclick="showPoliciesModal()" class="btn btn-primary">
+                        <i class="fas fa-book"></i>
+                        Políticas Generales
+                    </button>
                     <a href="{% url 'mis_reservas' %}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i>
                         Volver a Mis Reservas
@@ -566,66 +1178,91 @@
     </div>
 
     <div class="container">
-        <div class="main-content">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+        <div class="main-section">
+            <!-- =================================================================
+                 BANNER DE POLÍTICAS
+                 ================================================================= -->
+            <div class="policies-banner">
+                <i class="fas fa-shield-alt"></i>
+                <div class="policies-content">
+                    <h3>Políticas Corporativas de Uso</h3>
+                    <p>Antes de realizar una reserva, te recomendamos revisar nuestras políticas generales de uso de espacios, cancelaciones y responsabilidades.</p>
+                </div>
+                <button class="btn-policies" onclick="showPoliciesModal()">
+                    <i class="fas fa-external-link-alt"></i>
+                    Ver Políticas
+                </button>
+            </div>
 
+            <!-- Mensajes de error dinámicos -->
             <div class="alert alert-danger" id="error-messages" style="display: none;">
                 <i class="fas fa-exclamation-triangle"></i>
                 <span id="error-text"></span>
             </div>
 
-            <div class="reservation-card">
-                <div class="form-header">
+            <!-- =================================================================
+                 STEP 1: SELECT SPACE
+                 ================================================================= -->
+            <div class="section-card" id="spacesSection">
+                <div class="section-header">
                     <h2>
                         <i class="fas fa-building"></i>
-                        Solicitud de Reserva
+                        Espacios Disponibles
                     </h2>
-                    <p>Complete los siguientes campos para procesar su reserva</p>
+                    <p>Seleccione el espacio que desea reservar</p>
                 </div>
 
-                <form method="post" onsubmit="return validateForm(event)">
-                    {% csrf_token %}
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="espacio">
-                                <i class="fas fa-map-marker-alt icon"></i>
-                                Espacio a Reservar
-                            </label>
-                            <select name="espacio" id="espacio" required>
-                                <option value="">Seleccione un espacio...</option>
-                                {% for espacio in espacios %}
-                                    <option value="{{ espacio.id }}">{{ espacio.nombre }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                <div class="spaces-grid" id="spacesGrid">
+                    <!-- Los espacios se cargarán dinámicamente aquí -->
+                </div>
+            </div>
 
-                        <div class="form-group">
-                            <label for="fecha">
-                                <i class="fas fa-calendar-alt icon"></i>
-                                Fecha de Reserva
-                            </label>
-                            <input type="date" name="fecha" id="fecha" min="{{ fecha_minima }}" required>
-                        </div>
+            <!-- =================================================================
+                 STEP 2: COMPLETE RESERVATION
+                 ================================================================= -->
+            <div class="section-card form-section" id="formSection">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-calendar-check"></i>
+                        Completar Reserva
+                    </h2>
+                    <p id="selectedSpaceName">Espacio seleccionado</p>
+                </div>
+
+                <form method="POST" action="{% url 'nueva_reserva' %}" onsubmit="return validateForm(event)">
+                    {% csrf_token %}
+
+                    <input type="hidden" name="espacio" id="espacioInput">
+
+                    <div class="form-group">
+                        <label for="fecha">
+                            <i class="fas fa-calendar-alt"></i>
+                            Fecha de Reserva *
+                        </label>
+                        <input type="date" id="fecha" name="fecha" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="bloques_horarios">
-                            <i class="fas fa-clock icon"></i>
-                            Seleccionar Bloques de Horario (Múltiple)
+                        <label for="proposito">
+                            <i class="fas fa-clipboard-list"></i>
+                            Propósito de la Reserva *
                         </label>
-                        
+                        <textarea id="proposito" name="proposito" placeholder="Ej: Reunión con cliente, Evento de celebración, Entrevistas de trabajo..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
                         <!-- Estado de disponibilidad -->
                         <div id="availability-status" class="availability-status">
                             <i class="fas fa-sync-alt fa-spin"></i>
                             Verificando disponibilidad...
+                        </div>
+                        
+                        <div class="time-blocks-header">
+                            <h3>
+                                <i class="fas fa-clock"></i>
+                                Horarios Disponibles
+                            </h3>
+                            <span class="time-blocks-info" id="blocksInfo">Seleccione uno o más bloques</span>
                         </div>
                         
                         <!-- Spinner de carga -->
@@ -634,8 +1271,16 @@
                             <p>Cargando horarios disponibles...</p>
                         </div>
                         
-                        <div class="time-blocks" id="time-blocks">
-                            <p class="no-space">Primero seleccione un espacio y fecha...</p>
+                        <div class="time-blocks-grid" id="timeBlocksContainer">
+                            <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                                <i class="fas fa-calendar-day" style="font-size: 3rem; color: var(--medium-gray); margin-bottom: 1rem; display: block;"></i>
+                                <p style="color: var(--medium-gray); font-size: 1.1rem; font-weight: 600;">
+                                    Seleccione una fecha arriba para ver los horarios disponibles
+                                </p>
+                                <p style="color: var(--medium-gray); font-size: 0.9rem; margin-top: 0.5rem;">
+                                    Los horarios se actualizarán automáticamente según la disponibilidad
+                                </p>
+                            </div>
                         </div>
                         
                         <div id="hidden-horarios"></div>
@@ -646,49 +1291,47 @@
                         </div>
                     </div>
 
-                    <div id="visitor-info" class="visitor-info">
+                    <!-- VISITOR INFO (solo para estacionamientos) -->
+                    <div class="visitor-section" id="visitorSection">
                         <div class="visitor-header">
-                            <i class="fas fa-user-tie" style="font-size: 1.5rem; color: #3498db;"></i>
-                            <h3>Información del Visitante</h3>
+                            <i class="fas fa-user-tie visitor-icon"></i>
+                            <h3>Información del Visitante (Obligatorio)</h3>
                         </div>
-                        
-                        <div class="form-grid">
+                        <div class="visitor-form-grid">
                             <div class="form-group">
                                 <label for="nombre_visitante">
-                                    <i class="fas fa-user icon"></i>
-                                    Nombre Completo
+                                    <i class="fas fa-user"></i>
+                                    Nombre Completo *
                                 </label>
-                                <input type="text" name="nombre_visitante" id="nombre_visitante" 
+                                <input type="text" id="nombre_visitante" name="nombre_visitante" 
                                        placeholder="Ej: Juan Carlos Pérez López">
                             </div>
-
                             <div class="form-group">
                                 <label for="placa_visitante">
-                                    <i class="fas fa-car icon"></i>
-                                    Placa del Vehículo
+                                    <i class="fas fa-car"></i>
+                                    Placa del Vehículo *
                                 </label>
-                                <input type="text" name="placa_visitante" id="placa_visitante" 
+                                <input type="text" id="placa_visitante" name="placa_visitante" 
                                        placeholder="Ej: ABC-123" style="text-transform: uppercase;">
                             </div>
-
                             <div class="form-group">
                                 <label for="empresa_visitante">
-                                    <i class="fas fa-briefcase icon"></i>
+                                    <i class="fas fa-briefcase"></i>
                                     Empresa / Organización
                                 </label>
-                                <input type="text" name="empresa_visitante" id="empresa_visitante" 
+                                <input type="text" id="empresa_visitante" name="empresa_visitante" 
                                        placeholder="Ej: Corporación Internacional S.A.">
                             </div>
                         </div>
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary" id="submit-btn">
+                        <button type="submit" class="btn-submit" id="submit-btn">
                             <i class="fas fa-check-circle"></i>
                             Confirmar Reserva
                         </button>
-                        <a href="{% url 'mis_reservas' %}" class="btn btn-secondary">
-                            <i class="fas fa-times"></i>
+                        <a href="{% url 'mis_reservas' %}" class="btn-cancel">
+                            <i class="fas fa-times-circle"></i>
                             Cancelar
                         </a>
                     </div>
@@ -697,29 +1340,538 @@
         </div>
     </div>
 
-<script>
+    <!-- =================================================================
+         MODAL DE POLÍTICAS
+         ================================================================= -->
+    <div class="modal" id="policiesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>
+                    <i class="fas fa-shield-alt"></i>
+                    Políticas Corporativas de Uso
+                </h2>
+                <button class="modal-close" onclick="closePoliciesModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- POLÍTICAS GENERALES -->
+                <div class="policy-section">
+                    <h3><i class="fas fa-list-check"></i> Políticas Generales de Uso</h3>
+                    <ul class="policy-list">
+                        <li>Todos los espacios deben ser reservados con anticipación a través del sistema</li>
+                        <li>El uso de los espacios está sujeto a disponibilidad y aprobación</li>
+                        <li>Los usuarios son responsables del buen uso y cuidado de las instalaciones</li>
+                        <li>Se debe respetar el horario reservado y liberar el espacio a tiempo</li>
+                        <li>No está permitido subarrendar o ceder reservas a terceros</li>
+                        <li>El consumo de alimentos está permitido solo en espacios designados</li>
+                        <li>Se debe mantener un nivel de ruido apropiado y respetuoso</li>
+                        <li>Queda prohibido fumar en todos los espacios cerrados del edificio</li>
+                    </ul>
+                </div>
+
+                <!-- CANCELACIONES Y MODIFICACIONES -->
+                <div class="policy-section">
+                    <h3><i class="fas fa-calendar-times"></i> Cancelaciones y Modificaciones</h3>
+                    <ul class="policy-list">
+                        <li>Las cancelaciones deben realizarse con el tiempo mínimo establecido para cada espacio</li>
+                        <li>Cancelaciones tardías pueden resultar en penalizaciones</li>
+                        <li>Modificaciones de horario sujetas a disponibilidad</li>
+                        <li>Más de 3 cancelaciones tardías en un mes pueden suspender privilegios de reserva</li>
+                    </ul>
+                </div>
+
+                <!-- RESPONSABILIDADES -->
+                <div class="policy-section">
+                    <h3><i class="fas fa-user-shield"></i> Responsabilidades del Usuario</h3>
+                    <ul class="policy-list">
+                        <li>El usuario es responsable por daños causados durante el uso del espacio</li>
+                        <li>Debe reportar inmediatamente cualquier daño o problema encontrado</li>
+                        <li>Es responsable de la seguridad de sus pertenencias personales</li>
+                        <li>Debe cumplir con todas las normas de seguridad del edificio</li>
+                    </ul>
+                </div>
+
+                <!-- ADVERTENCIAS IMPORTANTES -->
+                <div class="policy-warning">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Advertencias Importantes</h4>
+                    <ul>
+                        <li>El incumplimiento de estas políticas puede resultar en la pérdida de privilegios</li>
+                        <li>La empresa se reserva el derecho de cancelar reservas en caso de emergencia</li>
+                        <li>Las políticas pueden ser actualizadas sin previo aviso</li>
+                        <li>Es responsabilidad del usuario mantenerse informado sobre las políticas vigentes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATOS DESDE DJANGO =====
+        const espaciosData = [
+            {% for espacio in espacios %}
+            {
+                id: {{ espacio.id }},
+                nombre: "{{ espacio.nombre|escapejs }}",
+                tipo: "{{ espacio.tipo|lower|escapejs }}",
+                capacidad: {{ espacio.capacidad|default:10 }},
+                ubicacion: "{{ espacio.ubicacion|default:'Sin ubicar'|escapejs }}",
+                {% if espacio.tipo == 'estacionamiento' %}
+                es_estacionamiento_visita: {{ espacio.es_estacionamiento_visita|yesno:"true,false" }},
+                oficina_propietaria: "{{ espacio.oficina_propietaria.nombre_empresa|default:''|escapejs }}"
+                {% endif %}
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        // ===== VARIABLES GLOBALES =====
         let selectedTimeSlots = [];
         let currentSpaceType = '';
         let currentSpaceId = null;
         let currentDate = null;
         let availabilityData = null;
-        
+
+        // ===== INICIALIZACIÓN =====
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('fecha').min = today;
             
-            const card = document.querySelector('.reservation-card');
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(30px)';
-            
-            setTimeout(() => {
-                card.style.transition = 'all 0.6s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, 100);
+            loadSpaces();
+            setupEventListeners();
         });
 
-        // ===== FUNCIÓN CORREGIDA PARA VERIFICAR SI EL HORARIO YA PASÓ =====
+        // ===== CARGAR ESPACIOS =====
+        function loadSpaces() {
+            const grid = document.getElementById('spacesGrid');
+            grid.innerHTML = '';
+
+            espaciosData.forEach(espacio => {
+                const card = createSpaceCard(espacio);
+                grid.appendChild(card);
+            });
+        }
+
+        // ===== CREAR TARJETA DE ESPACIO =====
+        function createSpaceCard(espacio) {
+            const card = document.createElement('div');
+            card.className = 'space-card';
+            card.setAttribute('data-espacio-id', espacio.id);
+            card.setAttribute('data-tipo', espacio.tipo);
+
+            const icon = getSpaceIcon(espacio.tipo);
+            const conditions = getSpaceConditions(espacio.tipo);
+
+            card.innerHTML = `
+                <div class="space-icon-wrapper">
+                    ${icon}
+                </div>
+                
+                <div class="space-content">
+                    <h3 class="space-title">${espacio.nombre}</h3>
+                    <p class="space-subtitle">${espacio.tipo}</p>
+                    
+                    <span class="space-capacity">
+                        ${espacio.tipo === 'estacionamiento' ? 
+                            '<i class="fas fa-car"></i> 1 Espacio' : 
+                            `<i class="fas fa-users"></i> Capacidad: ${espacio.capacidad} personas`}
+                    </span>
+                    
+                    <div class="space-badges">
+                        ${getSpaceBadges(espacio)}
+                    </div>
+
+                    <div class="conditions-section">
+                        <button type="button" class="btn-conditions" onclick="toggleConditions(event, '${espacio.id}')">
+                            <i class="fas fa-info-circle"></i>
+                            Ver condiciones de uso
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        
+                        <div class="conditions-content" id="conditions_${espacio.id}">
+                            <ul>
+                                ${conditions}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <button class="btn-select-space" onclick="selectSpace('${espacio.id}', '${espacio.tipo}', '${espacio.nombre}')">
+                        <i class="fas fa-check-circle"></i>
+                        Seleccionar Espacio
+                    </button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // ===== OBTENER ICONO DEL ESPACIO =====
+        function getSpaceIcon(tipo) {
+            const icons = {
+                'sala': '🏢',
+                'directorio': '🏛️',
+                'terraza': '🌳',
+                'comedor': '🍽️',
+                'estacionamiento': '🅿️'
+            };
+            return icons[tipo] || '🏢';
+        }
+
+        // ===== OBTENER BADGES DEL ESPACIO =====
+        function getSpaceBadges(espacio) {
+            let badges = '';
+            
+            if (espacio.tipo === 'estacionamiento') {
+                if (espacio.es_estacionamiento_visita) {
+                    badges += '<span class="badge badge-public"><i class="fas fa-globe"></i> PÚBLICO</span>';
+                } else if (espacio.oficina_propietaria) {
+                    badges += '<span class="badge badge-private"><i class="fas fa-lock"></i> PRIVADO</span>';
+                }
+            }
+            
+            if (espacio.ubicacion) {
+                badges += `<span class="badge badge-location"><i class="fas fa-map-marker-alt"></i> ${espacio.ubicacion}</span>`;
+            }
+            
+            return badges;
+        }
+
+        // ===== OBTENER CONDICIONES DEL ESPACIO =====
+        function getSpaceConditions(tipo) {
+            const conditions = {
+                'directorio': `
+                    <li><i class="fas fa-check"></i> <strong>Capacidad:</strong> Hasta 20 personas</li>
+                    <li><i class="fas fa-check"></i> <strong>Mínimo:</strong> 2 bloques de horario</li>
+                    <li><i class="fas fa-check"></i> <strong>Máximo:</strong> 8 bloques por día</li>
+                    <li><i class="fas fa-clock"></i> <strong>Horario:</strong> 8:00 AM - 7:00 PM</li>
+                    <li class="warning"><i class="fas fa-user-tie"></i> <strong>Aprobación:</strong> Requiere aprobación de gerencia para más de 4 horas</li>
+                    <li><i class="fas fa-coffee"></i> <strong>Servicios:</strong> Incluye servicio de café y agua</li>
+                    <li><i class="fas fa-video"></i> <strong>Videoconferencia:</strong> Zoom/Teams disponible</li>
+                    <li class="warning"><i class="fas fa-calendar-times"></i> <strong>Cancelación:</strong> Mínimo 24 horas de anticipación</li>
+                `,
+                'sala': `
+                    <li><i class="fas fa-check"></i> <strong>Capacidad máxima:</strong> 10 personas</li>
+                    <li><i class="fas fa-check"></i> <strong>Máximo:</strong> 8 bloques por día</li>
+                    <li><i class="fas fa-clock"></i> <strong>Horario:</strong> 8:00 AM - 6:00 PM</li>
+                    <li class="warning"><i class="fas fa-broom"></i> <strong>Limpieza:</strong> Debe liberarse 10 minutos antes del fin</li>
+                    <li class="danger"><i class="fas fa-ban"></i> <strong>Alimentos:</strong> Prohibido consumir alimentos (solo bebidas)</li>
+                    <li><i class="fas fa-check"></i> <strong>Equipo audiovisual:</strong> Disponible previa solicitud</li>
+                    <li class="warning"><i class="fas fa-calendar-times"></i> <strong>Cancelación:</strong> Mínimo 2 horas de anticipación</li>
+                `,
+                'comedor': `
+                    <li><i class="fas fa-check"></i> <strong>Capacidad máxima:</strong> 15 personas</li>
+                    <li><i class="fas fa-check"></i> <strong>Máximo:</strong> 8 bloques por día</li>
+                    <li><i class="fas fa-clock"></i> <strong>Horario:</strong> Solo mañanas: 8:00 AM - 11:00 AM</li>
+                    <li><i class="fas fa-utensils"></i> <strong>Catering:</strong> Servicio disponible (costo adicional)</li>
+                    <li class="warning"><i class="fas fa-calendar-check"></i> <strong>Catering:</strong> Reserva con mínimo 48 horas de anticipación</li>
+                    <li class="warning"><i class="fas fa-broom"></i> <strong>Limpieza:</strong> Debe dejarse limpio después de uso</li>
+                    <li><i class="fas fa-check"></i> <strong>Incluye:</strong> Utensilios y vajilla disponibles</li>
+                    <li class="danger"><i class="fas fa-fire"></i> <strong>Restricción:</strong> No se permite cocinar, solo calentar alimentos</li>
+                `,
+                'terraza': `
+                    <li><i class="fas fa-check"></i> <strong>Capacidad máxima:</strong> 50 personas</li>
+                    <li><i class="fas fa-clock"></i> <strong>Horario:</strong> Solo tardes: 3:00 PM - 10:00 PM</li>
+                    <li><i class="fas fa-moon"></i> <strong>Ideal:</strong> Para eventos nocturnos y celebraciones</li>
+                    <li class="warning"><i class="fas fa-chair"></i> <strong>Mobiliario:</strong> Se debe solicitar adicional con 48 horas de anticipación</li>
+                    <li class="danger"><i class="fas fa-volume-mute"></i> <strong>Ruido:</strong> Prohibido parlantes a alto volumen después de las 8 PM</li>
+                    <li><i class="fas fa-broom"></i> <strong>Limpieza:</strong> Requiere limpieza posterior (incluida en reserva)</li>
+                    <li class="warning"><i class="fas fa-cloud-rain"></i> <strong>Clima:</strong> Sujeto a condiciones climáticas</li>
+                    <li class="danger"><i class="fas fa-smoking-ban"></i> <strong>Prohibido:</strong> No se permite fumar</li>
+                `,
+                'estacionamiento': `
+                    <li><i class="fas fa-user"></i> <strong>Obligatorio:</strong> Requiere datos del visitante (nombre completo)</li>
+                    <li><i class="fas fa-car"></i> <strong>Obligatorio:</strong> Requiere placa del vehículo</li>
+                    <li><i class="fas fa-clock"></i> <strong>Horario:</strong> Disponible 7:00 AM - 10:00 PM</li>
+                    <li class="danger"><i class="fas fa-truck"></i> <strong>Vehículos:</strong> Solo vehículos livianos (no camiones ni buses)</li>
+                    <li><i class="fas fa-check"></i> <strong>Límite:</strong> Máximo 1 espacio por reserva</li>
+                    <li class="warning"><i class="fas fa-id-card"></i> <strong>Identificación:</strong> El visitante debe portar identificación</li>
+                    <li class="danger"><i class="fas fa-exclamation-triangle"></i> <strong>Responsabilidad:</strong> Del vehículo es del propietario</li>
+                    <li class="warning"><i class="fas fa-bell"></i> <strong>Recepción:</strong> Debe notificar al llegar</li>
+                    <li class="danger"><i class="fas fa-tachometer-alt"></i> <strong>Velocidad:</strong> Máximo 10 km/h dentro del estacionamiento</li>
+                `
+            };
+            
+            return conditions[tipo] || '';
+        }
+
+        // ===== TOGGLE CONDICIONES =====
+        function toggleConditions(event, espacioId) {
+            event.stopPropagation();
+            const button = event.currentTarget;
+            const content = document.getElementById(`conditions_${espacioId}`);
+            
+            button.classList.toggle('active');
+            content.classList.toggle('show');
+        }
+
+        // ===== SELECCIONAR ESPACIO =====
+        function selectSpace(espacioId, tipo, nombre) {
+            currentSpaceId = espacioId;
+            currentSpaceType = tipo.toLowerCase();
+            
+            // Actualizar UI
+            document.querySelectorAll('.space-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            const selectedCard = document.querySelector(`[data-espacio-id="${espacioId}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+            
+            // Actualizar formulario
+            document.getElementById('espacioInput').value = espacioId;
+            document.getElementById('selectedSpaceName').textContent = `Espacio seleccionado: ${nombre}`;
+            
+            // Limpiar fecha y horarios anteriores
+            document.getElementById('fecha').value = '';
+            resetTimeBlocks();
+            
+            // Mostrar sección de formulario
+            document.getElementById('formSection').classList.add('active');
+            
+            // Scroll suave al formulario
+            setTimeout(() => {
+                document.getElementById('formSection').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 100);
+            
+            // Mostrar/ocultar sección de visitante
+            toggleVisitorInfo();
+            
+            // Mostrar mensaje indicando que seleccione fecha
+            showInfo('Ahora seleccione la fecha para ver los horarios disponibles');
+        }
+
+        // ===== RESET TIME BLOCKS =====
+        function resetTimeBlocks() {
+            const timeBlocks = document.getElementById('timeBlocksContainer');
+            const status = document.getElementById('availability-status');
+            const spinner = document.getElementById('loading-spinner');
+            
+            timeBlocks.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                    <i class="fas fa-calendar-day" style="font-size: 3rem; color: var(--medium-gray); margin-bottom: 1rem; display: block;"></i>
+                    <p style="color: var(--medium-gray); font-size: 1.1rem; font-weight: 600;">
+                        Seleccione una fecha arriba para ver los horarios disponibles
+                    </p>
+                    <p style="color: var(--medium-gray); font-size: 0.9rem; margin-top: 0.5rem;">
+                        Los horarios se actualizarán automáticamente según la disponibilidad
+                    </p>
+                </div>
+            `;
+            
+            status.style.display = 'none';
+            spinner.classList.remove('active');
+            
+            selectedTimeSlots = [];
+            updateHiddenInputs();
+            updateSummary('', '');
+        }
+
+        // ===== MOSTRAR INFO =====
+        function showInfo(message) {
+            const infoDiv = document.getElementById('error-messages');
+            const errorText = document.getElementById('error-text');
+            
+            errorText.textContent = message;
+            infoDiv.style.display = 'flex';
+            infoDiv.style.background = 'linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%)';
+            infoDiv.style.borderLeftColor = '#17a2b8';
+            infoDiv.querySelector('i').className = 'fas fa-info-circle';
+            
+            setTimeout(() => {
+                infoDiv.style.display = 'none';
+                infoDiv.style.background = '';
+                infoDiv.style.borderLeftColor = '';
+                infoDiv.querySelector('i').className = 'fas fa-exclamation-triangle';
+            }, 4000);
+        }
+
+        // ===== VERIFICAR DISPONIBILIDAD =====
+        async function verificarDisponibilidad() {
+            if (!currentSpaceId || !document.getElementById('fecha').value) {
+                return;
+            }
+            
+            currentDate = document.getElementById('fecha').value;
+            
+            // Mostrar animación de carga
+            showLoadingState();
+            
+            try {
+                // LLAMADA REAL AL BACKEND DJANGO
+                const response = await fetch(`/ajax/verificar-disponibilidad/?espacio_id=${currentSpaceId}&fecha=${currentDate}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Datos recibidos del servidor:', data);
+                
+                availabilityData = data;
+                updateHorariosConDisponibilidad(data);
+                showSuccessState();
+                
+                // Scroll suave a los horarios
+                setTimeout(() => {
+                    document.getElementById('timeBlocksContainer').scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error al verificar disponibilidad:', error);
+                showErrorState(error.message);
+            }
+        }
+
+        // ===== GENERAR HORARIOS DE EJEMPLO (YA NO SE USA - SOLO BACKUP) =====
+        function generateSampleSchedule(tipo) {
+            // Esta función ya NO se usa porque ahora viene del servidor
+            // La dejo solo como backup por si falla la conexión
+            console.warn('Usando horarios de respaldo - debería venir del servidor');
+            
+            const horarios = [];
+            let horaInicio, horaFin;
+            
+            if (tipo === 'comedor') {
+                horaInicio = 8;
+                horaFin = 11;
+            } else if (tipo === 'terraza') {
+                horaInicio = 15;
+                horaFin = 22;
+            } else if (tipo === 'estacionamiento') {
+                horaInicio = 7;
+                horaFin = 22;
+            } else {
+                horaInicio = 8;
+                horaFin = 18;
+            }
+            
+            for (let hora = horaInicio; hora < horaFin; hora++) {
+                const inicio = `${hora.toString().padStart(2, '0')}:00`;
+                const fin = `${(hora + 1).toString().padStart(2, '0')}:00`;
+                
+                horarios.push({
+                    inicio: inicio,
+                    fin: fin,
+                    label: `${inicio} - ${fin}`,
+                    ocupado: false
+                });
+            }
+            
+            return {
+                nombre_espacio: tipo,
+                horarios: horarios
+            };
+        }
+
+        // ===== ESTADOS DE CARGA =====
+        function showLoadingState() {
+            const status = document.getElementById('availability-status');
+            const spinner = document.getElementById('loading-spinner');
+            const timeBlocks = document.getElementById('timeBlocksContainer');
+            
+            status.className = 'availability-status loading';
+            status.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Verificando disponibilidad en tiempo real...';
+            status.style.display = 'block';
+            
+            spinner.classList.add('active');
+            timeBlocks.innerHTML = '';
+        }
+
+        function showSuccessState() {
+            const status = document.getElementById('availability-status');
+            const spinner = document.getElementById('loading-spinner');
+            
+            status.className = 'availability-status loaded';
+            status.innerHTML = '<i class="fas fa-check-circle"></i> Disponibilidad actualizada desde el servidor';
+            
+            spinner.classList.remove('active');
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+
+        function showErrorState(message) {
+            const status = document.getElementById('availability-status');
+            const spinner = document.getElementById('loading-spinner');
+            const timeBlocks = document.getElementById('timeBlocksContainer');
+            
+            status.className = 'availability-status';
+            status.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
+            status.style.color = 'white';
+            status.style.display = 'block';
+            status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error: ${message}`;
+            
+            spinner.classList.remove('active');
+            timeBlocks.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--medium-gray);">Error al cargar horarios. Intente nuevamente.</p>';
+        }
+
+        // ===== ACTUALIZAR HORARIOS CON DISPONIBILIDAD =====
+        function updateHorariosConDisponibilidad(data) {
+            const timeBlocks = document.getElementById('timeBlocksContainer');
+            
+            selectedTimeSlots = [];
+            updateHiddenInputs();
+            
+            timeBlocks.innerHTML = '';
+            
+            if (!data.horarios || data.horarios.length === 0) {
+                timeBlocks.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--medium-gray);">No hay horarios disponibles para este espacio.</p>';
+                toggleVisitorInfo();
+                return;
+            }
+            
+            data.horarios.forEach((bloque, index) => {
+                const timeBlock = document.createElement('div');
+                
+                let blockClass = 'time-block';
+                let disabledAttr = '';
+                
+                const horarioPasado = isTimeSlotPassed(bloque.inicio, currentDate);
+                
+                if (bloque.ocupado) {
+                    blockClass += ' ocupado';
+                    disabledAttr = 'disabled';
+                } else if (horarioPasado) {
+                    blockClass += ' ocupado pasado';
+                    disabledAttr = 'disabled';
+                } else {
+                    blockClass += ' disponible';
+                }
+                
+                timeBlock.className = blockClass;
+                timeBlock.innerHTML = `
+                    <input type="checkbox" id="time_${index}" 
+                           value="${bloque.inicio}-${bloque.fin}" 
+                           data-inicio="${bloque.inicio}"
+                           data-fin="${bloque.fin}"
+                           data-label="${bloque.label}"
+                           onchange="updateSelectedTimes()"
+                           ${disabledAttr}>
+                    <label for="time_${index}" class="time-block-label">
+                        ${bloque.label}
+                    </label>
+                `;
+                
+                timeBlocks.appendChild(timeBlock);
+            });
+            
+            toggleVisitorInfo();
+        }
+
+        // ===== VERIFICAR SI EL HORARIO YA PASÓ =====
         function isTimeSlotPassed(horaInicio, fecha) {
             try {
                 const ahora = new Date();
@@ -735,17 +1887,13 @@
                     return false;
                 }
                 
-                // Obtener hora de INICIO del bloque
                 const [hora, minuto] = horaInicio.split(':').map(Number);
-                
-                // Crear hora de FIN del bloque (asumiendo bloques de 1 hora)
                 const horaFin = hora + 1;
                 const minutoFin = minuto;
                 
                 const horaActual = ahora.getHours();
                 const minutoActual = ahora.getMinutes();
                 
-                // Bloquear solo si la hora actual es DESPUÉS del fin del bloque
                 if (horaActual > horaFin) {
                     return true;
                 } else if (horaActual === horaFin && minutoActual > minutoFin) {
@@ -760,231 +1908,27 @@
             }
         }
 
-        // ===== FUNCIÓN AJAX PARA VERIFICAR DISPONIBILIDAD =====
-        async function verificarDisponibilidad() {
-            const espacio = document.getElementById('espacio');
-            const fecha = document.getElementById('fecha');
-            
-            if (!espacio.value || !fecha.value) {
-                resetTimeBlocks();
-                return;
-            }
-            
-            currentSpaceId = espacio.value;
-            currentDate = fecha.value;
-            
-            console.log('DEBUG - Verificando disponibilidad para:', currentSpaceId, currentDate);
-            
-            // Mostrar estado de carga
-            showLoadingState();
-            
-            try {
-                const response = await fetch(`/ajax/verificar-disponibilidad/?espacio_id=${currentSpaceId}&fecha=${currentDate}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                console.log('DEBUG - Datos recibidos:', data);
-                availabilityData = data;
-                
-                // Actualizar interfaz con los datos recibidos
-                updateHorariosConDisponibilidad(data);
-                showSuccessState();
-                
-            } catch (error) {
-                console.error('Error al verificar disponibilidad:', error);
-                showErrorState(error.message);
-            }
-        }
-
-        function showLoadingState() {
-            const status = document.getElementById('availability-status');
-            const spinner = document.getElementById('loading-spinner');
-            const timeBlocks = document.getElementById('time-blocks');
-            
-            status.className = 'availability-status loading';
-            status.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Verificando disponibilidad...';
-            
-            spinner.classList.add('active');
-            timeBlocks.innerHTML = '';
-        }
-
-        function showSuccessState() {
-            const status = document.getElementById('availability-status');
-            const spinner = document.getElementById('loading-spinner');
-            
-            status.className = 'availability-status loaded';
-            status.innerHTML = '<i class="fas fa-check-circle"></i> Disponibilidad actualizada en tiempo real';
-            
-            spinner.classList.remove('active');
-            
-            // Ocultar después de 3 segundos
-            setTimeout(() => {
-                status.style.display = 'none';
-            }, 3000);
-        }
-
-        function showErrorState(message) {
-            const status = document.getElementById('availability-status');
-            const spinner = document.getElementById('loading-spinner');
-            const timeBlocks = document.getElementById('time-blocks');
-            
-            status.className = 'availability-status';
-            status.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
-            status.style.color = 'white';
-            status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error: ${message}`;
-            
-            spinner.classList.remove('active');
-            timeBlocks.innerHTML = '<p class="no-space">Error al cargar horarios. Intente nuevamente.</p>';
-        }
-
-        // ===== FUNCIÓN ACTUALIZADA PARA HORARIOS CON BLOQUEO DE PASADOS =====
-        function updateHorariosConDisponibilidad(data) {
-            console.log('DEBUG - Actualizando horarios con datos:', data);
-            
-            const timeBlocks = document.getElementById('time-blocks');
-            const espacioTexto = data.nombre_espacio.toLowerCase();
-            currentSpaceType = espacioTexto;
-            
-            // Limpiar selecciones previas
-            selectedTimeSlots = [];
-            updateHiddenInputs();
-            
-            timeBlocks.innerHTML = '';
-            
-            if (!data.horarios || data.horarios.length === 0) {
-                timeBlocks.innerHTML = '<p class="no-space">No hay horarios disponibles para este espacio.</p>';
-                toggleVisitorInfo();
-                return;
-            }
-            
-            data.horarios.forEach((bloque, index) => {
-                console.log('DEBUG - Procesando bloque:', bloque);
-                
-                const timeBlock = document.createElement('div');
-                
-                // Aplicar clases según disponibilidad
-                let blockClass = 'time-block';
-                let disabledAttr = '';
-                let razonBloqueo = '';
-                
-                // VERIFICAR SI EL HORARIO YA PASÓ
-                const horarioPasado = isTimeSlotPassed(bloque.inicio, currentDate);
-                console.log('DEBUG - Horario pasado para', bloque.inicio, ':', horarioPasado);
-                
-                if (bloque.ocupado) {
-                    blockClass += ' ocupado';
-                    disabledAttr = 'disabled';
-                    razonBloqueo = 'OCUPADO';
-                } else if (horarioPasado) {
-                    // BLOQUEAR HORARIOS PASADOS
-                    blockClass += ' ocupado pasado';
-                    disabledAttr = 'disabled';
-                    razonBloqueo = 'PASADO';
-                } else {
-                    blockClass += ' disponible';
-                }
-                
-                console.log('DEBUG - Clase final del bloque:', blockClass);
-                console.log('DEBUG - Razón bloqueo:', razonBloqueo);
-                
-                timeBlock.className = blockClass;
-                timeBlock.innerHTML = `
-                    <input type="checkbox" id="time_${index}" 
-                           value="${bloque.inicio}-${bloque.fin}" 
-                           data-inicio="${bloque.inicio}"
-                           data-fin="${bloque.fin}"
-                           data-label="${bloque.label}"
-                           onchange="updateSelectedTimes()"
-                           ${disabledAttr}>
-                    <label for="time_${index}" class="time-label">
-                        ${bloque.label}
-                    </label>
-                `;
-                
-                // Agregar etiqueta específica para horarios ocupados/pasados
-                if (razonBloqueo) {
-                    const etiqueta = document.createElement('span');
-                    etiqueta.style.cssText = `
-                        position: absolute;
-                        top: 50%;
-                        right: 10px;
-                        transform: translateY(-50%);
-                        background: ${razonBloqueo === 'PASADO' ? '#f39c12' : '#e74c3c'};
-                        color: white;
-                        font-size: 0.7rem;
-                        padding: 0.2rem 0.5rem;
-                        border-radius: 5px;
-                        font-weight: 700;
-                        z-index: 10;
-                    `;
-                    etiqueta.textContent = razonBloqueo;
-                    timeBlock.appendChild(etiqueta);
-                    
-                    // Forzar el estilo del bloque
-                    if (razonBloqueo === 'PASADO') {
-                        timeBlock.style.borderColor = '#f39c12';
-                        timeBlock.style.background = 'linear-gradient(135deg, #fef9e7 0%, #fcf3cf 100%)';
-                        timeBlock.style.opacity = '0.8';
-                    }
-                }
-                
-                timeBlocks.appendChild(timeBlock);
-            });
-            
-            toggleVisitorInfo();
-        }
-
-        function resetTimeBlocks() {
-            const timeBlocks = document.getElementById('time-blocks');
-            const status = document.getElementById('availability-status');
-            const spinner = document.getElementById('loading-spinner');
-            
-            timeBlocks.innerHTML = '<p class="no-space">Primero seleccione un espacio y fecha...</p>';
-            status.style.display = 'none';
-            spinner.classList.remove('active');
-            
-            selectedTimeSlots = [];
-            updateHiddenInputs();
-            updateSummary('', '');
-        }
-
+        // ===== OBTENER LÍMITES DE BLOQUES =====
         function getMaxBlocks() {
             if (currentSpaceType.includes('estacionamiento') || currentSpaceType.includes('terraza')) {
-                return 0; // Sin límite
-            } else if (currentSpaceType.includes('directorio')) {
-                return 8; // 8 bloques máximo
-            } else if (currentSpaceType.includes('sala')) {
-                return 8; // 8 bloques máximo para salas
-            } else if (currentSpaceType.includes('comedor')) {
-                return 8; // 5 bloques máximo para comedor
+                return 0;
+            } else if (currentSpaceType.includes('directorio') || currentSpaceType.includes('sala') || currentSpaceType.includes('comedor')) {
+                return 8;
             }
-            
-            return 10; // Por defecto
+            return 10;
         }
 
         function getMinBlocks() {
             if (currentSpaceType.includes('directorio')) {
-                return 2; // Mínimo 2 bloques para directorio
+                return 2;
             }
-            return 1; // Por defecto mínimo 1 bloque
+            return 1;
         }
 
         function getLimitMessage() {
             if (currentSpaceType.includes('estacionamiento') || currentSpaceType.includes('terraza')) {
                 return 'Sin límite de horarios';
-            } else if (currentSpaceType.includes('directorio')) {
-                return 'Máximo 8 bloques (8 horas)';
-            } else if (currentSpaceType.includes('sala')) {
-                return 'Máximo 8 bloques (8 horas)';
-            } else if (currentSpaceType.includes('comedor')) {
+            } else if (currentSpaceType.includes('directorio') || currentSpaceType.includes('sala') || currentSpaceType.includes('comedor')) {
                 return 'Máximo 8 bloques (8 horas)';
             }
             return 'Máximo 10 bloques';
@@ -997,15 +1941,15 @@
             return '';
         }
 
+        // ===== ACTUALIZAR TIEMPOS SELECCIONADOS =====
         function updateSelectedTimes() {
-            const checkboxes = document.querySelectorAll('#time-blocks input[type="checkbox"]:checked');
+            const checkboxes = document.querySelectorAll('#timeBlocksContainer input[type="checkbox"]:checked');
             
             let maxBlocks = getMaxBlocks();
             let minBlocks = getMinBlocks();
             let limitMessage = getLimitMessage();
             let minMessage = getMinMessage();
             
-            // Validar máximo
             if (checkboxes.length > maxBlocks && maxBlocks > 0) {
                 const lastChecked = Array.from(checkboxes).pop();
                 lastChecked.checked = false;
@@ -1029,7 +1973,6 @@
             updateSummary(limitMessage, minMessage);
             updateVisualStyles();
             
-            // Validar mínimo para mostrar advertencia
             if (checkboxes.length > 0 && checkboxes.length < minBlocks) {
                 showError(`${minMessage}. Seleccionados: ${checkboxes.length}/${minBlocks}`);
             } else {
@@ -1037,6 +1980,7 @@
             }
         }
 
+        // ===== ACTUALIZAR INPUTS OCULTOS =====
         function updateHiddenInputs() {
             const container = document.getElementById('hidden-horarios');
             container.innerHTML = '';
@@ -1057,7 +2001,8 @@
                 container.appendChild(inputTotal);
             }
         }
-        
+
+        // ===== ACTUALIZAR RESUMEN =====
         function updateSummary(limitMessage, minMessage) {
             const summary = document.getElementById('selected-summary');
             const summaryText = document.getElementById('summary-text');
@@ -1081,6 +2026,7 @@
             }
         }
 
+        // ===== ACTUALIZAR ESTILOS VISUALES =====
         function updateVisualStyles() {
             const timeBlocks = document.querySelectorAll('.time-block');
             timeBlocks.forEach(block => {
@@ -1093,33 +2039,26 @@
             });
         }
 
+        // ===== TOGGLE VISITOR INFO =====
         function toggleVisitorInfo() {
-            const espacio = document.getElementById('espacio');
-            const visitorInfo = document.getElementById('visitor-info');
+            const visitorInfo = document.getElementById('visitorSection');
             
-            if (!espacio.value) {
-                visitorInfo.classList.remove('active');
-                return;
-            }
-            
-            const espacioTexto = espacio.options[espacio.selectedIndex].text.toLowerCase();
-            
-            if (espacioTexto.includes('estacionamiento') || espacioTexto.includes('estac')) {
+            if (currentSpaceType && currentSpaceType.includes('estacionamiento')) {
                 visitorInfo.classList.add('active');
                 document.getElementById('nombre_visitante').required = true;
                 document.getElementById('placa_visitante').required = true;
-                document.querySelector('.visitor-header h3').textContent = 'Información del Visitante (Obligatorio)';
             } else {
                 visitorInfo.classList.remove('active');
                 document.getElementById('nombre_visitante').required = false;
                 document.getElementById('placa_visitante').required = false;
-                document.querySelector('.visitor-header h3').textContent = 'Información del Visitante';
             }
         }
 
+        // ===== VALIDAR FORMULARIO =====
         function validateForm(event) {
-            const espacio = document.getElementById('espacio').value;
+            const espacio = document.getElementById('espacioInput').value;
             const fecha = document.getElementById('fecha').value;
+            const proposito = document.getElementById('proposito').value;
             const horariosSeleccionados = selectedTimeSlots.length;
             const minBlocks = getMinBlocks();
             
@@ -1135,13 +2074,18 @@
                 return false;
             }
             
+            if (!proposito.trim()) {
+                showError('Debe especificar el propósito de la reserva');
+                event.preventDefault();
+                return false;
+            }
+            
             if (horariosSeleccionados === 0) {
                 showError('Debe seleccionar al menos un bloque de horario válido');
                 event.preventDefault();
                 return false;
             }
             
-            // Validar mínimo de bloques
             if (horariosSeleccionados < minBlocks) {
                 const minMessage = getMinMessage();
                 showError(`${minMessage}. Actualmente seleccionados: ${horariosSeleccionados}/${minBlocks}`);
@@ -1167,9 +2111,17 @@
             }
             
             hideError();
+            
+            // Deshabilitar botón para evitar doble envío
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            
+            // El formulario se enviará normalmente a Django
             return true;
         }
 
+        // ===== MOSTRAR/OCULTAR ERRORES =====
         function showError(message) {
             const errorDiv = document.getElementById('error-messages');
             const errorText = document.getElementById('error-text');
@@ -1183,20 +2135,39 @@
             errorDiv.style.display = 'none';
         }
 
+        // ===== MODAL DE POLÍTICAS =====
+        function showPoliciesModal() {
+            const modal = document.getElementById('policiesModal');
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePoliciesModal() {
+            const modal = document.getElementById('policiesModal');
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('policiesModal');
+            if (event.target === modal) {
+                closePoliciesModal();
+            }
+        }
+
         // ===== EVENT LISTENERS =====
-        document.getElementById('espacio').addEventListener('change', function() {
-            console.log('DEBUG - Espacio cambiado:', this.value);
-            verificarDisponibilidad();
-        });
+        function setupEventListeners() {
+            document.getElementById('fecha').addEventListener('change', function() {
+                if (currentSpaceId) {
+                    verificarDisponibilidad();
+                }
+            });
 
-        document.getElementById('fecha').addEventListener('change', function() {
-            console.log('DEBUG - Fecha cambiada:', this.value);
-            verificarDisponibilidad();
-        });
-
-        document.getElementById('placa_visitante').addEventListener('input', function() {
-            this.value = this.value.toUpperCase();
-        });
+            document.getElementById('placa_visitante').addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+        }
     </script>
 </body>
 </html>
