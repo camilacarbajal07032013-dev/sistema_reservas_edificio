@@ -1409,7 +1409,7 @@
                 id: {{ espacio.id }},
                 nombre: "{{ espacio.nombre|escapejs }}",
                 tipo: "{{ espacio.tipo|lower|escapejs }}",
-                capacidad: {{ espacio.capacidad|default:10 }},
+                capacidad: {{ espacio.capacidad|default:x }},
                 ubicacion: "{{ espacio.ubicacion|default:'Sin ubicar'|escapejs }}",
                 {% if espacio.tipo == 'estacionamiento' %}
                 es_estacionamiento_visita: {{ espacio.es_estacionamiento_visita|yesno:"true,false" }},
