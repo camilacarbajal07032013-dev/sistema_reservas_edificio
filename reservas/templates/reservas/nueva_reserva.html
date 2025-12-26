@@ -1409,8 +1409,6 @@
                 id: {{ espacio.id }},
                 nombre: "{{ espacio.nombre|escapejs }}",
                 tipo: "{{ espacio.tipo|lower|escapejs }}",
-                capacidad: {{ espacio.capacidad|default:10 }},
-                ubicacion: "{{ espacio.ubicacion|default:'Sin ubicar'|escapejs }}",
                 {% if espacio.tipo == 'estacionamiento' %}
                 es_estacionamiento_visita: {{ espacio.es_estacionamiento_visita|yesno:"true,false" }},
                 oficina_propietaria: "{{ espacio.oficina_propietaria.nombre_empresa|default:''|escapejs }}"
