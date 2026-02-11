@@ -24,4 +24,4 @@ RUN python manage.py collectstatic --noinput
 EXPOSE $PORT
 
 # Comando de inicio: aquí SÍ ejecutamos migrate porque ya hay conexión a DB
-CMD python manage.py migrate && gunicorn edificio.wsgi:application --bind 0.0.0.0:$PORT
+CMD python manage.py migrate && gunicorn edificio.wsgi:application --bind 0.0.0.0:${PORT:-8000}
