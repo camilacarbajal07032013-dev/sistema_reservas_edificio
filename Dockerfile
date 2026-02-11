@@ -1,11 +1,27 @@
-[phases.setup]
-nixPkgs = ['python311', 'postgresql_16.dev', 'gcc']
+# Usar imagen base de Python
+FROM python:3.11-slim
 
-[phases.install]
-cmds = ['python -m venv --copies /opt/venv && . /opt/venv/bin/activate && pip install -r requirements.txt']
+# Establecer directorio de trabajo
+WORKDIR /app
 
-[phases.build]
-cmds = ['pip install -r requirements.txt']
+# Instalar dependencias del sistema para PostgreSQL
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
-[start]
-cmd = 'python manage.py migrate && python manage.py collectstatic --noinput && gunicorn edificio.wsgi:application --bind 0.0.0.0:$PORT'
+# Copiar requirements y instalar dependencias Python
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar el código de la aplicación
+COPY . .
+
+# Recolectar archivos estáticos (esto SÍ se puede hacer en build porque no necesita DB)
+RUN python manage.py collectstatic --noinput
+
+# Exponer el puerto
+EXPOSE $PORT
+
+# Comando de inicio: aquí SÍ ejecutamos migrate porque ya hay conexión a DB
+CMD python manage.py migrate && gunicorn edificio.wsgi:application --bind 0.0.0.0:$PORT
