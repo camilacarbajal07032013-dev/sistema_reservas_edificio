@@ -702,3 +702,24 @@ def ver_usuarios(request):
     usuarios = User.objects.all()
     lista = "<br>".join([f"- {u.username} (activo: {u.is_active})" for u in usuarios])
     return HttpResponse(f"<h3>Usuarios en Railway ({usuarios.count()} total):</h3><br>{lista}")
+
+def setup_admin_user(request):
+    from django.http import HttpResponse
+    from django.contrib.auth import get_user_model
+    
+    User = get_user_model()
+    
+    # Eliminar admin si existe
+    User.objects.filter(username='admin').delete()
+    
+    # Crear nuevo admin
+    user = User.objects.create_superuser(
+        username='admin',
+        email='admin@edificio.com',
+        password='admin123'
+    )
+    user.is_staff = True
+    user.is_active = True
+    user.save()
+    
+    return HttpResponse('✅ Usuario admin creado correctamente con todos los permisos')
