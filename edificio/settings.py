@@ -89,7 +89,11 @@ if all(key in os.environ for key in ['PGHOST', 'PGDATABASE', 'PGUSER', 'PGPASSWO
             'PORT': os.environ.get('PGPORT', '5432'),
             'CONN_MAX_AGE': 600,
             'OPTIONS': {
-                'connect_timeout': 10,
+                'connect_timeout': 30,  # Aumentado a 30 segundos
+                'keepalives': 1,
+                'keepalives_idle': 30,
+                'keepalives_interval': 10,
+                'keepalives_count': 5,
             }
         }
     }
