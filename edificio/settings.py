@@ -76,26 +76,16 @@ WSGI_APPLICATION = 'edificio.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# Configuración de base de datos con variables individuales de Railway
-if all(key in os.environ for key in ['PGHOST', 'PGDATABASE', 'PGUSER', 'PGPASSWORD']):
-    # Producción en Railway - usar variables individuales de Postgres
+import dj_database_url
+
+# Usar DATABASE_URL de Railway (conexión privada)
+if 'DATABASE_URL' in os.environ:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('PGDATABASE'),
-            'USER': os.environ.get('PGUSER'),
-            'PASSWORD': os.environ.get('PGPASSWORD'),
-            'HOST': os.environ.get('PGHOST'),
-            'PORT': os.environ.get('PGPORT', '5432'),
-            'CONN_MAX_AGE': 600,
-            'OPTIONS': {
-                'connect_timeout': 120,  # Aumentado a 30 segundos
-                'keepalives': 1,
-                'keepalives_idle': 30,
-                'keepalives_interval': 10,
-                'keepalives_count': 5,
-            }
-        }
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
 else:
     # Desarrollo local - usar SQLite
